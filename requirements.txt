@@ -1,4 +1,5 @@
 requests
+openpyxl
 pandas
 pytz
 datefinder
