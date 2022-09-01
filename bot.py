@@ -153,7 +153,7 @@ async def censusHealth(interaction):
         await interaction.response.defer()
         try:
             embed = getCensusHealth()
-            await interaction.edit_original_message(embed=embed)
+            await interaction.followup.edit_original_message(embed=embed)
         except discord.errors.NotFound:
             pass
         except JSONDecodeError:
