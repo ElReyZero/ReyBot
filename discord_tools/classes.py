@@ -1,0 +1,31 @@
+from dataclasses import dataclass, field
+import asyncio
+
+from .functions import getServerPanel
+from discord import HTTPException, User, Interaction
+from datetime import datetime, timedelta
+from .data import alert_reminder_dict
+from .utils import continentToId
+
+@dataclass
+class AlertReminder:
+    continent:str
+    minutes:int
+    endTime: datetime
+    user:User
+    task:asyncio.Task = field(init=False)
+
+    async def checkRemainingReminderTime(self, interaction):
+        while True:
+            await asyncio.sleep(1)
+            current_time = datetime.now().replace(microsecond=0)
+            localEndTime = datetime.fromtimestamp(self.endTime.timestamp())
+            reminder = localEndTime - timedelta(minutes=self.minutes)
+            if current_time == reminder or current_time > reminder:
+                dm = await interaction.user.create_dm()
+                await dm.send(f"{interaction.user.mention} Reminder! {self.continent} will end <t:{int(self.endTime.timestamp())}:R>")
+                alert_reminder_dict[self.user.id].remove(self)
+                break
+
+    def setTask(self, task):
+        self.task = task

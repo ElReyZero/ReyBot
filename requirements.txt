@@ -1,0 +1,5 @@
+requests
+pandas
+pytz
+datefinder
+git+https://github.com/Rapptz/discord.py@aa0acf1d567ff95467472ce5d7377c9eb6f541be
