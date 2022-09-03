@@ -10,8 +10,8 @@ reybot-clean:
   only:
     - master
   script:
-    - docker stop ReyBot
-    - docker rm ReyBot
+    - docker stop reybot
+    - docker rm reybot
 
 
 reybot-deploy:
@@ -21,7 +21,7 @@ reybot-deploy:
   only:
     - master
   script:
-    - docker build . -f bot.Dockerfile -t Rey/rey_bot:latest
-    - docker tag Rey/rey_bot localhost:5000/rey_bot
+    - docker build . -f bot.Dockerfile -t rey/rey_bot:latest
+    - docker tag rey/rey_bot localhost:5000/rey_bot
     - docker push localhost:5000/rey_bot
     - docker-compose up -d

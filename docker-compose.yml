@@ -2,7 +2,7 @@ version: '3'
 services:
   reybot:
     image: localhost:5000/rey_bot:latest
-    container_name: ReyBot
+    container_name: reybot
     restart: always
     environment:
        - "DISCORD_TOKEN=${DISCORD_TOKEN}"
