@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 # LABEL about the custom image
 LABEL maintainer="ElReyZero"
 LABEL version="1.0"
-LABEL description="This is custom Docker Image for the ReyBot."
+LABEL description="This is a custom Docker Image for the ReyBot."
 
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
