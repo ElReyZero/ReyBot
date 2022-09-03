@@ -153,7 +153,7 @@ async def censusHealth(interaction):
         await interaction.response.defer()
         try:
             embed = getCensusHealth()
-            await interaction.followup.edit_original_message(embed=embed)
+            await interaction.edit_original_message(embed=embed)
         except discord.errors.NotFound:
             pass
         except JSONDecodeError:
@@ -203,7 +203,7 @@ async def checkServerPanel(interaction, server:Literal["Emerald", "Connery", "Co
                 await interaction.response.defer()
                 try:
                     embed = getServerPanel(server)
-                    await interaction.followup.edit_original_message(embed=embed)
+                    await interaction.edit_original_message(embed=embed)
                 except discord.errors.NotFound:
                     pass
                 except JSONDecodeError:
