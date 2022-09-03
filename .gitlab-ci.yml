@@ -15,7 +15,7 @@ reybot-clean:
     - docker rm reybot
 
 
-reybot-test:
+reybot-build:
   stage: build
   allow_failure: true
   tags:
@@ -26,7 +26,6 @@ reybot-test:
     - docker build . -f bot.Dockerfile -t rey/rey_bot:latest
     - docker tag rey/rey_bot localhost:5000/rey_bot
     - docker push localhost:5000/rey_bot
-    - docker run --name reybot localhost:5000/rey_bot:latest
 
 reybot-deploy:
   stage: deploy
