@@ -2,7 +2,10 @@ import pandas as pd
 # Alert Reminder Stuff
 alert_reminder_dict = {}
 
-timezones = pd.read_excel('./discord_tools/data/timezones.xlsx')
+try:
+    timezones = pd.read_excel('./discord_tools/data/timezones.xlsx')
+except FileNotFoundError:
+    timezones = pd.read_csv('/home/ReyBot/discord_tools/timezones.xlsx')
 
 def getIANATz(tz):
     standard = timezones.loc[timezones["STNDAbbreviation"] == tz]
