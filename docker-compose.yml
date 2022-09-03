@@ -5,6 +5,6 @@ services:
     container_name: reybot
     restart: always
     environment:
-      - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - ADMIN_IDS=${ADMIN_IDS}
-      - MAIN_ADMIN_IDS=${MAIN_ADMIN_IDS}
+      - DISCORD_TOKEN:${DISCORD_TOKEN}
+      - ADMIN_IDS:${ADMIN_IDS}
+      - MAIN_ADMIN_IDS:${MAIN_ADMIN_IDS}
