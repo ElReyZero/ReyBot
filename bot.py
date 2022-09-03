@@ -203,7 +203,7 @@ async def checkServerPanel(interaction, server:Literal["Emerald", "Connery", "Co
                 await interaction.response.defer()
                 try:
                     embed = getServerPanel(server)
-                    await interaction.edit_original_message(embed=embed)
+                    await interaction.followup.edit_original_message(embed=embed)
                 except discord.errors.NotFound:
                     pass
                 except JSONDecodeError:
@@ -221,7 +221,7 @@ async def checkServerPanel(interaction, server:Literal["Emerald", "Connery", "Co
 
 
 @bot.tree.command(name="send_timezone", description="Send a timezone for an event given a time and event name")
-async def scheduleEvent(interaction, event_name:str, date:str, time:str, timezone:Timezones):
+async def sendTimezone(interaction, event_name:str, date:str, time:str, timezone:Timezones):
     await interaction.response.defer()
     try:
         date = find_dates(date)
@@ -235,7 +235,21 @@ async def scheduleEvent(interaction, event_name:str, date:str, time:str, timezon
         embed = discord.Embed(color=0x171717, title=f"{event_name}", description=f"{event_name} will happen at")
         embed.add_field(name="Date", value=f"<t:{int(timestamp.timestamp())}>", inline=True)
         embed.add_field(name="Relative", value=f"<t:{int(timestamp.timestamp())}:R>", inline=True)
-        await interaction.followup.send(embed=embed)
+        getTimestampsButton = Button(label="Get Timestamps", style=discord.ButtonStyle.blurple)
+        ephemeral = False
+        async def discordTimeFormatCallback(interaction):
+            nonlocal ephemeral
+            getTimestampsButton.disabled = True
+            if ephemeral:
+                await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>", ephemeral=True) 
+            else:
+                await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>")
+                ephemeral = True
+
+        getTimestampsButton.callback = discordTimeFormatCallback
+        view = View(timeout=None)
+        view.add_item(getTimestampsButton)
+        await interaction.followup.send(embed=embed, view=view)
     except AttributeError:
         await interaction.followup.send(f"{interaction.user.mention} Invalid date format", ephemeral=True)
     except (IndexError, ValueError):
