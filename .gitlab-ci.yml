@@ -24,4 +24,4 @@ reybot-deploy:
     - docker build . -f bot.Dockerfile -t Rey/rey_bot:latest
     - docker tag Rey/rey_bot localhost:5000/rey_bot
     - docker push localhost:5000/rey_bot
-    - docker run -d --name ReyBot localhost:5000/rey_bot:latest
+    - docker-compose up -d

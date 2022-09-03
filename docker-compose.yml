@@ -1,0 +1,10 @@
+version: '3'
+services:
+  reybot:
+    image: localhost:5000/rey_bot:latest
+    container_name: ReyBot
+    restart: always
+    environment:
+       - "DISCORD_TOKEN=${DISCORD_TOKEN}"
+       - "ADMIN_IDS=${ADMIN_IDS}"
+       - "MAIN_ADMIN_IDS=${MAIN_ADMIN_IDS}"
