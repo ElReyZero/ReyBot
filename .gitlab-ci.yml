@@ -26,7 +26,7 @@ reybot-test:
     - docker build . -f bot.Dockerfile -t rey/rey_bot:latest
     - docker tag rey/rey_bot localhost:5000/rey_bot
     - docker push localhost:5000/rey_bot
-    - docker run --name reybot -p 58913:58913 localhost:5000/rey_bot:latest
+    - docker run --name reybot -p 69420:69420 localhost:5000/rey_bot:latest
 
 reybot-deploy:
   stage: deploy
