@@ -17,7 +17,6 @@ reybot-clean:
 
 reybot-build:
   stage: build
-  allow_failure: true
   tags:
     - rey-discord-bot
   only:
