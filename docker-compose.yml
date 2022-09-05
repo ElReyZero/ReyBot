@@ -12,3 +12,4 @@ services:
       GI_LTUID: ${GI_LTUID}
       GI_LTOKEN: ${GI_LTOKEN}
       GI_UUID: ${GI_UUID}
+      MAIN_GUILD: ${MAIN_GUILD}

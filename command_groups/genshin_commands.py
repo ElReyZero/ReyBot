@@ -1,4 +1,3 @@
-from code import interact
 from discord import app_commands, Attachment
 import config as cfg
 import genshin as gi

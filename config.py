@@ -25,6 +25,7 @@ class MissingConfig(Exception):
 
 MAIN_ADMIN_ID = None
 DISCORD_TOKEN = None
+MAIN_GUILD = None
 admin_ids = []
 
 #: Contains database parameters.
@@ -57,6 +58,8 @@ def get_config():
         MAIN_ADMIN_ID = os.environ["MAIN_ADMIN"]
         global admin_ids
         admin_ids = os.environ["ADMIN_IDS"].split(",")
+        global MAIN_GUILD 
+        MAIN_GUILD = os.environ["MAIN_GUILD"]
 
         global database
         database['host'] = os.environ["DB_HOST"]
@@ -99,6 +102,13 @@ def get_config():
             _error_incorrect(admin_ids, 'General', file)
 
         _check_section(config, "Database", file)
+
+        try:
+            MAIN_GUILD = config["General"]["main_guild"]
+        except KeyError:
+            _error_missing(MAIN_GUILD, 'General', file)
+        except ValueError:
+            _error_incorrect(MAIN_GUILD, 'General', file)
 
         try:
             database['host'] = config["Database"]["host"]

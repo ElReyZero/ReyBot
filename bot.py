@@ -4,7 +4,6 @@ import sys
 from datetime import datetime, timedelta
 from typing import Literal
 import discord
-from discord.app_commands import AppCommandError
 from discord.ext import commands
 from discord.ui import Button, View
 import requests
@@ -23,7 +22,7 @@ from utils.timezones import getIANA
 import config as cfg
 
 
-description = "A various bot made by ElReyZero"
+description = "A different bot made by ElReyZero"
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='$', description=description, intents=intents)
@@ -36,48 +35,44 @@ async def getAdmins():
 async def on_ready():
     await bot.wait_until_ready()
     await bot.tree.sync()
+    await bot.tree.sync(guild=discord.Object(id=cfg.MAIN_GUILD))
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
     print('------')
     cfg.connections.disconnect_all.start()
 
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):
-        await ctx.send(f"{ctx.author.mention} Invalid Command! Type `$help` for the list of available commands.")
-    else:
-        try:
-            original = error.original
-        except AttributeError:
-            original = error
-        if type(original).__name__ == "ConnectionError":
-            await ctx.send(f"{ctx.author.mention} The PS2 API timed out, please try again!")
-            return
-        elif type(original).__name__ == "403 Forbidden" or isinstance(original, discord.errors.Forbidden):
-            await ctx.send(f"{ctx.author.mention} Your DM's are disabled.\nPlease enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again.")
-            return
-        await ctx.send(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
-        user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
-        try:
-            if not isinstance(original, discord.errors.Forbidden):
-                try:
-                    traceback_message = "".join(format_exception(type(error), error, error.__traceback__))
-                    await user.send(f"Exception: {traceback_message}")
-                except TypeError:
-                    etype, value, tb = sys.exc_info()
-                    traceback_message = "".join(format_exception(etype, value, tb))
-                    await user.send(f"Exception: {traceback_message}")
-                except discord.errors.HTTPException:
-                    etype, value, tb = sys.exc_info()
-                    traceback_message = "".join(format_exception(etype, value, tb))
-                    await user.send(f"Exception: {traceback_message}")
-                    raise error
-            raise error
-        except discord.errors.HTTPException:
-            pass
-
-
+@bot.tree.error
+async def on_app_command_error(interaction, error):
+    try:
+        original = error.original
+    except AttributeError:
+        original = error
+    if type(original).__name__ == "ConnectionError":
+        await interaction.response.send_message(f"{interaction.user.mention} The PS2 API timed out, please try again!")
+        return
+    elif type(original).__name__ == "403 Forbidden" or isinstance(original, discord.errors.Forbidden):
+        await interaction.response.send_message(f"{interaction.user.mention} Your DM's are disabled.\nPlease enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again.")
+        return
+    await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
+    user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
+    try:
+        if not isinstance(original, discord.errors.Forbidden):
+            try:
+                traceback_message = "".join(format_exception(type(error), error, error.__traceback__))
+                await user.send(f"Exception: {traceback_message}")
+            except TypeError:
+                etype, value, tb = sys.exc_info()
+                traceback_message = "".join(format_exception(etype, value, tb))
+                await user.send(f"Exception: {traceback_message}")
+            except discord.errors.HTTPException:
+                etype, value, tb = sys.exc_info()
+                traceback_message = "".join(format_exception(etype, value, tb))
+                await user.send(f"Exception: {traceback_message}")
+                raise error
+        raise error
+    except discord.errors.HTTPException:
+        pass
 
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alertReminder(interaction: discord.Interaction, continent:Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes:int=5):
@@ -247,5 +242,5 @@ async def sendTimezone(interaction, event_name:str, date:str, time:str, timezone
 if __name__ == "__main__":
     cfg.get_config()
     cfg.connections = set_connections()
-    bot.tree.add_command(Genshin())
+    bot.tree.add_command(Genshin(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN)
