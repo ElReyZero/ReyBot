@@ -1,11 +1,8 @@
 from dataclasses import dataclass, field
 import asyncio
-
-from .functions import getServerPanel
-from discord import HTTPException, User, Interaction
+from discord import User
 from datetime import datetime, timedelta
 from .data import alert_reminder_dict
-from .utils import continentToId
 
 @dataclass
 class AlertReminder:

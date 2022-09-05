@@ -17,7 +17,9 @@ COPY bot.py /home/ReyBot/bot.py
 COPY config.py /home/ReyBot/config.py
 COPY requirements.txt /home/ReyBot/requirements.txt
 ADD discord_tools /home/ReyBot/discord_tools
-COPY discord_tools/data/timezones.xlsx /home/ReyBot/discord_tools/timezones.xlsx
+ADD database /home/ReyBot/database
+ADD utils /home/ReyBot/utils
+COPY utils/data/timezones.xlsx /home/ReyBot/utils/timezones.xlsx
 
 RUN pip3 install -r /home/ReyBot/requirements.txt
 

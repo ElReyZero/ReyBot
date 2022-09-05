@@ -3,7 +3,7 @@ from unicodedata import name
 import requests
 from discord import Embed
 from datetime import datetime, timedelta, timezone
-from .utils import nameToServerID, idToContinentName, serverIDToName, idToContinentState
+from utils.ps2 import nameToServerID, idToContinentName, serverIDToName, idToContinentState
 
 def getServerPanel(server):
     id = nameToServerID(server)

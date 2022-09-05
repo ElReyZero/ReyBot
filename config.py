@@ -1,6 +1,5 @@
 from configparser import ConfigParser, ParsingError
 import os
-import pathlib
 
 class ConfigError(Exception):
     """
@@ -24,7 +23,7 @@ class MissingConfig(Exception):
 ## DYNAMIC PARAMETERS:
 # (pulled from the config file)
 
-main_admin_id = None
+MAIN_ADMIN_ID = None
 DISCORD_TOKEN = None
 admin_ids = []
 
@@ -33,8 +32,16 @@ database = {
     "host": "",
     "name": "",
     "user": "",
-    "password": ""
+    "password": "",
 }
+
+genshin_data = {
+    "ltuid": "",
+    "ltoken": "",
+    "uuid": 0
+}
+
+connections = None
 
 def get_config():
     """
@@ -46,10 +53,17 @@ def get_config():
         global DISCORD_TOKEN
         DISCORD_TOKEN = os.environ["DISCORD_TOKEN"]
 
-        global main_admin_id
-        main_admin_id = os.environ["MAIN_ADMIN"]
+        global MAIN_ADMIN_ID
+        MAIN_ADMIN_ID = os.environ["MAIN_ADMIN"]
         global admin_ids
         admin_ids = os.environ["ADMIN_IDS"].split(",")
+
+        global database
+        database['host'] = os.environ["DB_HOST"]
+        global genshin_data
+        genshin_data['ltuid'] = os.environ["GI_LTUID"]
+        genshin_data['ltoken'] = os.environ["GI_LTOKEN"]
+        genshin_data['uuid'] = int(os.environ["GI_UUID"])
 
     except KeyError:
         if not os.path.isfile(file):
@@ -71,11 +85,11 @@ def get_config():
             _error_incorrect(DISCORD_TOKEN, 'General', file)
 
         try:
-            main_admin_id = config["General"]["main_admin_id"]
+            MAIN_ADMIN_ID = config["General"]["main_admin_id"]
         except KeyError:
-            _error_missing(main_admin_id, 'General', file)
+            _error_missing(MAIN_ADMIN_ID, 'General', file)
         except ValueError:
-            _error_incorrect(main_admin_id, 'General', file)
+            _error_incorrect(MAIN_ADMIN_ID, 'General', file)
         
         try:
             admin_ids = config["General"]["admin_ids"].split(",")
@@ -83,6 +97,38 @@ def get_config():
             _error_missing(admin_ids, 'General', file)
         except ValueError:
             _error_incorrect(admin_ids, 'General', file)
+
+        _check_section(config, "Database", file)
+
+        try:
+            database['host'] = config["Database"]["host"]
+        except KeyError:
+            _error_missing('host', 'Database', file)
+        except ValueError:
+            _error_incorrect('host', 'Database', file)
+
+        _check_section(config, "Genshin", file)
+
+        try:
+            genshin_data['ltuid'] = config["Genshin"]["ltuid"]
+        except KeyError:
+            _error_missing('ltuid', 'Genshin', file)
+        except ValueError:
+            _error_incorrect('ltuid', 'Genshin', file)
+        
+        try:
+            genshin_data['ltoken'] = config["Genshin"]["ltoken"]
+        except KeyError:
+            _error_missing('ltoken', 'Genshin', file)
+        except ValueError:
+            _error_incorrect('ltoken', 'Genshin', file)
+
+        try:
+            genshin_data['uuid'] = int(config["Genshin"]["uuid"])
+        except KeyError:
+            _error_missing('uuid', 'Genshin', file)
+        except ValueError:
+            _error_incorrect('uuid', 'Genshin', file)
 
 
 def _check_section(config, section, file):

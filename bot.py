@@ -1,6 +1,5 @@
 from json import JSONDecodeError
 from traceback import format_exception
-import os
 import sys
 from datetime import datetime, timedelta
 from typing import Literal
@@ -13,18 +12,18 @@ from datetime import timezone
 import asyncio
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-from discord_tools.utils import continentToId
+from database.management.connection import set_connections
+from utils.ps2 import continentToId
 from discord_tools.classes import AlertReminder
-from discord_tools.data import alert_reminder_dict, getIANATz
+from discord_tools.data import alert_reminder_dict
 from discord_tools.functions import getServerPanel, getCensusHealth
 from discord_tools.literals import Timezones
+from command_groups.genshin_commands import Genshin
+from utils.timezones import getIANA
 import config as cfg
 
 
-description = "A bot for PlanetSide 2"
+description = "A various bot made by ElReyZero"
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='$', description=description, intents=intents)
@@ -41,6 +40,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    cfg.connections.disconnect_all.start()
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -58,7 +58,7 @@ async def on_command_error(ctx, error):
             await ctx.send(f"{ctx.author.mention} Your DM's are disabled.\nPlease enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again.")
             return
         await ctx.send(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
-        user = await bot.fetch_user(cfg.main_admin_id)
+        user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
         try:
             if not isinstance(original, discord.errors.Forbidden):
                 try:
@@ -77,17 +77,6 @@ async def on_command_error(ctx, error):
         except discord.errors.HTTPException:
             pass
 
-@bot.tree.error
-async def on_error(interaction: discord.Interaction, error: AppCommandError):
-    try:
-        await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(error))
-    except discord.InteractionResponded:
-        await interaction.followup.send(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(error))
-
-    traceback_message = "".join(format_exception(type(error), error, error.__traceback__))
-    user = await bot.fetch_user(cfg.main_admin_id)
-    await user.send(f"Exception: {traceback_message}")
-    raise error
 
 
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
@@ -230,7 +219,7 @@ async def sendTimezone(interaction, event_name:str, date:str, time:str, timezone
             break
         time = time.split(":")
         timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
-        timezone_py = pytzTimezone(getIANATz(timezone))
+        timezone_py = pytzTimezone(getIANA(timezone))
         timestamp = timezone_py.localize(timestamp).astimezone(None)
         embed = discord.Embed(color=0x171717, title=f"{event_name}", description=f"{event_name} will happen at")
         embed.add_field(name="Date", value=f"<t:{int(timestamp.timestamp())}>", inline=True)
@@ -255,7 +244,8 @@ async def sendTimezone(interaction, event_name:str, date:str, time:str, timezone
     except (IndexError, ValueError):
         await interaction.followup.send(f"{interaction.user.mention} Invalid time format, time must be in the format HH:MM (24h)", ephemeral=True)
 
-
 if __name__ == "__main__":
     cfg.get_config()
+    cfg.connections = set_connections()
+    bot.tree.add_command(Genshin())
     bot.run(cfg.DISCORD_TOKEN)

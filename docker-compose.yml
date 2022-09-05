@@ -8,3 +8,7 @@ services:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       MAIN_ADMIN: ${MAIN_ADMIN}
       ADMIN_IDS: ${ADMIN_IDS}
+      DB_HOST: ${DB_HOST}
+      GI_LTUID: ${GI_LTUID}
+      GI_LTOKEN: ${GI_LTOKEN}
+      GI_UUID: ${GI_UUID}
