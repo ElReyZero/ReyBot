@@ -1,28 +1,36 @@
-from json import JSONDecodeError
-from traceback import format_exception
-import sys
-from datetime import datetime, timedelta
-from typing import Literal
+# discord.py
 import discord
 from discord.ext import commands
 from discord.ui import Button, View
+
+# Other modules
+import sys
+from json import JSONDecodeError
+from traceback import format_exception
+from datetime import datetime, timedelta
+from typing import Literal
 import requests
 from datetime import timezone
 import asyncio
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
+
+# Custom imports
 from database.management.connection import set_connections
 from utils.ps2 import continentToId
+from utils.timezones import getIANA
+import config as cfg
+
+# Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
 from discord_tools.functions import getServerPanel, getCensusHealth
 from discord_tools.literals import Timezones
-from command_groups.genshin_commands import Genshin
-from utils.timezones import getIANA
-import config as cfg
+# Group commands
+from command_groups.genshin_commands import GenshinDB
 
 
-description = "A different bot made by ElReyZero"
+description = "A multipurpose bot made by ElReyZero"
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='$', description=description, intents=intents)
@@ -242,5 +250,5 @@ async def sendTimezone(interaction, event_name:str, date:str, time:str, timezone
 if __name__ == "__main__":
     cfg.get_config()
     cfg.connections = set_connections()
-    bot.tree.add_command(Genshin(), guild=discord.Object(id=cfg.MAIN_GUILD))
+    bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN)
