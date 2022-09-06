@@ -1,4 +1,5 @@
 from json import JSONDecodeError
+from operator import indexOf
 from unicodedata import name
 import requests
 from discord import Embed
@@ -108,4 +109,29 @@ def getCensusHealth():
         embed.add_field(name="Error", value="There was an error getting the census API health check. This bot uses Honu to check the API's health so it might be down!", inline=True)
     
     embed.set_footer(text="Last updated")
+    return embed
+
+def getOWMatchesData(server):
+    server_id = nameToServerID(server)
+    currentRound = requests.get(f"https://api.ps2alerts.com/outfit-wars/{server_id}/current-round").json()
+    req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}&round={currentRound}")
+    data = req.json()
+    sorted_rankings = sorted(data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
+    factions = {1: "<:VS:954877444005974076>", 2: "<:NC:954877511601377380>", 3: "<:TR:954877484871086190>"}
+    matches = list()
+    for i in range(0, len(sorted_rankings)-1, 2):
+        startTime = datetime.strptime(sorted_rankings[i]['startTime'][:-5], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
+        faction1 = factions[sorted_rankings[i]['outfit']['faction']]
+        faction2 = factions[sorted_rankings[i+1]['outfit']['faction']]
+        tag1 = sorted_rankings[i]['outfit']['tag']
+        tag2 = sorted_rankings[i+1]['outfit']['tag']
+        matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
+        matches.append(matchString)
+
+    return matches
+
+def getOWEmbed(data, server, current_page, pages):
+    embed = Embed(color=0x171717, title=f"Outfit Wars Matches for {server}", description=f"Page {current_page}/{pages}")
+    for match in data:
+        embed.add_field(name=f"Match {indexOf(data, match) +1}", value=match, inline=False)
     return embed

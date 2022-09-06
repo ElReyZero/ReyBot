@@ -24,7 +24,7 @@ import config as cfg
 # Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
-from discord_tools.functions import getServerPanel, getCensusHealth
+from discord_tools.embeds import getServerPanel, getCensusHealth, getOWEmbed, getOWMatchesData
 from discord_tools.literals import Timezones
 # Group commands
 from command_groups.genshin_commands import GenshinDB
@@ -206,7 +206,6 @@ async def checkGlobalReminders(interaction):
     else:
         await interaction.response.send_message(f"{interaction.user.mention} You are not authorized to use this command", ephemeral=True)
 
-
 @bot.tree.command(name="server_panel", description="Check the active alerts and open continents on a server. Default: Emerald")
 async def checkServerPanel(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger"]="Emerald"):
     try:
@@ -268,6 +267,58 @@ async def sendTimezone(interaction, event_name:str, date:str, time:str, timezone
         await interaction.followup.send(f"{interaction.user.mention} Invalid date format", ephemeral=True)
     except (IndexError, ValueError):
         await interaction.followup.send(f"{interaction.user.mention} Invalid time format, time must be in the format HH:MM (24h)", ephemeral=True)
+
+@bot.tree.command(name="get_ow_matches", description="Get the Outfit Wars matches for the current round")
+async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
+    await interaction.response.defer()
+    matches = getOWMatchesData(server)
+    if len(matches) > 5:
+        half = len(matches)//2
+        pages = [matches[:half], matches[half:]]
+        current_page = 1
+        async def prev_callback(interaction):
+            try:
+                nonlocal current_page
+                if current_page > 1:
+                    current_page -= 1
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages))
+                    await interaction.response.edit_message(embed=embed)
+                else:
+                    current_page = len(pages)
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages))
+                    await interaction.response.edit_message(embed=embed)
+            except discord.InteractionResponded:
+                pass
+
+        async def next_callback(interaction):
+            try:
+                nonlocal current_page
+                if current_page != len(pages):
+                    current_page += 1
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages))
+                    await interaction.response.edit_message(embed=embed)
+                else:
+                    current_page = 1
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages))
+                    await interaction.response.edit_message(embed=embed)
+            except discord.InteractionResponded:
+                pass
+        embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages))
+        prev = Button(label="Prev", custom_id="prev", style=discord.ButtonStyle.green)
+        prev.callback = prev_callback
+        next = Button(label="Next", custom_id="next", style=discord.ButtonStyle.green)
+        next.callback = next_callback
+        view = View()
+        view.add_item(prev)
+        view.add_item(next)
+        await interaction.followup.send(embed=embed, view=view)
+    else:
+        embed = getOWEmbed(matches, server, 1, 1)
+        await interaction.followup.send(embed=embed)
 
 if __name__ == "__main__":
     cfg.get_config()
