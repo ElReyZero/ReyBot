@@ -117,7 +117,7 @@ def getOWMatchesData(server):
     req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}&round={currentRound}")
     data = req.json()
     sorted_rankings = sorted(data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
-    factions = {1: "<:VS:954877444005974076>", 2: "<:NC:954877511601377380>", 3: "<:TR:954877484871086190>"}
+    factions = {1: "<:VS:1014970179291205745>", 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>"}
     matches = list()
     for i in range(0, len(sorted_rankings)-1, 2):
         startTime = datetime.strptime(sorted_rankings[i]['startTime'][:-5], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)

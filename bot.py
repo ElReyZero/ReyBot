@@ -233,8 +233,8 @@ async def checkServerPanel(interaction, server:Literal["Emerald", "Connery", "Co
         return
 
 
-@bot.tree.command(name="send_timezone", description="Send a timezone for an event given a time, date and event name")
-async def sendTimezone(interaction, event_name:str, date:str, time:str, timezone:Timezones):
+@bot.tree.command(name="send_timestamp", description="Send a timestamp for an event given a time, date and event name")
+async def sendTimestamp(interaction, event_name:str, date:str, time:str, timezone:Timezones):
     await interaction.response.defer()
     try:
         date = find_dates(date)
