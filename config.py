@@ -26,6 +26,7 @@ class MissingConfig(Exception):
 MAIN_ADMIN_ID = None
 DISCORD_TOKEN = None
 MAIN_GUILD = None
+DEBUG = False
 admin_ids = []
 
 #: Contains database parameters.
@@ -139,6 +140,17 @@ def get_config():
             _error_missing('uuid', 'Genshin', file)
         except ValueError:
             _error_incorrect('uuid', 'Genshin', file)
+    
+    global DEBUG
+    try:
+        DEBUG = os.environ["REYBOT_DEBUG"]
+    except KeyError:
+        try:
+            DEBUG = bool(config["General"]["debug"])
+        except KeyError:
+            pass
+        except ValueError:
+            _error_incorrect('debug', 'General', file)
 
 
 def _check_section(config, section, file):

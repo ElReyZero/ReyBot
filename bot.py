@@ -36,11 +36,18 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='$', description=description, intents=intents)
 
 
-async def getAdmins():
+async def getAdmins()->list:
+    """Simple function that retrieves the admin User objects from the discord api.
+
+    Returns:
+        List: List with the admin user objects
+    """
     return [await bot.fetch_user(admin) for admin in cfg.admin_ids]
 
 @bot.event
 async def on_ready():
+    """ Modified function that runs on the 'on_ready' event from the bot, it syncs the commands and starts the bot
+    """
     await bot.wait_until_ready()
     await bot.tree.sync()
     await bot.tree.sync(guild=discord.Object(id=cfg.MAIN_GUILD))
@@ -48,10 +55,15 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    # Starts a loop that disconnects database connections that have been idle for more than 5 minutes
     cfg.connections.disconnect_all.start()
 
 @bot.tree.error
 async def on_app_command_error(interaction, error):
+    """Modified function that runs on the 'on_app_command_error' event, it handles errors from the bot.
+       The default behaviour is to send a warning to the user that triggered the command and DM the main admin regarding the exception (if debug is set to True).
+    """
+    # Depending on the type of exception, a different message will be sent
     try:
         original = error.original
     except AttributeError:
@@ -63,37 +75,45 @@ async def on_app_command_error(interaction, error):
         await interaction.response.send_message(f"{interaction.user.mention} Your DM's are disabled.\nPlease enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again.")
         return
     await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
-    user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
-    try:
-        if not isinstance(original, discord.errors.Forbidden):
-            try:
-                traceback_message = "".join(format_exception(type(error), error, error.__traceback__))
-                await user.send(f"Exception: {traceback_message}")
-            except TypeError:
-                etype, value, tb = sys.exc_info()
-                traceback_message = "".join(format_exception(etype, value, tb))
-                await user.send(f"Exception: {traceback_message}")
-            except discord.errors.HTTPException:
-                etype, value, tb = sys.exc_info()
-                traceback_message = "".join(format_exception(etype, value, tb))
-                await user.send(f"Exception: {traceback_message}")
-                raise error
-        raise error
-    except discord.errors.HTTPException:
-        pass
+
+    #If the DEBUG variable is set, the bot will DM the main admin with the whole traceback. It's meant for debug purposes only
+    if cfg.DEBUG:
+        user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
+        try:
+            if not isinstance(original, discord.errors.Forbidden):
+                try:
+                    traceback_message = "".join(format_exception(type(error), error, error.__traceback__))
+                    await user.send(f"Exception: {traceback_message}")
+                except TypeError:
+                    etype, value, tb = sys.exc_info()
+                    traceback_message = "".join(format_exception(etype, value, tb))
+                    await user.send(f"Exception: {traceback_message}")
+                except discord.errors.HTTPException:
+                    etype, value, tb = sys.exc_info()
+                    traceback_message = "".join(format_exception(etype, value, tb))
+                    await user.send(f"Exception: {traceback_message}")
+                    raise error
+            raise error
+        except discord.errors.HTTPException:
+            pass
 
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alertReminder(interaction: discord.Interaction, continent:Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes:int=5):
+    """Command that sets up a reminder before an alert ends.
+    """
+    # Check if the user had inputs for minutes, it also checks if it's valid
     minutes = 5 if minutes == None else minutes
     if minutes < 1:
         await interaction.response.send_message(f"{interaction.user.mention} Please enter a valid number of minutes.", ephemeral=True)
         return
 
+    # Since the input is the continent name, it must be converted to it's census id
     cont_id = continentToId(continent)
     req = requests.get(f"https://api.ps2alerts.com/instances/active?world=17&zone={cont_id}")
     data = req.json()
     if len(data) > 0:
         data = data[0]
+        # Formatting and replacing timezones
         startTime = data['timeStarted'][:-6]
         startTime = datetime.strptime(startTime, "%Y-%m-%dT%H:%M:%S")
         startTime = startTime.replace(tzinfo=timezone.utc).astimezone(tz=None)
@@ -103,9 +123,11 @@ async def alertReminder(interaction: discord.Interaction, continent:Literal["Ind
             await interaction.response.send_message(f"There is less than {minutes} minutes in the alert, you cannot set a reminder for that!")
             return
 
+        # Setting up the alert reminder
         reminder = AlertReminder(continent, minutes, endTime, interaction.user)
         task = asyncio.create_task(reminder.checkRemainingReminderTime(interaction))
         reminder.setTask(task)
+        # The bot will try to set the created reminder checking if there's one already set
         try:
             reminders = alert_reminder_dict[interaction.user.id]
             for reminder in reminders:

@@ -8,6 +8,7 @@ services:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       MAIN_ADMIN: ${MAIN_ADMIN}
       ADMIN_IDS: ${ADMIN_IDS}
+      REYBOT_DEBUG: ${REYBOT_DEBUG}
       DB_HOST: ${DB_HOST}
       GI_LTUID: ${GI_LTUID}
       GI_LTOKEN: ${GI_LTOKEN}
