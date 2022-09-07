@@ -57,6 +57,12 @@ def pushCharacters(chars):
             char.save()
 
 
-def pushGenshin():
-    push_all_wishes()
-    pushCharacters()
+@to_thread
+def getCharacter(name):
+    if not cfg.connections.connections["genshin"]["connected"]:
+        cfg.connections.connect("genshin")
+    cfg.connections.connections["genshin"]["last_used"] = datetime.now()
+    try:
+        return Characters.objects.get(name=name)
+    except DoesNotExist:
+        return None

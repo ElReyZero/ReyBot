@@ -1,7 +1,7 @@
 from discord import app_commands, Attachment
 import config as cfg
 import genshin as gi
-from database.populationScripts.genshin import pushCharacters, push_all_wishes
+from database.query_scripts.genshin import pushCharacters, push_all_wishes, getCharacter
 import os
 
 class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
@@ -9,12 +9,22 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
     @app_commands.command(name="push_characters", description="Push all current characters to the database")
     async def get_characters(self, interaction):
         client = gi.Client()
-        await interaction.response.send_message("Getting characters...")
+        await interaction.response.send_message("Pushing characters...")
         if interaction.user.id == int(cfg.MAIN_ADMIN_ID):
             client.set_cookies(ltuid=cfg.genshin_data["ltuid"], ltoken=cfg.genshin_data["ltoken"])
             chars = await client.get_genshin_characters(cfg.genshin_data["uuid"])
             await pushCharacters(chars)
-            await interaction.followup.send("Characters pushed to database", ephemeral=True)
+            await interaction.followup.send("Successfully pushed all characters to database", ephemeral=True)
+    
+    @app_commands.command(name="get_character", description="Get a character from the database")
+    async def get_character(self, interaction, name: str):
+        await interaction.response.defer()
+        character = await getCharacter(name)
+        if character:
+            character = character.to_json()
+            await interaction.followup.send(character)
+        else:
+            await interaction.followup.send(f"Character called {name} not found", ephemeral=True)
 
     @app_commands.command(name="push_wishes", description="Push an excel file of all wishes to the database")
     async def getWishes(self, interaction, wishes_file:Attachment):
