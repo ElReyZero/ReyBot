@@ -74,7 +74,10 @@ async def on_app_command_error(interaction, error):
     elif type(original).__name__ == "403 Forbidden" or isinstance(original, discord.errors.Forbidden):
         await interaction.response.send_message(f"{interaction.user.mention} Your DM's are disabled.\nPlease enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again.")
         return
-    await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
+    try:
+        await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
+    except discord.errors.InteractionResponded:
+        pass
 
     #If the DEBUG variable is set, the bot will DM the main admin with the whole traceback. It's meant for debug purposes only
     if cfg.DEBUG:

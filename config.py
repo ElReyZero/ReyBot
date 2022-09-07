@@ -50,6 +50,7 @@ def get_config():
     Populate the config data from the config file.
     """
     file = f"./config.cfg"
+    linux_file = f"/home/ReyBot/config.cfg"
 
     try:
         global DISCORD_TOKEN
@@ -67,17 +68,21 @@ def get_config():
         global genshin_data
         genshin_data['ltuid'] = os.environ["GI_LTUID"]
         genshin_data['ltoken'] = os.environ["GI_LTOKEN"]
-        try:
-            genshin_data['uuid'] = int(os.environ["GI_UUID"])
-        except ValueError:
-            pass
-    except KeyError:
-        if not os.path.isfile(file):
+        genshin_data['uuid'] = int(os.environ["GI_UUID"])
+    except (KeyError, ValueError):
+        using_linux = False
+        if os.path.isfile(linux_file):
+            using_linux = True
+        elif not os.path.isfile(file):
             raise ConfigError(f"{file} not found! "+file)
+            
 
         config = ConfigParser(inline_comment_prefixes="#")
         try:
-            config.read(file)
+            if using_linux:
+                config.read(linux_file)
+            else:
+                config.read(file)
         except ParsingError as e:
             raise ConfigError(f"Parsing Error in '{file}'\n{e}")
 

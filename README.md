@@ -15,6 +15,7 @@ Work In Progress!
 
 ## How to Run
 I've included multiple ways to run the bot, so use whichever you prefer.
+Note: Python 3.9 >= is required for the bot to run!
 ### Locally
 1. Install dependencies using `pip install -r requirements.txt`
 2. Modify the `config.cfg` file by filling the required config variables or add them as environment variables.

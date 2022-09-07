@@ -23,6 +23,8 @@ ADD utils /home/ReyBot/utils
 ADD command_groups /home/ReyBot/command_groups
 COPY utils/data/timezones.xlsx /home/ReyBot/utils/timezones.xlsx
 
+COPY config.cfg /home/ReyBot/config.cfg
+
 RUN pip3 install -r /home/ReyBot/requirements.txt
 
 ENTRYPOINT python3.10 /home/ReyBot/bot.py
