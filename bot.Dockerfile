@@ -11,7 +11,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Update Ubuntu Software repository
 RUN apt update && apt dist-upgrade -y && apt install software-properties-common -y && add-apt-repository ppa:deadsnakes/ppa \
-&& apt install python3.10 && apt install python3-pip git
+&& apt install python3.10 -y && apt install python3-pip git -y
 
 RUN mkdir "/home/ReyBot"
 COPY bot.py /home/ReyBot/bot.py
@@ -25,4 +25,4 @@ COPY utils/data/timezones.xlsx /home/ReyBot/utils/timezones.xlsx
 
 RUN pip3 install -r /home/ReyBot/requirements.txt
 
-ENTRYPOINT python3 /home/ReyBot/bot.py
+ENTRYPOINT python3.10 /home/ReyBot/bot.py
