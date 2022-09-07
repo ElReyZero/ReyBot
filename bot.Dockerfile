@@ -11,7 +11,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Update Ubuntu Software repository
 RUN apt update && apt dist-upgrade -y && apt install -y python3 python3-pip git
-RUN python3 --version
 
 RUN mkdir "/home/ReyBot"
 COPY bot.py /home/ReyBot/bot.py
