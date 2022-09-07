@@ -67,8 +67,10 @@ def get_config():
         global genshin_data
         genshin_data['ltuid'] = os.environ["GI_LTUID"]
         genshin_data['ltoken'] = os.environ["GI_LTOKEN"]
-        genshin_data['uuid'] = int(os.environ["GI_UUID"])
-
+        try:
+            genshin_data['uuid'] = int(os.environ["GI_UUID"])
+        except ValueError:
+            pass
     except KeyError:
         if not os.path.isfile(file):
             raise ConfigError(f"{file} not found! "+file)
