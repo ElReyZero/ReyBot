@@ -10,7 +10,8 @@ LABEL description="This is a custom Docker Image for the ReyBot."
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Update Ubuntu Software repository
-RUN apt update && apt dist-upgrade -y && apt install -y python python3 python3-pip git
+RUN apt update && apt dist-upgrade -y && apt install software-properties-common -y && add-apt-repository ppa:deadsnakes/ppa \
+&& apt install python3.10 && apt install python3-pip git
 
 RUN mkdir "/home/ReyBot"
 COPY bot.py /home/ReyBot/bot.py
