@@ -10,7 +10,6 @@ from utils.threading import to_thread
 def push_all_wishes(file):
     if not cfg.connections.connections["genshin"]["connected"]:
         cfg.connections.connect("genshin")
-    cfg.connections.connections["genshin"]["last_used"] = datetime.now()
     xls = pd.ExcelFile(file)
     for wishType in ["Character Event", "Weapon Event", "Standard"]:
         df = pd.read_excel(xls, wishType)
@@ -30,7 +29,6 @@ def push_all_wishes(file):
 def pushCharacters(chars):
     if not cfg.connections.connections["genshin"]["connected"]:
         cfg.connections.connect("genshin")
-    cfg.connections.connections["genshin"]["last_used"] = datetime.now()
     for char in chars:
         try:
             char_weapon = Weapons.objects.get(weapon_id=char.weapon.id)
@@ -61,7 +59,6 @@ def pushCharacters(chars):
 def getCharacter(name):
     if not cfg.connections.connections["genshin"]["connected"]:
         cfg.connections.connect("genshin")
-    cfg.connections.connections["genshin"]["last_used"] = datetime.now()
     try:
         return Characters.objects.get(name=name)
     except DoesNotExist:

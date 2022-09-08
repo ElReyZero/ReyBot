@@ -14,9 +14,10 @@ from datetime import timezone
 import asyncio
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
+import atexit
 
 # Custom imports
-from database.management.connection import set_connections
+from database.management.connection import set_connections, exit_handler
 from utils.ps2 import continentToId
 from utils.timezones import getIANA
 import config as cfg
@@ -55,8 +56,6 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    # Starts a loop that disconnects database connections that have been idle for more than 5 minutes
-    cfg.connections.disconnect_all.start()
 
 @bot.tree.error
 async def on_app_command_error(interaction, error):
@@ -330,4 +329,5 @@ if __name__ == "__main__":
     cfg.get_config()
     cfg.connections = set_connections()
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
+    atexit.register(exit_handler, cfg.connections)
     bot.run(cfg.DISCORD_TOKEN)

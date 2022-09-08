@@ -1,30 +1,25 @@
 from mongoengine import connect, disconnect
 from config import database
-from datetime import datetime
-from discord.ext.tasks import loop
 
 class Connections:
     def __init__(self):
         self.connections = {
             "genshin": {
                 "connected": False,
-                "last_used": None,
                 "connection_name": None
             }
         }
         self.used_connections = list()
 
-    @loop(minutes=1)
-    async def disconnect_all(self):
+    def disconnect_all(self):
         for connection in self.connections.keys():
-            if self.connections[connection]["connected"] and (datetime.now() - self.connections[connection]["last_used"]).total_seconds() > 300:
+            if self.connections[connection]["connected"]:
                 self.disconnect(connection)
 
     def connect(self, name):
         try:
             if not self.connections[name]["connected"]:
                 self.connections[name]["connected"] = True
-                self.connections[name]["last_used"] = datetime.now()
                 if not "default" in self.used_connections:
                     self.used_connections.append("default")
                     self.connections[name]["connection_name"] = "default"
@@ -45,3 +40,6 @@ class Connections:
 def set_connections():
     connections = Connections()
     return connections
+
+def exit_handler(connections):
+    connections.disconnect_all()
