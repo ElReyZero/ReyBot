@@ -41,5 +41,5 @@ def set_connections():
     connections = Connections()
     return connections
 
-def exit_handler(connections):
+def db_exit_handler(connections):
     connections.disconnect_all()

@@ -14,12 +14,12 @@ from datetime import timezone
 import asyncio
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
-import atexit
 
 # Custom imports
-from database.management.connection import set_connections, exit_handler
+from database.management.connection import set_connections
 from utils.ps2 import continentToId
 from utils.timezones import getIANA
+from utils.exit_handlers import main_exit_handler
 import config as cfg
 
 # Discord Tools
@@ -328,6 +328,6 @@ async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt
 if __name__ == "__main__":
     cfg.get_config()
     cfg.connections = set_connections()
+    main_exit_handler(cfg.connections)
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
-    atexit.register(exit_handler, cfg.connections)
     bot.run(cfg.DISCORD_TOKEN)
