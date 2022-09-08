@@ -85,19 +85,18 @@ async def on_app_command_error(interaction, error):
     if cfg.DEBUG:
         user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
         try:
-            if not isinstance(original, discord.errors.Forbidden):
-                try:
-                    traceback_message = "".join(format_exception(type(error), error, error.__traceback__))
-                    await user.send(f"Exception: {traceback_message}")
-                except TypeError:
-                    etype, value, tb = sys.exc_info()
-                    traceback_message = "".join(format_exception(etype, value, tb))
-                    await user.send(f"Exception: {traceback_message}")
-                except discord.errors.HTTPException:
-                    etype, value, tb = sys.exc_info()
-                    traceback_message = "".join(format_exception(etype, value, tb))
-                    await user.send(f"Exception: {traceback_message}")
-                    raise error
+            try:
+                traceback_message = "".join(format_exception(type(error), error, error.__traceback__))
+                await user.send(f"Exception: {traceback_message}")
+            except TypeError:
+                etype, value, tb = sys.exc_info()
+                traceback_message = "".join(format_exception(etype, value, tb))
+                await user.send(f"Exception: {traceback_message}")
+            except discord.errors.HTTPException:
+                etype, value, tb = sys.exc_info()
+                traceback_message = "".join(format_exception(etype, value, tb))
+                await user.send(f"Exception: {traceback_message}")
+                raise error
             raise error
         except discord.errors.HTTPException:
             pass
@@ -329,5 +328,6 @@ if __name__ == "__main__":
     cfg.get_config()
     cfg.connections = set_connections()
     main_exit_handler(cfg.connections)
+    cfg.connections.connect("genshin")
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN)

@@ -2,6 +2,7 @@ from discord import app_commands, Attachment
 import config as cfg
 import genshin as gi
 from database.query_scripts.genshin import pushCharacters, push_all_wishes, getCharacter
+from discord_tools.embeds import genshinCharacterEmbed
 import os
 
 class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
@@ -21,8 +22,9 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
         await interaction.response.defer()
         character = await getCharacter(name)
         if character:
-            character = character.to_json()
-            await interaction.followup.send(character)
+            character = character.to_mongo()
+            embed = genshinCharacterEmbed(character)
+            await interaction.followup.send(embed=embed)
         else:
             await interaction.followup.send(f"Character called {name} not found", ephemeral=True)
 

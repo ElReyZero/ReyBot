@@ -2,14 +2,10 @@ import pandas as pd
 from database.classes.genshin import Constellations, Wishes, Weapons, Characters
 from pymongo.errors import BulkWriteError
 from mongoengine import DoesNotExist
-import config as cfg
-from datetime import datetime
 from utils.threading import to_thread
 
 @to_thread
 def push_all_wishes(file):
-    if not cfg.connections.connections["genshin"]["connected"]:
-        cfg.connections.connect("genshin")
     xls = pd.ExcelFile(file)
     for wishType in ["Character Event", "Weapon Event", "Standard"]:
         df = pd.read_excel(xls, wishType)
@@ -27,8 +23,6 @@ def push_all_wishes(file):
 
 @to_thread
 def pushCharacters(chars):
-    if not cfg.connections.connections["genshin"]["connected"]:
-        cfg.connections.connect("genshin")
     for char in chars:
         try:
             char_weapon = Weapons.objects.get(weapon_id=char.weapon.id)
@@ -57,8 +51,6 @@ def pushCharacters(chars):
 
 @to_thread
 def getCharacter(name):
-    if not cfg.connections.connections["genshin"]["connected"]:
-        cfg.connections.connect("genshin")
     try:
         return Characters.objects.get(name=name)
     except DoesNotExist:

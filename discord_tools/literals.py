@@ -17,3 +17,12 @@ class Months(Enum):
 
 Years = Literal[2022, 2023]
 Timezones = Literal['AST', 'CDT', 'CST', 'EDT', 'EST', 'MDT', 'MST', 'PDT', 'PST','UTC']
+
+class ElementColor(Enum):
+    Anemo = 0x77e6c3
+    Cryo = 0xa0e9e5
+    Dendro = 0x23c18a
+    Electro = 0xa757cb
+    Geo = 0xe3b342
+    Hydro = 0x21e1eb
+    Pyro = 0xfe925d

@@ -1,8 +1,8 @@
 from json import JSONDecodeError
 from operator import indexOf
-from unicodedata import name
 import requests
 from discord import Embed
+from discord_tools.literals import ElementColor
 from datetime import datetime, timedelta, timezone
 from utils.ps2 import nameToServerID, idToContinentName, serverIDToName, idToContinentState
 
@@ -134,4 +134,11 @@ def getOWEmbed(data, server, current_page, pages):
     embed = Embed(color=0x171717, title=f"Outfit Wars Matches for {server}", description=f"Page {current_page}/{pages}")
     for match in data:
         embed.add_field(name=f"Match {indexOf(data, match) +1}", value=match, inline=False)
+    return embed
+
+def genshinCharacterEmbed(data):
+    element = ElementColor[data['element']]
+    embed = Embed(color=element.value, title=f"{data['name']}", description=f"Element: {data['element']}\nLevel {data['level']}")
+    embed.set_image(url=data["icon"])
+
     return embed
