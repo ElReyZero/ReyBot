@@ -2,7 +2,7 @@ from json import JSONDecodeError
 from operator import indexOf
 import requests
 from discord import Embed
-from discord_tools.literals import ElementColor
+from discord_tools.literals import ElementColor, ElementEmote
 from datetime import datetime, timedelta, timezone
 from utils.ps2 import nameToServerID, idToContinentName, serverIDToName, idToContinentState
 
@@ -137,8 +137,15 @@ def getOWEmbed(data, server, current_page, pages):
     return embed
 
 def genshinCharacterEmbed(data):
-    element = ElementColor[data['element']]
-    embed = Embed(color=element.value, title=f"{data['name']}", description=f"Element: {data['element']}\nLevel {data['level']}")
+    element_color = ElementColor[data['element']]
+    element_emote = ElementEmote[data['element']]
+    element = f"Element: {data['element']} {element_emote.value}\n"
+    level = f"Level: {data['level']}\n"
+    rarity = "Rarity: "+":star: " * data['rarity'] + "\n"
+    friendship_lvl = f"Friendship Level <:friendship_lvl:1017420726992654356>: {data['friendship']}\n"
+    constellation_lvl = f"Constellation Level: {data['constellation_level']}"
+    desc = element + rarity + level + friendship_lvl + constellation_lvl
+    embed = Embed(color=element_color.value, title=f"{data['name']}", description=desc)
     embed.set_image(url=data["icon"])
 
     return embed
