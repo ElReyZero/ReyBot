@@ -70,6 +70,11 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
 
+@bot.event
+async def on_command_error(ctx, error):
+    traceback_message = format_exception(type(error), error, error.__traceback__)
+    exception_to_log(log, traceback_message)
+
 @bot.tree.error
 async def on_app_command_error(interaction, error):
     """Modified function that runs on the 'on_app_command_error' event, it handles errors from the bot.
@@ -114,6 +119,19 @@ async def on_app_command_error(interaction, error):
             raise error
         except discord.errors.HTTPException:
             pass
+
+@commands.dm_only()
+@bot.command(aliases=["logs", "getLogs"])
+async def get_bot_logs(ctx):
+    """Command that returns the bot log file to the user that requested it.
+    """
+    if ctx.author not in await getAdmins():
+        await ctx.send("You don't have permission to use this command!")
+        return
+    try:
+        await ctx.send("Here you go!", file=discord.File("./logs/bot.log"))
+    except FileNotFoundError:
+        await ctx.send("Here you go!", file=discord.File("/home/ReyBot/logs/bot.log"))
         
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alertReminder(interaction: discord.Interaction, continent:Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes:int=5):

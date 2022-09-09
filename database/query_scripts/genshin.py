@@ -29,6 +29,13 @@ def push_all_wishes(file):
 def pushCharacters(chars):
     log.info("MongoDB - Pushing current characters to database")
     for char in chars:
+        log.info(f"MongoDB - Pushing {char.name} to database")
+        log.info(f"MongoDB - Character data:")
+        log.info(f"MongoDB - Name: {char.name}")
+        log.info(f"MongoDB - Element: {char.element}")
+        log.info(f"MongoDB - Level: {char.level}")
+        log.info(f"MongoDB - Constellation level: {char.constellation}")
+        log.info(f"MongoDB - Friendship level: {char.friendship}")
         try:
             char_weapon = Weapons.objects.get(weapon_id=char.weapon.id)
         except DoesNotExist:
@@ -48,10 +55,14 @@ def pushCharacters(chars):
             newValues = {"$set": {"level":char.level, "friendship":char.friendship, "constellation_level":char.constellation}}
             Characters._get_collection().update_one(filter, newValues)
             char = Characters.objects.get(character_id=char.id)
+            log.info("MongoDB - Character already exists in database. Updating")
             char.update(set__constellations=constellation_list, set__weapon=char_weapon)
+            log.info(f"MongoDB - Updated {char.name} successfully")
         except DoesNotExist:
+            log.info("MongoDB - Character not found in database, creating new document")
             char = Characters(character_id=char.id, name=char.name, element=char.element, rarity=char.rarity, icon=char.icon, collab=char.collab, level=char.level, friendship=char.friendship, constellation_level=char.constellation, weapon=char_weapon, constellations=constellation_doc)
             char.save()
+            log.info(f"MongoDB - Pushed {char.name} successfully as a new Document")
 
 
 @to_thread
