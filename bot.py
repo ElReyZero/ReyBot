@@ -16,12 +16,12 @@ import logging, logging.handlers, sys, os
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
 import requests
-from tzlocal import get_localzone
 
 # Custom imports
 from database.management.connection import set_connections
+from utils.logger import define_log, StreamToLogger, exception_to_log
 from utils.ps2 import continentToId
-from utils.timezones import getIANA, getTZ
+from utils.timezones import getIANA
 from utils.exit_handlers import main_exit_handler
 import config as cfg
 
@@ -33,13 +33,13 @@ from discord_tools.literals import Timezones
 # Group commands
 from command_groups.genshin_commands import GenshinDB
 
+logging.getLogger('discord.http').setLevel(logging.INFO)
+log = logging.getLogger('discord')
 
 description = "A multipurpose bot made by ElReyZero"
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='$', description=description, intents=intents)
-
-log = logging.getLogger("discord")
 
 async def getAdmins()->list:
     """Simple function that retrieves the admin User objects from the discord api.
@@ -49,52 +49,15 @@ async def getAdmins()->list:
     """
     return [await bot.fetch_user(admin) for admin in cfg.admin_ids]
 
-def define_log():
-    # Logging config, logging outside the github repo
-    try:
-        if os.name != 'nt':
-            os.makedirs('/home/ReyBot/logs')
-        else:
-            os.makedirs('./logs')
-    except FileExistsError:
-        pass
-    if os.name != 'nt':
-        log_filename = '/home/ReyBot/logs/bot.log'
-    else:
-        log_filename = './logs/bot.log'
-    # Formatter will log in local time
-    local_tz = get_localzone()
-    local_tz = getTZ(local_tz)
-    formatter = logging.Formatter('%(asctime)s | %(levelname)s %(message)s', f"%Y-%m-%d %H:%M:%S {local_tz}")
-    # Print debug
-    level = logging.DEBUG
-    # Print to file, change file everyday at 12:00 Local
-    date = datetime(2020, 1, 1, 12)
-    file_handler = logging.handlers.TimedRotatingFileHandler(log_filename, when='midnight', atTime=date)
-    log.setLevel(level)
-    file_handler.setLevel(level)
-    file_handler.setFormatter(formatter)
-
-    class StreamToLogger(object):
-        """
-        Fake file-like stream object that redirects writes to a logger instance.
-        """
-        def __init__(self, logger, log_level=logging.INFO):
-            self.logger = logger
-            self.log_level = log_level
-            self.linebuf = ''
-
-        def write(self, buf):
-            for line in buf.rstrip().splitlines():
-                  self.logger.log(self.log_level, line.rstrip())
-
-        def flush(self):
-            pass
+def setup_log():
+    console_handler, file_handler, formatter = define_log()
 
     # Redirect stdout and stderr to log:
     sys.stdout = StreamToLogger(log, logging.INFO)
+    sys.stderr = StreamToLogger(log, logging.ERROR)
     log.addHandler(file_handler)
-        
+    log.propagate = True
+    discord.utils.setup_logging(handler=console_handler, formatter=formatter, level=logging.INFO)
 
 @bot.event
 async def on_ready():
@@ -113,6 +76,8 @@ async def on_app_command_error(interaction, error):
        The default behaviour is to send a warning to the user that triggered the command and DM the main admin regarding the exception (if debug is set to True).
     """
     # Depending on the type of exception, a different message will be sent
+    traceback_message = format_exception(type(error), error, error.__traceback__)
+    exception_to_log(log, traceback_message)
     try:
         original = error.original
     except AttributeError:
@@ -130,7 +95,6 @@ async def on_app_command_error(interaction, error):
             await interaction.followup.send(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
         except discord.InteractionResponded:
             pass
-
     #If the DEBUG variable is set, the bot will DM the main admin with the whole traceback. It's meant for debug purposes only
     if cfg.DEBUG:
         user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
@@ -374,13 +338,10 @@ async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt
         embed = getOWEmbed(matches, server, 1, 1)
         await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="error", description="Test error")
-async def error(interaction):
-    raise Exception("This is a test error")
 
 if __name__ == "__main__":
     # Defining the logger
-    define_log()
+    console_handler = setup_log()
     # Setting up the config
     cfg.get_config()
     cfg.connections = set_connections()
@@ -388,4 +349,4 @@ if __name__ == "__main__":
     cfg.connections.connect("genshin")
     # Starting the bot
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
-    bot.run(cfg.DISCORD_TOKEN)
+    bot.run(cfg.DISCORD_TOKEN, log_handler=console_handler)

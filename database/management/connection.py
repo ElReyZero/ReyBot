@@ -1,5 +1,8 @@
 from mongoengine import connect, disconnect
 from config import database
+import logging
+
+log = logging.getLogger('discord')
 
 class Connections:
     def __init__(self):
@@ -26,6 +29,7 @@ class Connections:
                 else:
                     self.connections[name]["connection_name"] = name
                 connect(db=name, host=database['host'], alias=self.connections[name]["connection_name"])
+                log.info(f"MongoDB - Connected to database: {name}")
         except KeyError:
             raise Exception(f"Connection {name} not found.") 
 
@@ -34,6 +38,7 @@ class Connections:
             if self.connections[name]["connected"]:
                 self.connections[name]["connected"] = False
                 disconnect(alias=self.connections[name]["connection_name"])
+                log.info(f"MongoDB - Disconnected from database: {name}")
         except KeyError:
             raise Exception(f"Connection {name} not found.") 
 
