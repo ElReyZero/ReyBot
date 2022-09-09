@@ -3,9 +3,13 @@ from database.classes.genshin import Constellations, Wishes, Weapons, Characters
 from pymongo.errors import BulkWriteError
 from mongoengine import DoesNotExist
 from utils.threading import to_thread
+import logging
+
+log = logging.getLogger('discord')
 
 @to_thread
 def push_all_wishes(file):
+    log.info("MongoDB - Pushing all wishes to database")
     xls = pd.ExcelFile(file)
     for wishType in ["Character Event", "Weapon Event", "Standard"]:
         df = pd.read_excel(xls, wishType)
@@ -23,6 +27,7 @@ def push_all_wishes(file):
 
 @to_thread
 def pushCharacters(chars):
+    log.info("MongoDB - Pushing current characters to database")
     for char in chars:
         try:
             char_weapon = Weapons.objects.get(weapon_id=char.weapon.id)
@@ -52,6 +57,8 @@ def pushCharacters(chars):
 @to_thread
 def getCharacter(name):
     try:
+        log.info(f"MongoDB: Searching for character: {name}")
         return Characters.objects.get(name=name)
     except DoesNotExist:
+        log.info(f"MongoDB: Character {name} not found")
         return None
