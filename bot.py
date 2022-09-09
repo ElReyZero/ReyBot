@@ -1,24 +1,27 @@
 # discord.py
+from inspect import trace
 import discord
 from discord.ext import commands
 from discord.ui import Button, View
 
 # Other modules
-import sys
 from json import JSONDecodeError
 from traceback import format_exception
 from datetime import datetime, timedelta
 from typing import Literal
-import requests
 from datetime import timezone
 import asyncio
+import logging, logging.handlers, sys, os
+# Dependency imports
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
+import requests
+from tzlocal import get_localzone
 
 # Custom imports
 from database.management.connection import set_connections
 from utils.ps2 import continentToId
-from utils.timezones import getIANA
+from utils.timezones import getIANA, getTZ
 from utils.exit_handlers import main_exit_handler
 import config as cfg
 
@@ -36,6 +39,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='$', description=description, intents=intents)
 
+log = logging.getLogger("discord")
 
 async def getAdmins()->list:
     """Simple function that retrieves the admin User objects from the discord api.
@@ -44,6 +48,53 @@ async def getAdmins()->list:
         List: List with the admin user objects
     """
     return [await bot.fetch_user(admin) for admin in cfg.admin_ids]
+
+def define_log():
+    # Logging config, logging outside the github repo
+    try:
+        if os.name != 'nt':
+            os.makedirs('/home/ReyBot/logs')
+        else:
+            os.makedirs('./logs')
+    except FileExistsError:
+        pass
+    if os.name != 'nt':
+        log_filename = '/home/ReyBot/logs/bot.log'
+    else:
+        log_filename = './logs/bot.log'
+    # Formatter will log in local time
+    local_tz = get_localzone()
+    local_tz = getTZ(local_tz)
+    formatter = logging.Formatter('%(asctime)s | %(levelname)s %(message)s', f"%Y-%m-%d %H:%M:%S {local_tz}")
+    # Print debug
+    level = logging.DEBUG
+    # Print to file, change file everyday at 12:00 Local
+    date = datetime(2020, 1, 1, 12)
+    file_handler = logging.handlers.TimedRotatingFileHandler(log_filename, when='midnight', atTime=date)
+    log.setLevel(level)
+    file_handler.setLevel(level)
+    file_handler.setFormatter(formatter)
+
+    class StreamToLogger(object):
+        """
+        Fake file-like stream object that redirects writes to a logger instance.
+        """
+        def __init__(self, logger, log_level=logging.INFO):
+            self.logger = logger
+            self.log_level = log_level
+            self.linebuf = ''
+
+        def write(self, buf):
+            for line in buf.rstrip().splitlines():
+                  self.logger.log(self.log_level, line.rstrip())
+
+        def flush(self):
+            pass
+
+    # Redirect stdout and stderr to log:
+    sys.stdout = StreamToLogger(log, logging.INFO)
+    log.addHandler(file_handler)
+        
 
 @bot.event
 async def on_ready():
@@ -55,7 +106,6 @@ async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
-    print('------')
 
 @bot.tree.error
 async def on_app_command_error(interaction, error):
@@ -100,7 +150,7 @@ async def on_app_command_error(interaction, error):
             raise error
         except discord.errors.HTTPException:
             pass
-
+        
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alertReminder(interaction: discord.Interaction, continent:Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes:int=5):
     """Command that sets up a reminder before an alert ends.
@@ -324,10 +374,18 @@ async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt
         embed = getOWEmbed(matches, server, 1, 1)
         await interaction.followup.send(embed=embed)
 
+@bot.tree.command(name="error", description="Test error")
+async def error(interaction):
+    raise Exception("This is a test error")
+
 if __name__ == "__main__":
+    # Defining the logger
+    define_log()
+    # Setting up the config
     cfg.get_config()
     cfg.connections = set_connections()
     main_exit_handler(cfg.connections)
     cfg.connections.connect("genshin")
+    # Starting the bot
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN)
