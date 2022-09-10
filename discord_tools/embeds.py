@@ -129,10 +129,9 @@ def getOWMatchesData(server):
             matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
         else:
             instance = requests.get(f"https://api.ps2alerts.com/outfit-wars/{sorted_rankings[i]['instanceId']}").json()
-            winner_id = instance["result"]["victor"]
-            winner = "blue" if instance["outfitwars"]["teams"]["blue"]["faction"] == winner_id else "red"
+            winner = "blue" if instance["result"]["blue"] > instance["result"]["red"] else "red"
             winnerTag = instance["outfitwars"]["teams"][winner]["tag"]
-            winnerFaction = factions[winner_id]
+            winnerFaction = factions[instance["outfitwars"]["teams"][winner]["faction"]]
             winner_name = instance["outfitwars"]["teams"][winner]['name']
             matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {winner_name}"
         matches.append(matchString)
