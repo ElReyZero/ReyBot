@@ -133,7 +133,8 @@ def getOWMatchesData(server):
             winner = "blue" if instance["outfitwars"]["teams"]["blue"]["faction"] == winner_id else "red"
             winnerTag = instance["outfitwars"]["teams"][winner]["tag"]
             winnerFaction = factions[winner_id]
-            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {sorted_rankings[winner]['outfit']['name']}"
+            winner_name = instance["outfitwars"]["teams"][winner]['name']
+            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {winner_name}"
         matches.append(matchString)
 
     return matches
