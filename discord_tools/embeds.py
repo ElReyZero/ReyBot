@@ -125,7 +125,13 @@ def getOWMatchesData(server):
         faction2 = factions[sorted_rankings[i+1]['outfit']['faction']]
         tag1 = sorted_rankings[i]['outfit']['tag']
         tag2 = sorted_rankings[i+1]['outfit']['tag']
-        matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
+        if not sorted_rankings[i]["instanceId"]:
+            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
+        else:
+            winner = i if sorted_rankings[i]["rankingParameters"]["TotalScore"] > sorted_rankings[i+1]["rankingParameters"]["TotalScore"] else i+1
+            winnerTag = sorted_rankings[winner]['outfit']['tag']
+            winnerFaction = factions[sorted_rankings[winner]['outfit']['faction']]
+            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {sorted_rankings[winner]['outfit']['name']}"
         matches.append(matchString)
 
     return matches
