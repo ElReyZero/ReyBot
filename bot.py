@@ -28,7 +28,7 @@ import config as cfg
 # Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
-from discord_tools.embeds import getServerPanel, getCensusHealth, getOWEmbed, getOWMatchesData
+from discord_tools.embeds import getOWRankings, getServerPanel, getCensusHealth, getOWEmbed, getOWMatchesData
 from discord_tools.literals import Timezones
 # Group commands
 from command_groups.genshin_commands import GenshinDB
@@ -356,6 +356,54 @@ async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt
         embed = getOWEmbed(matches, server, 1, 1)
         await interaction.followup.send(embed=embed)
 
+@bot.tree.command(name="get_ow_standings", description="Get the Outfit Wars standings for the current round")
+async def getOWStandings(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
+    await interaction.response.defer()
+    standings = getOWRankings(server)
+    if len(standings) > 5:
+        half = len(standings)//2
+        pages = [standings[:half], standings[half:]]
+        current_page = 1
+        async def prev_callback(interaction):
+            try:
+                nonlocal current_page
+                if current_page > 1:
+                    current_page -= 1
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
+                    await interaction.response.edit_message(embed=embed)
+                else:
+                    current_page = len(pages)
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
+                    await interaction.response.edit_message(embed=embed)
+            except discord.InteractionResponded:
+                pass
+
+        async def next_callback(interaction):
+            try:
+                nonlocal current_page
+                if current_page != len(pages):
+                    current_page += 1
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
+                    await interaction.response.edit_message(embed=embed)
+                else:
+                    current_page = 1
+                    content = pages[current_page-1]
+                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
+                    await interaction.response.edit_message(embed=embed)
+            except discord.InteractionResponded:
+                pass
+        embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages), match=False)
+        prev = Button(label="Prev", custom_id="prev", style=discord.ButtonStyle.green)
+        prev.callback = prev_callback
+        next = Button(label="Next", custom_id="next", style=discord.ButtonStyle.green)
+        next.callback = next_callback
+        view = View()
+        view.add_item(prev)
+        view.add_item(next)
+        await interaction.followup.send(embed=embed, view=view)
 
 if __name__ == "__main__":
     # Defining the logger

@@ -113,36 +113,72 @@ def getCensusHealth():
 
 def getOWMatchesData(server):
     server_id = nameToServerID(server)
-    currentRound = requests.get(f"https://api.ps2alerts.com/outfit-wars/{server_id}/current-round").json()
-    req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}&round={currentRound}")
+    req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}")
     data = req.json()
-    sorted_rankings = sorted(data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
+    current_round = data[0]["round"]
+    filtered_rankings = filter(lambda round: round["round"] == current_round, data)
+    sorted_rankings = sorted(list(filtered_rankings), key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
     factions = {1: "<:VS:1014970179291205745>", 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>"}
     matches = list()
     for i in range(0, len(sorted_rankings)-1, 2):
-        startTime = datetime.strptime(sorted_rankings[i]['startTime'][:-5], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
-        faction1 = factions[sorted_rankings[i]['outfit']['faction']]
-        faction2 = factions[sorted_rankings[i+1]['outfit']['faction']]
-        tag1 = sorted_rankings[i]['outfit']['tag']
-        tag2 = sorted_rankings[i+1]['outfit']['tag']
-        if not sorted_rankings[i]["instanceId"]:
-            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
-        else:
-            instance = requests.get(f"https://api.ps2alerts.com/outfit-wars/{sorted_rankings[i]['instanceId']}").json()
-            winner = "blue" if instance["result"]["blue"] > instance["result"]["red"] else "red"
-            winnerTag = instance["outfitwars"]["teams"][winner]["tag"]
-            winnerFaction = factions[instance["outfitwars"]["teams"][winner]["faction"]]
-            winner_name = instance["outfitwars"]["teams"][winner]['name']
-            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {winner_name}"
-        matches.append(matchString)
-
+        if sorted_rankings[i]["round"] == current_round and sorted_rankings[i+1]["round"] == current_round:
+            startTime = datetime.strptime(sorted_rankings[i]['startTime'][:-5], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
+            faction1 = factions[sorted_rankings[i]['outfit']['faction']]
+            faction2 = factions[sorted_rankings[i+1]['outfit']['faction']]
+            tag1 = sorted_rankings[i]['outfit']['tag']
+            tag2 = sorted_rankings[i+1]['outfit']['tag']
+            if not sorted_rankings[i]["instanceId"]:
+                matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
+            else:
+                instance = requests.get(f"https://api.ps2alerts.com/outfit-wars/{sorted_rankings[i]['instanceId']}").json()
+                winner = "blue" if instance["result"]["blue"] > instance["result"]["red"] else "red"
+                winnerTag = instance["outfitwars"]["teams"][winner]["tag"]
+                winnerFaction = factions[instance["outfitwars"]["teams"][winner]["faction"]]
+                winner_name = instance["outfitwars"]["teams"][winner]['name']
+                matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {winner_name}"
+            matches.append([i+1, matchString])
     return matches
 
-def getOWEmbed(data, server, current_page, pages):
-    embed = Embed(color=0x171717, title=f"Outfit Wars Matches for {server}", description=f"Page {current_page}/{pages}")
-    for match in data:
-        embed.add_field(name=f"Match {indexOf(data, match) +1}", value=match, inline=False)
+def getOWEmbed(data, server, current_page, pages, match=True):
+    if match:
+        embed = Embed(color=0x171717, title=f"Outfit Wars Matches for {server}", description=f"Page {current_page}/{pages}")
+        matchNumber = data[0][0]
+        if matchNumber != 1:
+            matchNumber //= 2
+            matchNumber += 1
+        for match in data:
+            embed.add_field(name=f"Match {matchNumber}", value=match[1], inline=False)
+            matchNumber += 1
+    else:
+        embed = Embed(color=0x171717, title=f"Outfit Wars Rankings for {server}", description=f"Page {current_page}/{pages}")
+        positions = ""
+        names = ""
+        scores = ""
+        for entry in data:
+            positions += f"{entry[0]}\n"
+            names += f"{entry[1]}\n"
+            scores += f"{entry[2]}\n"
+        embed.add_field(name="Rank", value=positions, inline=True)
+        embed.add_field(name="Outfit Name", value=names, inline=True)
+        embed.add_field(name="Score (Wins + Points)", value=scores, inline=True)
     return embed
+
+def getOWRankings(server):
+    server_id = nameToServerID(server)
+    req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}")
+    data = req.json()
+    current_round = data[0]["round"]
+    sorted_rankings = sorted(data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
+    factions = {1: "<:VS:1014970179291205745>", 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>"}
+    rankings = list()
+    for i in range(len(sorted_rankings)):
+        if sorted_rankings[i]["round"] == current_round:
+            faction = factions[sorted_rankings[i]['outfit']['faction']]
+            tag = sorted_rankings[i]['outfit']['tag']
+            name = sorted_rankings[i]['outfit']['name']
+            score = sorted_rankings[i]['rankingParameters']['TotalScore']
+            rankings.append([f"{i+1}.", f"{faction}[{tag}] {name}", score])
+    return rankings
 
 def genshinCharacterEmbed(data):
     element_color = ElementColor[data['element']]
