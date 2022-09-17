@@ -1,0 +1,42 @@
+2022-09-09 21:28:41 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-09 21:28:41 UTC-05 | INFO logging in using static token
+2022-09-09 21:28:44 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 0513a0c411a6afdf27ab562502dd24b5).
+2022-09-09 21:28:47 UTC-05 | INFO Logged in as
+2022-09-09 21:28:47 UTC-05 | INFO ReyBot
+2022-09-09 21:28:47 UTC-05 | INFO 327234083815948300
+2022-09-09 21:29:05 UTC-05 | ERROR An exception has ocurred while executing the bot:
+2022-09-09 21:29:05 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-09 21:29:05 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\site-packages\discord\app_commands\commands.py", line 851, in _do_call
+2022-09-09 21:29:05 UTC-05 | ERROR     return await self._callback(interaction, **params)  # type: ignore
+2022-09-09 21:29:05 UTC-05 | ERROR   File "d:\Users\Juan PC\Documents\Programming Scripts\Python Scripts\BWAE\ReyBot\bot.py", line 309, in getOWMatches
+2022-09-09 21:29:05 UTC-05 | ERROR     await interaction.response.defer()
+2022-09-09 21:29:05 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\site-packages\discord\interactions.py", line 592, in defer
+2022-09-09 21:29:05 UTC-05 | ERROR     await adapter.create_interaction_response(
+2022-09-09 21:29:05 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\site-packages\discord\webhook\async_.py", line 218, in request
+2022-09-09 21:29:05 UTC-05 | ERROR     raise NotFound(response, data)
+2022-09-09 21:29:05 UTC-05 | ERROR discord.errors.NotFound: 404 Not Found (error code: 10062): Unknown interaction
+2022-09-09 21:29:05 UTC-05 | ERROR 
+2022-09-09 21:29:05 UTC-05 | ERROR The above exception was the direct cause of the following exception:
+2022-09-09 21:29:05 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-09 21:29:05 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\site-packages\discord\app_commands\tree.py", line 1240, in _call
+2022-09-09 21:29:05 UTC-05 | ERROR     await command._invoke_with_namespace(interaction, namespace)
+2022-09-09 21:29:05 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\site-packages\discord\app_commands\commands.py", line 876, in _invoke_with_namespace
+2022-09-09 21:29:05 UTC-05 | ERROR     return await self._do_call(interaction, transformed_values)
+2022-09-09 21:29:05 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\site-packages\discord\app_commands\commands.py", line 869, in _do_call
+2022-09-09 21:29:05 UTC-05 | ERROR     raise CommandInvokeError(self, e) from e
+2022-09-09 21:29:05 UTC-05 | ERROR discord.app_commands.errors.CommandInvokeError: Command 'get_ow_matches' raised an exception: NotFound: 404 Not Found (error code: 10062): Unknown interaction
+2022-09-09 21:29:14 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-09 21:29:15 UTC-05 | ERROR Exception ignored in:
+2022-09-09 21:29:15 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000002328C1DE3B0>
+2022-09-09 21:29:15 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-09 21:29:15 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-09 21:29:15 UTC-05 | ERROR self.close()
+2022-09-09 21:29:15 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-09 21:29:15 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-09 21:29:15 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\asyncio\base_events.py", line 745, in call_soon
+2022-09-09 21:29:15 UTC-05 | ERROR self._check_closed()
+2022-09-09 21:29:15 UTC-05 | ERROR   File "D:\Users\Juan PC\AppData\Roaming\Python\Python310\lib\asyncio\base_events.py", line 510, in _check_closed
+2022-09-09 21:29:15 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-09 21:29:15 UTC-05 | ERROR RuntimeError
+2022-09-09 21:29:15 UTC-05 | ERROR :
+2022-09-09 21:29:15 UTC-05 | ERROR Event loop is closed
