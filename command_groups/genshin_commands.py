@@ -3,7 +3,7 @@ import discord.ui as ui
 import config as cfg
 import genshin as gi
 from database.query_scripts.genshin import pushCharacters, push_all_wishes, getCharacter, getWeaponByObjId
-from discord_tools.embeds import genshinCharacterEmbed
+from discord_tools.embeds import genshinCharacterEmbed, genshinWeaponEmbed
 import os
 
 class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
@@ -26,7 +26,11 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
             character = character.to_mongo()
             weapon = await getWeaponByObjId(character["weapon"])
             embed = genshinCharacterEmbed(character)
+            async def get_weapon(interaction):
+                embed = genshinWeaponEmbed(weapon)
+                await interaction.response.send_message(embed=embed)
             button = ui.Button(label=f'Weapon: {weapon["name"]}', style=ButtonStyle.primary, custom_id="weapon")    
+            button.callback = get_weapon
             view = ui.View()
             view.add_item(button)
             await interaction.followup.send(embed=embed, view=view)

@@ -188,3 +188,13 @@ def genshinCharacterEmbed(char_data):
     embed.set_image(url=char_data["icon"])
 
     return embed
+
+def genshinWeaponEmbed(weapon_data):
+    rarity = "Rarity: "+":star: " * weapon_data['rarity'] + "\n"
+    level = f"Level: {weapon_data['level']}\n"
+    type = f"Type: {weapon_data['type']}\n"
+    refinement_lvl = f"Refinement Level: {weapon_data['refinement']}\n"
+    desc = rarity + level + type + refinement_lvl
+    embed = Embed(color=0x171717, title=f"{weapon_data['name']}", description=desc)
+    embed.set_image(url=weapon_data["icon"])
+    return embed
