@@ -1,0 +1,197 @@
+2022-09-15 07:15:03 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:15:03 UTC-05 | INFO logging in using static token
+2022-09-15 07:15:04 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: ac3b5789b980ba1319faa5d1cb6e38e2).
+2022-09-15 07:15:07 UTC-05 | INFO Logged in as
+2022-09-15 07:15:07 UTC-05 | INFO ReyBot
+2022-09-15 07:15:07 UTC-05 | INFO 327234083815948300
+2022-09-15 07:15:38 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:15:38 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:15:38 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x00000230BD2A1D80>
+2022-09-15 07:15:38 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:15:38 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:15:38 UTC-05 | ERROR self.close()
+2022-09-15 07:15:38 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:15:38 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:15:38 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:15:38 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:15:39 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:15:39 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:15:39 UTC-05 | ERROR RuntimeError
+2022-09-15 07:15:39 UTC-05 | ERROR :
+2022-09-15 07:15:39 UTC-05 | ERROR Event loop is closed
+2022-09-15 07:17:29 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:17:29 UTC-05 | INFO logging in using static token
+2022-09-15 07:17:31 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: b4feaa142044f5139239b63739a6fe12).
+2022-09-15 07:17:33 UTC-05 | INFO Logged in as
+2022-09-15 07:17:33 UTC-05 | INFO ReyBot
+2022-09-15 07:17:33 UTC-05 | INFO 327234083815948300
+2022-09-15 07:18:23 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:18:24 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:18:24 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000001F945701D80>
+2022-09-15 07:18:24 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:18:24 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:18:24 UTC-05 | ERROR self.close()
+2022-09-15 07:18:24 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:18:24 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:18:24 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:18:24 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:18:24 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:18:24 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:18:24 UTC-05 | ERROR RuntimeError
+2022-09-15 07:18:24 UTC-05 | ERROR :
+2022-09-15 07:18:24 UTC-05 | ERROR Event loop is closed
+2022-09-15 07:19:57 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:19:57 UTC-05 | INFO logging in using static token
+2022-09-15 07:19:58 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 041f4cb2134cd558d0bc894eb681d517).
+2022-09-15 07:20:01 UTC-05 | INFO Logged in as
+2022-09-15 07:20:01 UTC-05 | INFO ReyBot
+2022-09-15 07:20:01 UTC-05 | INFO 327234083815948300
+2022-09-15 07:20:22 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:20:22 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:20:22 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000002DDD3681D80>
+2022-09-15 07:20:22 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:20:22 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:20:22 UTC-05 | ERROR self.close()
+2022-09-15 07:20:22 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:20:22 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:20:22 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:20:22 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:20:22 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:20:22 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:20:22 UTC-05 | ERROR RuntimeError
+2022-09-15 07:20:22 UTC-05 | ERROR :
+2022-09-15 07:20:22 UTC-05 | ERROR Event loop is closed
+2022-09-15 07:20:26 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:20:26 UTC-05 | INFO logging in using static token
+2022-09-15 07:20:27 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 4b41916f8618f1b84470951e6a97e5c1).
+2022-09-15 07:21:01 UTC-05 | INFO Logged in as
+2022-09-15 07:21:01 UTC-05 | INFO ReyBot
+2022-09-15 07:21:01 UTC-05 | INFO 327234083815948300
+2022-09-15 07:24:40 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:27:01 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:27:02 UTC-05 | INFO logging in using static token
+2022-09-15 07:27:03 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 12f7056cd06fbf9f9ebf5a742b907b55).
+2022-09-15 07:27:06 UTC-05 | INFO Logged in as
+2022-09-15 07:27:06 UTC-05 | INFO ReyBot
+2022-09-15 07:27:06 UTC-05 | INFO 327234083815948300
+2022-09-15 07:27:35 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:28:13 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:28:13 UTC-05 | INFO logging in using static token
+2022-09-15 07:28:15 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 75c72d0aa9a1731e1421f5feedd603d6).
+2022-09-15 07:28:18 UTC-05 | INFO Logged in as
+2022-09-15 07:28:18 UTC-05 | INFO ReyBot
+2022-09-15 07:28:18 UTC-05 | INFO 327234083815948300
+2022-09-15 07:30:01 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:30:20 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:30:20 UTC-05 | INFO logging in using static token
+2022-09-15 07:30:22 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: f9f3b99f552cc1b84fcc4d258c997df2).
+2022-09-15 07:30:24 UTC-05 | INFO Logged in as
+2022-09-15 07:30:24 UTC-05 | INFO ReyBot
+2022-09-15 07:30:24 UTC-05 | INFO 327234083815948300
+2022-09-15 07:31:04 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:31:04 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:31:04 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000001EF0AA91D80>
+2022-09-15 07:31:04 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:31:04 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:31:04 UTC-05 | ERROR self.close()
+2022-09-15 07:31:04 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:31:04 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:31:04 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:31:04 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:31:04 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:31:04 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:31:04 UTC-05 | ERROR RuntimeError
+2022-09-15 07:31:04 UTC-05 | ERROR :
+2022-09-15 07:31:04 UTC-05 | ERROR Event loop is closed
+2022-09-15 07:33:14 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:33:26 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:33:26 UTC-05 | INFO logging in using static token
+2022-09-15 07:33:34 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 6873093b9b94dea18d8119c959299ad1).
+2022-09-15 07:33:39 UTC-05 | INFO Logged in as
+2022-09-15 07:33:39 UTC-05 | INFO ReyBot
+2022-09-15 07:33:39 UTC-05 | INFO 327234083815948300
+2022-09-15 07:35:25 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:35:31 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:35:31 UTC-05 | INFO logging in using static token
+2022-09-15 07:35:33 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 66eacc2c44a64cddb0dd631429592743).
+2022-09-15 07:35:36 UTC-05 | INFO Logged in as
+2022-09-15 07:35:36 UTC-05 | INFO ReyBot
+2022-09-15 07:35:36 UTC-05 | INFO 327234083815948300
+2022-09-15 07:36:12 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:36:12 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:36:12 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000002309DAE1D80>
+2022-09-15 07:36:12 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:36:12 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:36:12 UTC-05 | ERROR self.close()
+2022-09-15 07:36:12 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:36:12 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:36:12 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:36:12 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:36:12 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:36:12 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:36:12 UTC-05 | ERROR RuntimeError
+2022-09-15 07:36:12 UTC-05 | ERROR :
+2022-09-15 07:36:12 UTC-05 | ERROR Event loop is closed
+2022-09-15 07:37:41 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:37:41 UTC-05 | INFO logging in using static token
+2022-09-15 07:37:42 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 2af14a73d49011fe901c1eb04670a08b).
+2022-09-15 07:37:46 UTC-05 | INFO Logged in as
+2022-09-15 07:37:46 UTC-05 | INFO ReyBot
+2022-09-15 07:37:46 UTC-05 | INFO 327234083815948300
+2022-09-15 07:38:38 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:38:38 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:38:38 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000001A9B32F1D80>
+2022-09-15 07:38:38 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:38:38 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:38:38 UTC-05 | ERROR self.close()
+2022-09-15 07:38:38 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:38:38 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:38:38 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:38:38 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:38:38 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:38:38 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:38:38 UTC-05 | ERROR RuntimeError
+2022-09-15 07:38:38 UTC-05 | ERROR :
+2022-09-15 07:38:38 UTC-05 | ERROR Event loop is closed
+2022-09-15 07:40:25 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:40:25 UTC-05 | INFO logging in using static token
+2022-09-15 07:40:26 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 10a0cec80b6b56af17fdd37823795bd7).
+2022-09-15 07:40:29 UTC-05 | INFO Logged in as
+2022-09-15 07:40:29 UTC-05 | INFO ReyBot
+2022-09-15 07:40:29 UTC-05 | INFO 327234083815948300
+2022-09-15 07:41:08 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:41:08 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:41:08 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000001B3B10E1D80>
+2022-09-15 07:41:08 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:41:08 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:41:08 UTC-05 | ERROR self.close()
+2022-09-15 07:41:08 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:41:08 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:41:08 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:41:08 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:41:08 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:41:08 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:41:08 UTC-05 | ERROR RuntimeError
+2022-09-15 07:41:08 UTC-05 | ERROR :
+2022-09-15 07:41:08 UTC-05 | ERROR Event loop is closed
+2022-09-15 07:45:16 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-15 07:45:16 UTC-05 | INFO logging in using static token
+2022-09-15 07:45:17 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 462e23524e636323f038207149adc72d).
+2022-09-15 07:45:20 UTC-05 | INFO Logged in as
+2022-09-15 07:45:20 UTC-05 | INFO ReyBot
+2022-09-15 07:45:20 UTC-05 | INFO 327234083815948300
+2022-09-15 07:46:00 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-15 07:46:01 UTC-05 | ERROR Exception ignored in:
+2022-09-15 07:46:01 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000001DB4C051D80>
+2022-09-15 07:46:01 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-15 07:46:01 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-15 07:46:01 UTC-05 | ERROR self.close()
+2022-09-15 07:46:01 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-15 07:46:01 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-15 07:46:01 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-15 07:46:01 UTC-05 | ERROR self._check_closed()
+2022-09-15 07:46:01 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-15 07:46:01 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-15 07:46:01 UTC-05 | ERROR RuntimeError
+2022-09-15 07:46:01 UTC-05 | ERROR :
+2022-09-15 07:46:01 UTC-05 | ERROR Event loop is closed

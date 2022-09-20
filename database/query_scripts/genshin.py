@@ -73,3 +73,12 @@ def getCharacter(name):
     except DoesNotExist:
         log.info(f"MongoDB: Character {name} not found")
         return None
+
+@to_thread
+def getWeaponByObjId(object_id):
+    try:
+        log.info(f"MongoDB: Searching for weapon with object_id: {object_id}")
+        return Weapons.objects.get(id=object_id)
+    except DoesNotExist:
+        log.info(f"MongoDB: Weapon with object_id {object_id} not found")
+        return None

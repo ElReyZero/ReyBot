@@ -58,7 +58,7 @@ def getServerPanel(server):
                         continentStatus = ""
                         if not cont_name == "Oshur":
                             if "Unstable" in unstableState:
-                                continentStatus+= f"<:unstable:1004847460650319995> {unstableState}"
+                                continentStatus+= f"<:unstable:1014970998803664896> {unstableState}"
                             else:
                                 continentStatus+= f"{unstableState}"
                         else:
@@ -175,16 +175,16 @@ def getOWRankings(server):
             rankings.append([f"{i+1}.", f"{faction}[{tag}] {name}", score])
     return rankings
 
-def genshinCharacterEmbed(data):
-    element_color = ElementColor[data['element']]
-    element_emote = ElementEmote[data['element']]
-    element = f"Element: {data['element']} {element_emote.value}\n"
-    level = f"Level: {data['level']}\n"
-    rarity = "Rarity: "+":star: " * data['rarity'] + "\n"
-    friendship_lvl = f"Friendship Level <:friendship_lvl:1017420726992654356>: {data['friendship']}\n"
-    constellation_lvl = f"Constellation Level: {data['constellation_level']}"
+def genshinCharacterEmbed(char_data):
+    element_color = ElementColor[char_data['element']]
+    element_emote = ElementEmote[char_data['element']]
+    element = f"Element: {char_data['element']} {element_emote.value}\n"
+    level = f"Level: {char_data['level']}\n"
+    rarity = "Rarity: "+":star: " * char_data['rarity'] + "\n"
+    friendship_lvl = f"Friendship Level <:friendship_lvl:1017420726992654356>: {char_data['friendship']}\n"
+    constellation_lvl = f"Constellation Level: {char_data['constellation_level']}"
     desc = element + rarity + level + friendship_lvl + constellation_lvl
-    embed = Embed(color=element_color.value, title=f"{data['name']}", description=desc)
-    embed.set_image(url=data["icon"])
+    embed = Embed(color=element_color.value, title=f"{char_data['name']}", description=desc)
+    embed.set_image(url=char_data["icon"])
 
     return embed
