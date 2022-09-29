@@ -19,6 +19,8 @@ import requests
 
 # Custom imports
 from database.management.connection import set_connections
+from discord_tools.exceptions import OWException
+from discord_tools.views.ps2_views import OWView
 from utils.logger import define_log, StreamToLogger, exception_to_log
 from utils.ps2 import continentToId
 from utils.timezones import getIANA
@@ -307,50 +309,17 @@ async def sendTimestamp(interaction, event_name:str, date:str, time:str, timezon
 @bot.tree.command(name="get_ow_matches", description="Get the Outfit Wars matches for the current round")
 async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
     await interaction.response.defer()
-    matches = getOWMatchesData(server)
+    try:
+        matches = getOWMatchesData(server)
+    except OWException:
+        await interaction.followup.send("Outfit Wars is Over!")
+        return
     if len(matches) > 5:
         half = len(matches)//2
         pages = [matches[:half], matches[half:]]
         current_page = 1
-        async def prev_callback(interaction):
-            try:
-                nonlocal current_page
-                if current_page > 1:
-                    current_page -= 1
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages))
-                    await interaction.response.edit_message(embed=embed)
-                else:
-                    current_page = len(pages)
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages))
-                    await interaction.response.edit_message(embed=embed)
-            except discord.InteractionResponded:
-                pass
-
-        async def next_callback(interaction):
-            try:
-                nonlocal current_page
-                if current_page != len(pages):
-                    current_page += 1
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages))
-                    await interaction.response.edit_message(embed=embed)
-                else:
-                    current_page = 1
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages))
-                    await interaction.response.edit_message(embed=embed)
-            except discord.InteractionResponded:
-                pass
+        view = OWView(matches, server, match=True)
         embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages))
-        prev = Button(label="Prev", custom_id="prev", style=discord.ButtonStyle.green)
-        prev.callback = prev_callback
-        next = Button(label="Next", custom_id="next", style=discord.ButtonStyle.green)
-        next.callback = next_callback
-        view = View()
-        view.add_item(prev)
-        view.add_item(next)
         await interaction.followup.send(embed=embed, view=view)
     else:
         embed = getOWEmbed(matches, server, 1, 1)
@@ -360,50 +329,16 @@ async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt
 async def getOWStandings(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
     await interaction.response.defer()
     standings = getOWRankings(server)
+    view = OWView(standings, server)
+    current_page = 1
+    pages = [standings]
     if len(standings) > 5:
         half = len(standings)//2
         pages = [standings[:half], standings[half:]]
         current_page = 1
-        async def prev_callback(interaction):
-            try:
-                nonlocal current_page
-                if current_page > 1:
-                    current_page -= 1
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
-                    await interaction.response.edit_message(embed=embed)
-                else:
-                    current_page = len(pages)
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
-                    await interaction.response.edit_message(embed=embed)
-            except discord.InteractionResponded:
-                pass
 
-        async def next_callback(interaction):
-            try:
-                nonlocal current_page
-                if current_page != len(pages):
-                    current_page += 1
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
-                    await interaction.response.edit_message(embed=embed)
-                else:
-                    current_page = 1
-                    content = pages[current_page-1]
-                    embed = getOWEmbed(content, server, current_page, len(pages), match=False)
-                    await interaction.response.edit_message(embed=embed)
-            except discord.InteractionResponded:
-                pass
-        embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages), match=False)
-        prev = Button(label="Prev", custom_id="prev", style=discord.ButtonStyle.green)
-        prev.callback = prev_callback
-        next = Button(label="Next", custom_id="next", style=discord.ButtonStyle.green)
-        next.callback = next_callback
-        view = View()
-        view.add_item(prev)
-        view.add_item(next)
-        await interaction.followup.send(embed=embed, view=view)
+    embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages), match=False)
+    await interaction.followup.send(embed=embed, view=view)
 
 if __name__ == "__main__":
     # Defining the logger

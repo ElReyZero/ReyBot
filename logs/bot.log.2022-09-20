@@ -1,0 +1,177 @@
+2022-09-20 16:18:24 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-20 16:18:24 UTC-05 | INFO logging in using static token
+2022-09-20 16:18:25 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: adf3b6bfdb5f4797794f768f0c61133d).
+2022-09-20 16:18:28 UTC-05 | INFO Logged in as
+2022-09-20 16:18:28 UTC-05 | INFO ReyBot
+2022-09-20 16:18:28 UTC-05 | INFO 327234083815948300
+2022-09-20 16:18:57 UTC-05 | INFO MongoDB: Searching for character: Keqing
+2022-09-20 16:18:58 UTC-05 | INFO MongoDB: Searching for weapon with object_id: 630064a799edc6d487603341
+2022-09-20 16:19:00 UTC-05 | ERROR Ignoring exception in view <View timeout=180.0 children=1> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label="Weapon: Lion's Roar" emoji=None row=None>
+Traceback (most recent call last):
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\discord\ui\view.py", line 425, in _scheduled_task
+    await item.callback(interaction)
+  File "c:\Users\ElRey\Documents\Scripts\Python\ReyBot\command_groups\genshin_commands.py", line 30, in get_weapon
+    embed = genshinWeaponEmbed(weapon)
+  File "c:\Users\ElRey\Documents\Scripts\Python\ReyBot\discord_tools\embeds.py", line 196, in genshinWeaponEmbed
+    refinement_lvl = f"Refinement Level: {weapon_data['refinement_level']}\n"
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\mongoengine\base\document.py", line 257, in __getitem__
+    raise KeyError(name)
+KeyError: 'refinement_level'
+2022-09-20 16:19:09 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-20 16:19:10 UTC-05 | ERROR Exception ignored in:
+2022-09-20 16:19:10 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x000002AACAD51D80>
+2022-09-20 16:19:10 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-20 16:19:10 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-20 16:19:10 UTC-05 | ERROR self.close()
+2022-09-20 16:19:10 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-20 16:19:10 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-20 16:19:10 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-20 16:19:10 UTC-05 | ERROR self._check_closed()
+2022-09-20 16:19:10 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-20 16:19:10 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-20 16:19:10 UTC-05 | ERROR RuntimeError
+2022-09-20 16:19:10 UTC-05 | ERROR :
+2022-09-20 16:19:10 UTC-05 | ERROR Event loop is closed
+2022-09-20 16:19:31 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-20 16:19:31 UTC-05 | INFO logging in using static token
+2022-09-20 16:19:32 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 85bee7094b260cb9201fbd5215a2da77).
+2022-09-20 16:19:35 UTC-05 | INFO Logged in as
+2022-09-20 16:19:35 UTC-05 | INFO ReyBot
+2022-09-20 16:19:35 UTC-05 | INFO 327234083815948300
+2022-09-20 16:19:45 UTC-05 | INFO MongoDB: Searching for character: Keqing
+2022-09-20 16:19:46 UTC-05 | INFO MongoDB: Searching for weapon with object_id: 630064a799edc6d487603341
+2022-09-20 16:20:41 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-20 16:20:44 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-20 16:20:44 UTC-05 | INFO logging in using static token
+2022-09-20 16:20:46 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 70390046348bc408ebe4d1d2d6404f7d).
+2022-09-20 16:20:48 UTC-05 | INFO Logged in as
+2022-09-20 16:20:48 UTC-05 | INFO ReyBot
+2022-09-20 16:20:48 UTC-05 | INFO 327234083815948300
+2022-09-20 16:20:48 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-20 16:20:49 UTC-05 | ERROR Exception ignored in:
+2022-09-20 16:20:49 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x0000028D0EC41D80>
+2022-09-20 16:20:49 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-20 16:20:49 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-20 16:20:49 UTC-05 | ERROR self.close()
+2022-09-20 16:20:49 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-20 16:20:49 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-20 16:20:49 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-20 16:20:49 UTC-05 | ERROR self._check_closed()
+2022-09-20 16:20:49 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-20 16:20:49 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-20 16:20:49 UTC-05 | ERROR RuntimeError
+2022-09-20 16:20:49 UTC-05 | ERROR :
+2022-09-20 16:20:49 UTC-05 | ERROR Event loop is closed
+2022-09-20 16:20:55 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-20 16:20:55 UTC-05 | INFO logging in using static token
+2022-09-20 16:20:57 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 9796f3583bf13ec0cea30b4cbc180b90).
+2022-09-20 16:21:18 UTC-05 | INFO MongoDB: Searching for character: Keqing
+2022-09-20 16:21:19 UTC-05 | INFO MongoDB: Searching for weapon with object_id: 630064a799edc6d487603341
+2022-09-20 16:21:41 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-20 16:21:42 UTC-05 | ERROR Exception ignored in:
+2022-09-20 16:21:42 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x00000199C7951D80>
+2022-09-20 16:21:42 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-20 16:21:42 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-20 16:21:42 UTC-05 | ERROR self.close()
+2022-09-20 16:21:42 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-20 16:21:42 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-20 16:21:42 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-20 16:21:42 UTC-05 | ERROR self._check_closed()
+2022-09-20 16:21:42 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-20 16:21:42 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-20 16:21:42 UTC-05 | ERROR RuntimeError
+2022-09-20 16:21:42 UTC-05 | ERROR :
+2022-09-20 16:21:42 UTC-05 | ERROR Event loop is closed
+2022-09-20 16:21:45 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-20 16:21:45 UTC-05 | INFO logging in using static token
+2022-09-20 16:21:46 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 1dfcd47ff43a72f65a5ef0c2a41c761c).
+2022-09-20 16:21:49 UTC-05 | INFO Logged in as
+2022-09-20 16:21:49 UTC-05 | INFO ReyBot
+2022-09-20 16:21:49 UTC-05 | INFO 327234083815948300
+2022-09-20 16:21:51 UTC-05 | INFO MongoDB: Searching for character: Keqing
+2022-09-20 16:21:52 UTC-05 | INFO MongoDB: Searching for weapon with object_id: 630064a799edc6d487603341
+2022-09-20 16:21:57 UTC-05 | ERROR Ignoring exception in view <View timeout=180.0 children=1> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label="Weapon: Lion's Roar" emoji=None row=None>
+Traceback (most recent call last):
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\discord\ui\view.py", line 425, in _scheduled_task
+    await item.callback(interaction)
+  File "c:\Users\ElRey\Documents\Scripts\Python\ReyBot\command_groups\genshin_commands.py", line 31, in get_weapon
+    await interaction.followup.send(embed=embed)
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\discord\webhook\async_.py", line 1725, in send
+    data = await adapter.execute_webhook(
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\discord\webhook\async_.py", line 218, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10015): Unknown Webhook
+2022-09-20 16:22:15 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-20 16:22:16 UTC-05 | ERROR Exception ignored in:
+2022-09-20 16:22:16 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x00000242FFC61D80>
+2022-09-20 16:22:16 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-20 16:22:16 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-20 16:22:16 UTC-05 | ERROR self.close()
+2022-09-20 16:22:16 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-20 16:22:16 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-20 16:22:16 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-20 16:22:16 UTC-05 | ERROR self._check_closed()
+2022-09-20 16:22:16 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-20 16:22:16 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-20 16:22:16 UTC-05 | ERROR RuntimeError
+2022-09-20 16:22:16 UTC-05 | ERROR :
+2022-09-20 16:22:16 UTC-05 | ERROR Event loop is closed
+2022-09-20 16:22:24 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-20 16:22:24 UTC-05 | INFO logging in using static token
+2022-09-20 16:22:27 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: b1f4524ed3c127bcbf278fbf8903ee8b).
+2022-09-20 16:22:30 UTC-05 | INFO MongoDB: Searching for character: Keqing
+2022-09-20 16:22:31 UTC-05 | INFO MongoDB: Searching for weapon with object_id: 630064a799edc6d487603341
+2022-09-20 16:22:48 UTC-05 | INFO MongoDB: Searching for character: Venti
+2022-09-20 16:22:48 UTC-05 | INFO MongoDB: Searching for weapon with object_id: 630064a199edc6d487603329
+2022-09-20 16:22:49 UTC-05 | INFO Logged in as
+2022-09-20 16:22:49 UTC-05 | INFO ReyBot
+2022-09-20 16:22:49 UTC-05 | INFO 327234083815948300
+2022-09-20 16:23:14 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-20 16:23:15 UTC-05 | ERROR Exception ignored in:
+2022-09-20 16:23:15 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x00000294E6BB1D80>
+2022-09-20 16:23:15 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-20 16:23:15 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-20 16:23:15 UTC-05 | ERROR self.close()
+2022-09-20 16:23:15 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-20 16:23:15 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-20 16:23:15 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-20 16:23:15 UTC-05 | ERROR self._check_closed()
+2022-09-20 16:23:15 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-20 16:23:15 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-20 16:23:15 UTC-05 | ERROR RuntimeError
+2022-09-20 16:23:15 UTC-05 | ERROR :
+2022-09-20 16:23:15 UTC-05 | ERROR Event loop is closed
+2022-09-20 16:25:48 UTC-05 | INFO MongoDB - Connected to database: genshin
+2022-09-20 16:25:48 UTC-05 | INFO logging in using static token
+2022-09-20 16:25:49 UTC-05 | INFO Shard ID None has connected to Gateway (Session ID: 31ed8dac477823132a4c64b26701c5d8).
+2022-09-20 16:25:52 UTC-05 | INFO Logged in as
+2022-09-20 16:25:52 UTC-05 | INFO ReyBot
+2022-09-20 16:25:52 UTC-05 | INFO 327234083815948300
+2022-09-20 16:25:55 UTC-05 | INFO MongoDB: Searching for character: Venti
+2022-09-20 16:25:56 UTC-05 | INFO MongoDB: Searching for weapon with object_id: 630064a199edc6d487603329
+2022-09-20 16:26:01 UTC-05 | ERROR Ignoring exception in view <View timeout=180.0 children=1> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='Weapon: Elegy for the End' emoji=None row=None>
+Traceback (most recent call last):
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\discord\ui\view.py", line 425, in _scheduled_task
+    await item.callback(interaction)
+  File "c:\Users\ElRey\Documents\Scripts\Python\ReyBot\command_groups\genshin_commands.py", line 31, in get_weapon
+    await interaction.edit_original_response(view=None)
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\discord\interactions.py", line 461, in edit_original_response
+    data = await adapter.edit_original_interaction_response(
+  File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\site-packages\discord\webhook\async_.py", line 218, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10015): Unknown Webhook
+2022-09-20 16:26:05 UTC-05 | INFO MongoDB - Disconnected from database: genshin
+2022-09-20 16:26:05 UTC-05 | ERROR Exception ignored in:
+2022-09-20 16:26:05 UTC-05 | ERROR <function _ProactorBasePipeTransport.__del__ at 0x0000022D75B21D80>
+2022-09-20 16:26:05 UTC-05 | ERROR Traceback (most recent call last):
+2022-09-20 16:26:05 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 116, in __del__
+2022-09-20 16:26:05 UTC-05 | ERROR self.close()
+2022-09-20 16:26:05 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 108, in close
+2022-09-20 16:26:05 UTC-05 | ERROR self._loop.call_soon(self._call_connection_lost, None)
+2022-09-20 16:26:05 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 750, in call_soon
+2022-09-20 16:26:05 UTC-05 | ERROR self._check_closed()
+2022-09-20 16:26:05 UTC-05 | ERROR   File "C:\Users\ElRey\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 515, in _check_closed
+2022-09-20 16:26:05 UTC-05 | ERROR raise RuntimeError('Event loop is closed')
+2022-09-20 16:26:05 UTC-05 | ERROR RuntimeError
+2022-09-20 16:26:05 UTC-05 | ERROR :
+2022-09-20 16:26:05 UTC-05 | ERROR Event loop is closed

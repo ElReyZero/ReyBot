@@ -2,6 +2,7 @@ from json import JSONDecodeError
 from operator import indexOf
 import requests
 from discord import Embed
+from discord_tools.exceptions import OWException
 from discord_tools.literals import ElementColor, ElementEmote
 from datetime import datetime, timedelta, timezone
 from utils.ps2 import nameToServerID, idToContinentName, serverIDToName, idToContinentState
@@ -86,7 +87,6 @@ def getServerPanel(server):
         return None
         
 
-
 def getCensusHealth():
     request = requests.get("https://wt.honu.pw/api/health")
     data = request.json()
@@ -119,21 +119,39 @@ def getOWMatchesData(server):
     sorted_rankings = sorted(data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
     factions = {1: "<:VS:1014970179291205745>", 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>"}
     matches = list()
+    outfit_limit = None
+    if currentRound == 5:
+        outfit_limit = 8
+    elif currentRound == 6:
+        outfit_limit = 4
+    elif currentRound == 7:
+        outfit_limit = 2
+    elif currentRound >=7:
+        raise OWException() 
+
+    if outfit_limit:
+        sorted_rankings = sorted_rankings[:outfit_limit]
     for i in range(0, len(sorted_rankings)-1, 2):
         startTime = datetime.strptime(sorted_rankings[i]['startTime'][:-5], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
-        faction1 = factions[sorted_rankings[i]['outfit']['faction']]
-        faction2 = factions[sorted_rankings[i+1]['outfit']['faction']]
-        tag1 = sorted_rankings[i]['outfit']['tag']
-        tag2 = sorted_rankings[i+1]['outfit']['tag']
-        if not sorted_rankings[i]["instanceId"]:
-            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
+        if outfit_limit:
+            team1 = i
+            team2 = len(sorted_rankings)-i-1
         else:
-            instance = requests.get(f"https://api.ps2alerts.com/outfit-wars/{sorted_rankings[i]['instanceId']}").json()
+            team1 = i
+            team2 = i+1
+        faction1 = factions[sorted_rankings[team1]['outfit']['faction']]
+        faction2 = factions[sorted_rankings[team2]['outfit']['faction']]
+        tag1 = sorted_rankings[team1]['outfit']['tag']
+        tag2 = sorted_rankings[team2]['outfit']['tag']
+        if not sorted_rankings[team1]["instanceId"]:
+            matchString = f"{faction1}[{tag1}] {sorted_rankings[team1]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[team2]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
+        else:
+            instance = requests.get(f"https://api.ps2alerts.com/outfit-wars/{sorted_rankings[team1]['instanceId']}").json()
             winner = "blue" if instance["result"]["blue"] > instance["result"]["red"] else "red"
             winnerTag = instance["outfitwars"]["teams"][winner]["tag"]
             winnerFaction = factions[instance["outfitwars"]["teams"][winner]["faction"]]
             winner_name = instance["outfitwars"]["teams"][winner]['name']
-            matchString = f"{faction1}[{tag1}] {sorted_rankings[i]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[i+1]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {winner_name}"
+            matchString = f"{faction1}[{tag1}] {sorted_rankings[team1]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[team2]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {winner_name}"
         matches.append(matchString)
 
     return matches
@@ -166,13 +184,15 @@ def getOWRankings(server):
     sorted_rankings = sorted(data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
     factions = {1: "<:VS:1014970179291205745>", 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>"}
     rankings = list()
+    counter = 1
     for i in range(len(sorted_rankings)):
         if sorted_rankings[i]["round"] == current_round:
             faction = factions[sorted_rankings[i]['outfit']['faction']]
             tag = sorted_rankings[i]['outfit']['tag']
             name = sorted_rankings[i]['outfit']['name']
             score = sorted_rankings[i]['rankingParameters']['TotalScore']
-            rankings.append([f"{i+1}.", f"{faction}[{tag}] {name}", score])
+            rankings.append([f"{counter}.", f"{faction}[{tag}] {name}", score])
+            counter += 1
     return rankings
 
 def genshinCharacterEmbed(char_data):
