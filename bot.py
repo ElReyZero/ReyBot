@@ -134,7 +134,7 @@ async def get_bot_logs(ctx):
         await ctx.send("Here you go!", file=discord.File("./logs/bot.log"))
     except FileNotFoundError:
         await ctx.send("Here you go!", file=discord.File("/home/ReyBot/logs/bot.log"))
-        
+
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alertReminder(interaction: discord.Interaction, continent:Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes:int=5):
     """Command that sets up a reminder before an alert ends.
@@ -292,7 +292,7 @@ async def sendTimestamp(interaction, event_name:str, date:str, time:str, timezon
             nonlocal ephemeral
             getTimestampsButton.disabled = True
             if ephemeral:
-                await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>", ephemeral=True) 
+                await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>", ephemeral=True)
             else:
                 await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>")
                 ephemeral = True

@@ -60,7 +60,7 @@ def get_config():
         MAIN_ADMIN_ID = os.environ["MAIN_ADMIN"]
         global admin_ids
         admin_ids = os.environ["ADMIN_IDS"].split(",")
-        global MAIN_GUILD 
+        global MAIN_GUILD
         MAIN_GUILD = os.environ["MAIN_GUILD"]
 
         global database
@@ -75,7 +75,7 @@ def get_config():
             using_linux = True
         elif not os.path.isfile(file):
             raise ConfigError(f"{file} not found! "+file)
-            
+
 
         config = ConfigParser(inline_comment_prefixes="#")
         try:
@@ -101,7 +101,7 @@ def get_config():
             _error_missing(MAIN_ADMIN_ID, 'General', file)
         except ValueError:
             _error_incorrect(MAIN_ADMIN_ID, 'General', file)
-        
+
         try:
             admin_ids = config["General"]["admin_ids"].split(",")
         except KeyError:
@@ -133,7 +133,7 @@ def get_config():
             _error_missing('ltuid', 'Genshin', file)
         except ValueError:
             _error_incorrect('ltuid', 'Genshin', file)
-        
+
         try:
             genshin_data['ltoken'] = config["Genshin"]["ltoken"]
         except KeyError:
@@ -147,7 +147,7 @@ def get_config():
             _error_missing('uuid', 'Genshin', file)
         except ValueError:
             _error_incorrect('uuid', 'Genshin', file)
-    
+
     global DEBUG
     try:
         DEBUG = os.environ["REYBOT_DEBUG"]

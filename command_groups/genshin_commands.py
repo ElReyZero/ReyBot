@@ -18,7 +18,7 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
             chars = await client.get_genshin_characters(cfg.genshin_data["uuid"])
             await pushCharacters(chars)
             await interaction.followup.send("Successfully pushed all characters to database", ephemeral=True)
-    
+
     @app_commands.command(name="get_character", description="Get a character from the database")
     async def get_character(self, interaction, name: str):
         await interaction.response.defer()

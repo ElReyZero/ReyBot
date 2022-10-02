@@ -85,13 +85,13 @@ def getServerPanel(server):
             return None
     except JSONDecodeError:
         return None
-        
+
 
 def getCensusHealth():
     request = requests.get("https://wt.honu.pw/api/health")
     data = request.json()
     embed = Embed(color=0xff0000, title="Census API Health Check", description="Current status of the Census API separated by server events", timestamp=datetime.now())
-    if data:     
+    if data:
         for entry in data["death"]:
             if entry.get('failureCount')>= 30:
                 status = "Down"
@@ -102,12 +102,12 @@ def getCensusHealth():
             eventTime = datetime.strptime(entry.get('lastEvent')[:-1], "%Y-%m-%d %H:%M:%S")
             eventTime = eventTime.replace(tzinfo=timezone.utc).astimezone(tz=None)
             server_name = serverIDToName(entry.get('worldID'))
-            embed.add_field(name=server_name, 
-                            value=f"Last Event: <t:{int(eventTime.timestamp())}:R>\nLast Event Date: {entry.get('lastEvent')[:-1]} UTC\nFailure Count: {entry.get('failureCount')}\nStatus: {status}", 
+            embed.add_field(name=server_name,
+                            value=f"Last Event: <t:{int(eventTime.timestamp())}:R>\nLast Event Date: {entry.get('lastEvent')[:-1]} UTC\nFailure Count: {entry.get('failureCount')}\nStatus: {status}",
                             inline=True)
     else:
         embed.add_field(name="Error", value="There was an error getting the census API health check. This bot uses Honu to check the API's health so it might be down!", inline=True)
-    
+
     embed.set_footer(text="Last updated")
     return embed
 
@@ -127,7 +127,7 @@ def getOWMatchesData(server):
     elif currentRound == 7:
         outfit_limit = 2
     elif currentRound >=7:
-        raise OWException() 
+        raise OWException()
 
     if outfit_limit:
         sorted_rankings = sorted_rankings[:outfit_limit]

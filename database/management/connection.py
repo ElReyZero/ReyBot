@@ -32,7 +32,7 @@ class Connections:
                 log.info(f"MongoDB - Connected to database: {name}")
         except KeyError:
             log.critical(f"MongoDB - Attempting to connect - Connection {name} not found.")
-            raise Exception(f"Connection {name} not found.") 
+            raise Exception(f"Connection {name} not found.")
 
     def disconnect(self, name):
         try:
@@ -42,7 +42,7 @@ class Connections:
                 log.info(f"MongoDB - Disconnected from database: {name}")
         except KeyError:
             log.critical(f"MongoDB - Attempting to disconnect - Connection {name} not found.")
-            raise Exception(f"Connection {name} not found.") 
+            raise Exception(f"Connection {name} not found.")
 
 def set_connections():
     connections = Connections()

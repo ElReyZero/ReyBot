@@ -74,8 +74,6 @@ def getAllCharacters():
     log.info("MongoDB - Getting all characters from database")
     return Characters.objects
 
-
-
 @to_thread
 def getCharacter(name):
     try:
