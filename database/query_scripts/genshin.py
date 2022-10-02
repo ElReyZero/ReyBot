@@ -7,6 +7,8 @@ import logging
 
 log = logging.getLogger('discord')
 
+CARD_ICON_PATH = "https://enka.network/ui/"
+
 @to_thread
 def push_all_wishes(file):
     log.info("MongoDB - Pushing all wishes to database")
@@ -60,9 +62,12 @@ def pushCharacters(chars):
             log.info(f"MongoDB - Updated {char.name} successfully")
         except DoesNotExist:
             log.info("MongoDB - Character not found in database, creating new document")
-            char = Characters(character_id=char.id, name=char.name, element=char.element, rarity=char.rarity, icon=char.icon, collab=char.collab, level=char.level, friendship=char.friendship, constellation_level=char.constellation, weapon=char_weapon, constellations=constellation_doc)
+            charIcon = char.icon.split("/")[-1]
+            charIcon = CARD_ICON_PATH + charIcon.split(".")[0] + "_Card.png"
+            char = Characters(character_id=char.id, name=char.name, element=char.element, rarity=char.rarity, icon=charIcon, collab=char.collab, level=char.level, friendship=char.friendship, constellation_level=char.constellation, weapon=char_weapon, constellations=constellation_list)
             char.save()
             log.info(f"MongoDB - Pushed {char.name} successfully as a new Document")
+    log.info("MongoDB - Successfully pushed all characters to database")
 
 @to_thread
 def getAllCharacters():
