@@ -1,10 +1,10 @@
 from discord import app_commands, Attachment, ButtonStyle
-import discord.ui as ui
+from random import randint
 import config as cfg
 import genshin as gi
-from database.query_scripts.genshin import pushCharacters, push_all_wishes, getCharacter, getWeaponByObjId
-from discord_tools.embeds import genshinCharacterEmbed, genshinWeaponEmbed
-from discord_tools.views.genshin_views import WeaponView
+from database.query_scripts.genshin import pushCharacters, push_all_wishes, getCharacter, getWeaponByObjId, getAllCharacters
+from discord_tools.embeds import genshinCharacterEmbed
+from discord_tools.views.genshin_views import AllCharactersView, WeaponView
 import os
 
 class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
@@ -31,6 +31,18 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
             await interaction.followup.send(embed=embed, view=view)
         else:
             await interaction.followup.send(f"Character called {name} not found", ephemeral=True)
+
+    @app_commands.command(name="get_all_characters", description="Get all characters from the database")
+    async def get_all_characters(self, interaction):
+        await interaction.response.defer()
+        characters = await getAllCharacters()
+        if characters:
+            characters = [character.to_mongo() for character in characters]
+            view = AllCharactersView(characters)
+            embed = genshinCharacterEmbed(characters[randint(0, len(characters)-1)])
+            await interaction.followup.send(embed=embed, view=view)
+        else:
+            await interaction.followup.send(f"No characters found", ephemeral=True)
 
     @app_commands.command(name="push_wishes", description="Push an excel file of all wishes to the database")
     async def getWishes(self, interaction, wishes_file:Attachment):

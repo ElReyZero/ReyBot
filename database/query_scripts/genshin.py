@@ -64,6 +64,12 @@ def pushCharacters(chars):
             char.save()
             log.info(f"MongoDB - Pushed {char.name} successfully as a new Document")
 
+@to_thread
+def getAllCharacters():
+    log.info("MongoDB - Getting all characters from database")
+    return Characters.objects
+
+
 
 @to_thread
 def getCharacter(name):
