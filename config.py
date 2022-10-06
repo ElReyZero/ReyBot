@@ -125,28 +125,28 @@ def get_config():
         except ValueError:
             _error_incorrect('host', 'Database', file)
 
-        _check_section(config, "Genshin", file)
+        if not (database['host'].capitalize() == "None" or database['host'] == ""):
+            _check_section(config, "Genshin", file)
+            try:
+                genshin_data['ltuid'] = config["Genshin"]["ltuid"]
+            except KeyError:
+                _error_missing('ltuid', 'Genshin', file)
+            except ValueError:
+                _error_incorrect('ltuid', 'Genshin', file)
 
-        try:
-            genshin_data['ltuid'] = config["Genshin"]["ltuid"]
-        except KeyError:
-            _error_missing('ltuid', 'Genshin', file)
-        except ValueError:
-            _error_incorrect('ltuid', 'Genshin', file)
+            try:
+                genshin_data['ltoken'] = config["Genshin"]["ltoken"]
+            except KeyError:
+                _error_missing('ltoken', 'Genshin', file)
+            except ValueError:
+                _error_incorrect('ltoken', 'Genshin', file)
 
-        try:
-            genshin_data['ltoken'] = config["Genshin"]["ltoken"]
-        except KeyError:
-            _error_missing('ltoken', 'Genshin', file)
-        except ValueError:
-            _error_incorrect('ltoken', 'Genshin', file)
-
-        try:
-            genshin_data['uuid'] = int(config["Genshin"]["uuid"])
-        except KeyError:
-            _error_missing('uuid', 'Genshin', file)
-        except ValueError:
-            _error_incorrect('uuid', 'Genshin', file)
+            try:
+                genshin_data['uuid'] = int(config["Genshin"]["uuid"])
+            except KeyError:
+                _error_missing('uuid', 'Genshin', file)
+            except ValueError:
+                _error_incorrect('uuid', 'Genshin', file)
 
     global DEBUG
     try:

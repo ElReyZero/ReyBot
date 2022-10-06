@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Literal
 from datetime import timezone
 import asyncio
-import logging, logging.handlers, sys, os
+import logging, logging.handlers, sys
 # Dependency imports
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
@@ -21,6 +21,7 @@ import requests
 from database.management.connection import set_connections
 from discord_tools.exceptions import OWException
 from discord_tools.views.ps2_views import OWView
+from discord_tools.tasks import updateGenshinChars
 from utils.logger import define_log, StreamToLogger, exception_to_log
 from utils.ps2 import continentToId
 from utils.timezones import getIANA
@@ -68,14 +69,12 @@ async def on_ready():
     await bot.wait_until_ready()
     await bot.tree.sync()
     await bot.tree.sync(guild=discord.Object(id=cfg.MAIN_GUILD))
+    await bot.change_presence(activity=discord.Game(name="with the API"))
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
-
-@bot.event
-async def on_command_error(ctx, error):
-    traceback_message = format_exception(type(error), error, error.__traceback__)
-    exception_to_log(log, traceback_message)
+    if cfg.connections:
+        updateGenshinChars.start()
 
 @bot.tree.error
 async def on_app_command_error(interaction, error):
@@ -346,8 +345,9 @@ if __name__ == "__main__":
     # Setting up the config
     cfg.get_config()
     cfg.connections = set_connections()
-    main_exit_handler(cfg.connections)
-    cfg.connections.connect("genshin")
+    if cfg.connections:
+        main_exit_handler(cfg.connections)
+        cfg.connections.connect("genshin")
     # Starting the bot
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN, log_handler=console_handler)

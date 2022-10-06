@@ -28,16 +28,17 @@ def push_all_wishes(file):
             print(f"Count is {Wishes.objects.count()}")
 
 @to_thread
-def pushCharacters(chars):
+def pushCharacters(chars, task=False):
     log.info("MongoDB - Pushing current characters to database")
     for char in chars:
-        log.info(f"MongoDB - Pushing {char.name} to database")
-        log.info(f"MongoDB - Character data:")
-        log.info(f"MongoDB - Name: {char.name}")
-        log.info(f"MongoDB - Element: {char.element}")
-        log.info(f"MongoDB - Level: {char.level}")
-        log.info(f"MongoDB - Constellation level: {char.constellation}")
-        log.info(f"MongoDB - Friendship level: {char.friendship}")
+        if not task:
+            log.info(f"MongoDB - Pushing {char.name} to database")
+            log.info(f"MongoDB - Character data:")
+            log.info(f"MongoDB - Name: {char.name}")
+            log.info(f"MongoDB - Element: {char.element}")
+            log.info(f"MongoDB - Level: {char.level}")
+            log.info(f"MongoDB - Constellation level: {char.constellation}")
+            log.info(f"MongoDB - Friendship level: {char.friendship}")
         try:
             char_weapon = Weapons.objects.get(weapon_id=char.weapon.id)
         except DoesNotExist:
@@ -57,9 +58,9 @@ def pushCharacters(chars):
             newValues = {"$set": {"level":char.level, "friendship":char.friendship, "constellation_level":char.constellation}}
             Characters._get_collection().update_one(filter, newValues)
             char = Characters.objects.get(character_id=char.id)
-            log.info("MongoDB - Character already exists in database. Updating")
+            log.info("MongoDB - Character already exists in database. Updating") if not task else ""
             char.update(set__constellations=constellation_list, set__weapon=char_weapon)
-            log.info(f"MongoDB - Updated {char.name} successfully")
+            log.info(f"MongoDB - Updated {char.name} successfully") if not task else ""
         except DoesNotExist:
             log.info("MongoDB - Character not found in database, creating new document")
             charIcon = char.icon.split("/")[-1]

@@ -45,8 +45,10 @@ class Connections:
             raise Exception(f"Connection {name} not found.")
 
 def set_connections():
-    connections = Connections()
-    return connections
+    if database["host"].capitalize() == "None" or database["host"] == "":
+        return None
+    else:
+        return Connections()
 
 def db_exit_handler(connections):
     connections.disconnect_all()
