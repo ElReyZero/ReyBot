@@ -206,10 +206,11 @@ async def getPS2CharacterEmbed(char_name):
             faction = await char.faction()
             stats = await char.stat_history(results=100)
             outfit = await char.outfit()
+            title = await char.title()
             factions = {1: "<:VS:1014970179291205745>", 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>", 4: "<:NSO:1014970962493575262>"}
             faction_colors = {1: 0x5400ca, 2: 0x2986cc, 3: 0xFF0000, 4 : 0x999999}
             char_stats = CharacterStats(char.id, char.battle_rank, char.data.prestige_level, stats)
-            embed = Embed(color=faction_colors[faction.id], title=f"{char.name}\nLink: https://wt.honu.pw/c/{char.id}", description=f"{await char.title()} of the {server} {faction.name}")
+            embed = Embed(color=faction_colors[faction.id], title=f"{char.name}\nLink: https://wt.honu.pw/c/{char.id}", description=f"{title if title else 'Player'} of the {server} {faction.name}")
             embed.add_field(name="Server", value=server, inline=True)
             embed.add_field(name="Faction", value=factions[faction.id] + " " + faction.name.en, inline=True)
             embed.add_field(name="Battle Rank", value=char.battle_rank.value, inline=True)
