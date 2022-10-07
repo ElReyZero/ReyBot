@@ -1,11 +1,14 @@
 from json import JSONDecodeError
 from operator import indexOf
+import config as cfg
 import requests
 from discord import Embed
 from discord_tools.exceptions import OWException
 from discord_tools.literals import ElementColor, ElementEmote
 from datetime import datetime, timedelta, timezone
-from utils.ps2 import nameToServerID, idToContinentName, serverIDToName, idToContinentState
+from utils.ps2 import CharacterStats, nameToServerID, idToContinentName, serverIDToName, idToContinentState
+import auraxium
+from auraxium import ps2
 
 def getServerPanel(server):
     id = nameToServerID(server)
@@ -194,6 +197,33 @@ def getOWRankings(server):
             rankings.append([f"{counter}.", f"{faction}[{tag}] {name}", score])
             counter += 1
     return rankings
+
+async def getPS2CharacterEmbed(char_name):
+    async with auraxium.Client(service_id=cfg.service_id) as client:
+        char = await client.get_by_name(ps2.Character, char_name)
+        if char:
+            server = await char.world()
+            faction = await char.faction()
+            stats = await char.stat_history(results=100)
+            outfit = await char.outfit()
+            factions = {1: "<:VS:1014970179291205745>", 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>", 4: "<:NSO:1014970962493575262>"}
+            faction_colors = {1: 0x5400ca, 2: 0x2986cc, 3: 0xFF0000, 4 : 0x999999}
+            char_stats = CharacterStats(char.id, char.battle_rank, char.data.prestige_level, stats)
+            embed = Embed(color=faction_colors[faction.id], title=f"{char.name}\nLink: https://wt.honu.pw/c/{char.id}", description=f"{await char.title()} of the {server} {faction.name}")
+            embed.add_field(name="Server", value=server, inline=True)
+            embed.add_field(name="Faction", value=factions[faction.id] + " " + faction.name.en, inline=True)
+            embed.add_field(name="Battle Rank", value=char.battle_rank.value, inline=True)
+            embed.add_field(name="ASP", value=char.data.prestige_level, inline=True)
+            embed.add_field(name="Last Login", value = f"<t:{int(char.times.last_login)}:R>", inline=True)
+            embed.add_field(name="Is Online", value = "Yes" if await char.is_online() else "No", inline=True)
+            embed.add_field(name="Kills", value=char_stats.kills, inline=True)
+            embed.add_field(name="Overall KD", value=char_stats.KD, inline=True)
+            embed.add_field(name="Overall KPM", value=char_stats.KPM, inline=True)
+            embed.add_field(name="Outfit", value=f"[[{outfit.tag}] {outfit.name}](https://wt.honu.pw/o/{outfit.id}) ", inline=True)
+            return embed
+        else:
+            return None
+
 
 def genshinCharacterEmbed(char_data):
     element_color = ElementColor[char_data['element']]

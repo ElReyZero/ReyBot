@@ -45,6 +45,8 @@ genshin_data = {
 
 connections = None
 
+service_id = None
+
 def get_config():
     """
     Populate the config data from the config file.
@@ -62,7 +64,8 @@ def get_config():
         admin_ids = os.environ["ADMIN_IDS"].split(",")
         global MAIN_GUILD
         MAIN_GUILD = os.environ["MAIN_GUILD"]
-
+        global service_id
+        service_id = os.environ["SERVICE_ID"]
         global database
         database['host'] = os.environ["DB_HOST"]
         global genshin_data
@@ -117,6 +120,15 @@ def get_config():
             _error_missing(MAIN_GUILD, 'General', file)
         except ValueError:
             _error_incorrect(MAIN_GUILD, 'General', file)
+
+        _check_section(config, "PS2", file)
+
+        try:
+            service_id = config["PS2"]["service_id"]
+        except KeyError:
+            _error_missing(service_id, 'PS2', file)
+        except ValueError:
+            _error_incorrect(service_id, 'PS2', file)
 
         try:
             database['host'] = config["Database"]["host"]

@@ -1,5 +1,4 @@
 # discord.py
-from inspect import trace
 import discord
 from discord.ext import commands
 from discord.ui import Button, View
@@ -31,7 +30,7 @@ import config as cfg
 # Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
-from discord_tools.embeds import getOWRankings, getServerPanel, getCensusHealth, getOWEmbed, getOWMatchesData
+from discord_tools.embeds import getOWRankings, getServerPanel, getCensusHealth, getOWEmbed, getOWMatchesData, getPS2CharacterEmbed
 from discord_tools.literals import Timezones
 # Group commands
 from command_groups.genshin_commands import GenshinDB
@@ -305,7 +304,7 @@ async def sendTimestamp(interaction, event_name:str, date:str, time:str, timezon
     except (IndexError, ValueError):
         await interaction.followup.send(f"{interaction.user.mention} Invalid time format, time must be in the format HH:MM (24h)", ephemeral=True)
 
-@bot.tree.command(name="get_ow_matches", description="Get the Outfit Wars matches for the current round")
+@bot.tree.command(name="ow_matches", description="Get the Outfit Wars matches for the current round")
 async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
     await interaction.response.defer()
     try:
@@ -324,7 +323,7 @@ async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt
         embed = getOWEmbed(matches, server, 1, 1)
         await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="get_ow_standings", description="Get the Outfit Wars standings for the current round")
+@bot.tree.command(name="ow_standings", description="Get the Outfit Wars standings for the current round")
 async def getOWStandings(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
     await interaction.response.defer()
     standings = getOWRankings(server)
@@ -338,6 +337,15 @@ async def getOWStandings(interaction, server:Literal["Emerald", "Connery", "Coba
 
     embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages), match=False)
     await interaction.followup.send(embed=embed, view=view)
+
+@bot.tree.command(name="character", description="Get the stats of a character")
+async def getCharacterStats(interaction, character_name:str):
+    await interaction.response.defer()
+    embed = await getPS2CharacterEmbed(character_name)
+    if embed:
+        await interaction.followup.send(embed=embed)
+    else:
+        await interaction.followup.send("Character not found")
 
 if __name__ == "__main__":
     # Defining the logger
