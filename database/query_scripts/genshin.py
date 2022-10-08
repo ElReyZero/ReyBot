@@ -1,5 +1,5 @@
 import pandas as pd
-from database.classes.genshin import Constellations, Wishes, Weapons, Characters
+from database.models.genshin import Constellations, Wishes, Weapons, Characters
 from pymongo.errors import BulkWriteError
 from mongoengine import DoesNotExist
 from utils.threading import to_thread

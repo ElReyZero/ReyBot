@@ -1,4 +1,4 @@
-from discord import app_commands, Attachment, ButtonStyle
+from discord import app_commands, Attachment
 from random import randint
 import config as cfg
 import genshin as gi

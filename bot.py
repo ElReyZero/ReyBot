@@ -15,25 +15,24 @@ import logging, logging.handlers, sys
 from pytz import timezone as pytzTimezone
 from datefinder import find_dates
 import requests
+from command_groups.pokemon_tracking_commands import PokemonTracker
 
 # Custom imports
 from database.management.connection import set_connections
 from discord_tools.exceptions import OWException
 from discord_tools.views.ps2_views import OWView
-from discord_tools.tasks import updateGenshinChars
 from utils.logger import define_log, StreamToLogger, exception_to_log
 from utils.ps2 import continentToId
 from utils.timezones import getIANA
 from utils.exit_handlers import main_exit_handler
 import config as cfg
-
 # Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
 from discord_tools.embeds import getOWRankings, getServerPanel, getCensusHealth, getOWEmbed, getOWMatchesData, getPS2CharacterEmbed
 from discord_tools.literals import Timezones
-# Group commands
 from command_groups.genshin_commands import GenshinDB
+from discord_tools.tasks import updateGenshinChars
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
 log = logging.getLogger('discord')
@@ -53,7 +52,6 @@ async def getAdmins()->list:
 
 def setup_log():
     console_handler, file_handler, formatter = define_log()
-
     # Redirect stdout and stderr to log:
     sys.stdout = StreamToLogger(log, logging.INFO)
     sys.stderr = StreamToLogger(log, logging.ERROR)
@@ -356,6 +354,9 @@ if __name__ == "__main__":
     if cfg.connections:
         main_exit_handler(cfg.connections)
         cfg.connections.connect("genshin")
-    # Starting the bot
+        cfg.connections.connect("pokemon")
+
+    # Group commands
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
+    bot.tree.add_command(PokemonTracker(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN, log_handler=console_handler)

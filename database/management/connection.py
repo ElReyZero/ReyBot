@@ -10,6 +10,10 @@ class Connections:
             "genshin": {
                 "connected": False,
                 "connection_name": None
+            },
+            "pokemon": {
+                "connected": False,
+                "connection_name": None
             }
         }
         self.used_connections = list()
@@ -23,11 +27,7 @@ class Connections:
         try:
             if not self.connections[name]["connected"]:
                 self.connections[name]["connected"] = True
-                if not "default" in self.used_connections:
-                    self.used_connections.append("default")
-                    self.connections[name]["connection_name"] = "default"
-                else:
-                    self.connections[name]["connection_name"] = name
+                self.connections[name]["connection_name"] = name
                 connect(db=name, host=database['host'], alias=self.connections[name]["connection_name"])
                 log.info(f"MongoDB - Connected to database: {name}")
         except KeyError:

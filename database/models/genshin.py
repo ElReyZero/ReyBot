@@ -1,4 +1,5 @@
 from mongoengine import *
+import config as cfg
 
 class Wishes(Document):
     type = StringField(required=True)
@@ -14,8 +15,9 @@ class Wishes(Document):
     meta = {
         'indexes': [
             {'fields': ('name', 'time', 'roll_no'), 'unique': True, 'dropDups': True}
-        ]
-    }    
+        ],
+        "db_alias": "genshin"
+    }
 
 class Constellations(Document):
     constellation_id = IntField(required=True)
@@ -24,6 +26,8 @@ class Constellations(Document):
     name = StringField(required=True)
     effect = StringField(required=True)
     activated = BooleanField(required=True)
+
+    meta = {"db_alias": "genshin"}
 
 class Weapons(Document):
     weapon_id = IntField(required=True)
@@ -39,7 +43,8 @@ class Weapons(Document):
     meta = {
         'indexes': [
             {'fields': ('weapon_id',), 'unique': True, 'dropDups': True}
-        ]
+        ],
+        "db_alias": "genshin"
     }
 
 class Characters(Document):
@@ -58,5 +63,6 @@ class Characters(Document):
     meta = {
         'indexes': [
             {'fields': ('character_id',), 'unique': True, 'dropDups': True}
-        ]
+        ],
+        "db_alias": "genshin"
     }
