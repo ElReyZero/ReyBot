@@ -128,7 +128,7 @@ def getOWMatchesData(server):
     elif currentRound == 6:
         outfit_limit = 4
     elif currentRound == 7:
-        outfit_limit = 2
+        outfit_limit = 4
     elif currentRound >=7:
         raise OWException()
 
