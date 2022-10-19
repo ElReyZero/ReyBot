@@ -1,6 +1,7 @@
 from discord import app_commands, Attachment
 from database.query_scripts.pokemon import mark_pokemon, get_pkmn_entry, import_dex
 from typing import Literal
+import config as cfg
 import os
 
 class PokemonTracker(app_commands.Group, name="pkmn_tracker", description="Commands Related to Pokemon Tracking"):
@@ -30,7 +31,7 @@ class PokemonTracker(app_commands.Group, name="pkmn_tracker", description="Comma
         if not dex_file.filename.endswith(".xlsx"):
             await interaction.followup.send("Please upload a valid excel file")
             return
-        filepath = './temp/dex.xlsx'
+        filepath = cfg.PROJECT_PATH +'/temp/dex.xlsx'
         await dex_file.save(filepath)
         try:
             await import_dex(interaction.user.id, filepath)

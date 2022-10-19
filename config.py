@@ -23,6 +23,7 @@ class MissingConfig(Exception):
 ## DYNAMIC PARAMETERS:
 # (pulled from the config file)
 
+PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 MAIN_ADMIN_ID = None
 DISCORD_TOKEN = None
 MAIN_GUILD = None
@@ -51,8 +52,8 @@ def get_config():
     """
     Populate the config data from the config file.
     """
-    file = f"./config.cfg"
-    linux_file = f"/home/ReyBot/config.cfg"
+    global PROJECT_PATH
+    file = PROJECT_PATH + "/config.cfg"
 
     try:
         global DISCORD_TOKEN
@@ -73,19 +74,12 @@ def get_config():
         genshin_data['ltoken'] = os.environ["GI_LTOKEN"]
         genshin_data['uuid'] = int(os.environ["GI_UUID"])
     except (KeyError, ValueError):
-        using_linux = False
-        if os.path.isfile(linux_file):
-            using_linux = True
-        elif not os.path.isfile(file):
+        if not os.path.isfile(file):
             raise ConfigError(f"{file} not found! "+file)
-
 
         config = ConfigParser(inline_comment_prefixes="#")
         try:
-            if using_linux:
-                config.read(linux_file)
-            else:
-                config.read(file)
+            config.read(file)
         except ParsingError as e:
             raise ConfigError(f"Parsing Error in '{file}'\n{e}")
 

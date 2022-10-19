@@ -4,7 +4,7 @@ from utils.timezones import getTZ
 from datetime import datetime
 import sys
 import os
-
+import config as cfg
 
 
 class ColorFormatter(logging.Formatter):
@@ -17,7 +17,7 @@ class ColorFormatter(logging.Formatter):
     # 90-97 are the same but "bright" foreground
     # 100-107 are the same as the bright ones but for the background.
     # 1 means bold, 2 means dim, 0 means reset, and 4 means underline.
-    
+
     # Formatter will log in local time
     TIMEZONE = getTZ(get_localzone())
 
@@ -52,22 +52,16 @@ class ColorFormatter(logging.Formatter):
         # Remove the cache layer
         record.exc_text = None
         return output
-    
+
 
 def define_log():
     # Logging config, logging outside the github repo
     try:
-        if os.name != 'nt':
-            os.makedirs('/home/ReyBot/logs')
-        else:
-            os.makedirs('./logs')
+        os.makedirs(cfg.PROJECT_PATH + '/logs')
     except FileExistsError:
         pass
-    if os.name != 'nt':
-        log_filename = '/home/ReyBot/logs/bot.log'
-    else:
-        log_filename = './logs/bot.log'
-    
+
+    log_filename = cfg.PROJECT_PATH +'/logs/bot.log'
     console_handler = logging.StreamHandler(sys.stdout)
     console_formatter = ColorFormatter()
     timezone = console_formatter.TIMEZONE

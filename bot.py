@@ -127,9 +127,9 @@ async def get_bot_logs(ctx):
         await ctx.send("You don't have permission to use this command!")
         return
     try:
-        await ctx.send("Here you go!", file=discord.File("./logs/bot.log"))
+        await ctx.send("Here you go!", file=discord.File(cfg.PROJECT_PATH+"/logs/bot.log"))
     except FileNotFoundError:
-        await ctx.send("Here you go!", file=discord.File("/home/ReyBot/logs/bot.log"))
+        await ctx.send("The log file doesn't exist!")
 
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alertReminder(interaction: discord.Interaction, continent:Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes:int=5):

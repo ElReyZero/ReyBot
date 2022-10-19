@@ -50,7 +50,7 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
         if not wishes_file.filename.endswith(".xlsx"):
             await interaction.followup.send("Please upload a valid excel file")
             return
-        filepath = './temp/wishes.xlsx'
+        filepath = cfg.PROJECT_PATH + '/temp/wishes.xlsx'
         await wishes_file.save(filepath)
         try:
             if interaction.user.id == int(cfg.MAIN_ADMIN_ID):
