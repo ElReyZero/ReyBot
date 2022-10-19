@@ -52,6 +52,9 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
             return
         filepath = cfg.PROJECT_PATH + '/temp/wishes.xlsx'
         await wishes_file.save(filepath)
+        if not os.path.exists(filepath):
+            await interaction.followup.send("Error saving file")
+            return
         try:
             if interaction.user.id == int(cfg.MAIN_ADMIN_ID):
                 await push_all_wishes(filepath)

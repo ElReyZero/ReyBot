@@ -94,10 +94,7 @@ async def on_app_command_error(interaction, error):
     try:
         await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
     except discord.errors.InteractionResponded:
-        try:
-            await interaction.followup.send(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
-        except discord.InteractionResponded:
-            pass
+        pass
     #If the DEBUG variable is set, the bot will DM the main admin with the whole traceback. It's meant for debug purposes only
     if cfg.DEBUG:
         user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
