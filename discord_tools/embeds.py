@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from utils.ps2 import CharacterStats, nameToServerID, idToContinentName, serverIDToName, idToContinentState
 import auraxium
 from auraxium import ps2
+from deprecated import deprecated
 
 def getServerPanel(server):
     id = nameToServerID(server)
@@ -89,7 +90,6 @@ def getServerPanel(server):
     except JSONDecodeError:
         return None
 
-
 def getCensusHealth():
     request = requests.get("https://wt.honu.pw/api/health")
     data = request.json()
@@ -114,6 +114,7 @@ def getCensusHealth():
     embed.set_footer(text="Last updated")
     return embed
 
+@deprecated(version="0.0.1", reason="Reason: Outfit Wars is over")
 def getOWMatchesData(server):
     server_id = nameToServerID(server)
     currentRound = requests.get(f"https://api.ps2alerts.com/outfit-wars/{server_id}/current-round").json()
@@ -159,7 +160,7 @@ def getOWMatchesData(server):
 
     return matches
 
-
+@deprecated(version="0.0.1", reason="Reason: Outfit Wars is over")
 def getOWEmbed(data, server, current_page, pages, match=True):
     if match:
         embed = Embed(color=0x171717, title=f"Outfit Wars Matches for {server}", description=f"Page {current_page}/{pages}")
@@ -179,6 +180,7 @@ def getOWEmbed(data, server, current_page, pages, match=True):
         embed.add_field(name="Score (Wins + Points)", value=scores, inline=True)
     return embed
 
+@deprecated(version="0.0.1", reason="Reason: Outfit Wars is over")
 def getOWRankings(server):
     server_id = nameToServerID(server)
     req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}")
@@ -224,7 +226,6 @@ async def getPS2CharacterEmbed(char_name):
             return embed
         else:
             return None
-
 
 def genshinCharacterEmbed(char_data):
     element_color = ElementColor[char_data['element']]

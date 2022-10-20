@@ -19,8 +19,6 @@ from command_groups.pokemon_tracking_commands import PokemonTracker
 
 # Custom imports
 from database.management.connection import set_connections
-from discord_tools.exceptions import OWException
-from discord_tools.views.ps2_views import OWView
 from utils.logger import define_log, StreamToLogger, exception_to_log
 from utils.ps2 import continentToId
 from utils.timezones import getIANA
@@ -29,7 +27,7 @@ import config as cfg
 # Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
-from discord_tools.embeds import getOWRankings, getServerPanel, getCensusHealth, getOWEmbed, getOWMatchesData, getPS2CharacterEmbed
+from discord_tools.embeds import getServerPanel, getCensusHealth, getPS2CharacterEmbed
 from discord_tools.literals import Timezones
 from command_groups.genshin_commands import GenshinDB
 from discord_tools.tasks import updateGenshinChars
@@ -263,7 +261,6 @@ async def checkServerPanel(interaction, server:Literal["Emerald", "Connery", "Co
         await interaction.followup.send("Can't fetch data from Honu (It's most likely down). Please try again later.")
         return
 
-
 @bot.tree.command(name="send_timestamp", description="Send a timestamp for an event given a time, date and event name")
 async def sendTimestamp(interaction, event_name:str, date:str, time:str, timezone:Timezones):
     await interaction.response.defer()
@@ -299,39 +296,6 @@ async def sendTimestamp(interaction, event_name:str, date:str, time:str, timezon
     except (IndexError, ValueError):
         await interaction.followup.send(f"{interaction.user.mention} Invalid time format, time must be in the format HH:MM (24h)", ephemeral=True)
 
-@bot.tree.command(name="ow_matches", description="Get the Outfit Wars matches for the current round")
-async def getOWMatches(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
-    await interaction.response.defer()
-    try:
-        matches = getOWMatchesData(server)
-    except OWException:
-        await interaction.followup.send("Outfit Wars is Over!")
-        return
-    if len(matches) > 5:
-        half = len(matches)//2
-        pages = [matches[:half], matches[half:]]
-        current_page = 1
-        view = OWView(matches, server, match=True)
-        embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages))
-        await interaction.followup.send(embed=embed, view=view)
-    else:
-        embed = getOWEmbed(matches, server, 1, 1)
-        await interaction.followup.send(embed=embed)
-
-@bot.tree.command(name="ow_standings", description="Get the Outfit Wars standings for the current round")
-async def getOWStandings(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
-    await interaction.response.defer()
-    standings = getOWRankings(server)
-    view = OWView(standings, server)
-    current_page = 1
-    pages = [standings]
-    if len(standings) > 5:
-        half = len(standings)//2
-        pages = [standings[:half], standings[half:]]
-        current_page = 1
-
-    embed = getOWEmbed(pages[current_page-1], server, current_page, len(pages), match=False)
-    await interaction.followup.send(embed=embed, view=view)
 
 @bot.tree.command(name="character", description="Get the stats of a character")
 async def getCharacterStats(interaction, character_name:str):
