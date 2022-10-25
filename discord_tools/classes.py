@@ -12,7 +12,7 @@ class AlertReminder:
     user:User
     task:asyncio.Task = field(init=False)
 
-    async def checkRemainingReminderTime(self, interaction):
+    async def check_remaining_reminder_time(self, interaction):
         while True:
             await asyncio.sleep(1)
             current_time = datetime.now().replace(microsecond=0)
@@ -24,5 +24,5 @@ class AlertReminder:
                 alert_reminder_dict[self.user.id].remove(self)
                 break
 
-    def setTask(self, task):
+    def set_task(self, task):
         self.task = task

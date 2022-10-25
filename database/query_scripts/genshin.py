@@ -28,7 +28,7 @@ def push_all_wishes(file):
             print(f"Count is {Wishes.objects.count()}")
 
 @to_thread
-def pushCharacters(chars, task=False):
+def push_characters(chars, task=False):
     log.info("MongoDB - Pushing current characters to database")
     for char in chars:
         if not task:
@@ -71,12 +71,12 @@ def pushCharacters(chars, task=False):
     log.info("MongoDB - Successfully pushed all characters to database")
 
 @to_thread
-def getAllCharacters():
+def get_all_characters():
     log.info("MongoDB - Getting all characters from database")
     return Characters.objects
 
 @to_thread
-def getCharacter(name):
+def get_character(name):
     try:
         log.info(f"MongoDB: Searching for character: {name}")
         return Characters.objects.get(name=name)
@@ -85,7 +85,7 @@ def getCharacter(name):
         return None
 
 @to_thread
-def getWeaponByObjId(object_id):
+def get_weapon_by_obj_id(object_id):
     try:
         log.info(f"MongoDB: Searching for weapon with object_id: {object_id}")
         return Weapons.objects.get(id=object_id)

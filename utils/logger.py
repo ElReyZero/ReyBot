@@ -1,6 +1,6 @@
 import logging
 from tzlocal import get_localzone
-from utils.timezones import getTZ
+from utils.timezones import get_TZ
 from datetime import datetime
 import sys
 import os
@@ -19,7 +19,7 @@ class ColorFormatter(logging.Formatter):
     # 1 means bold, 2 means dim, 0 means reset, and 4 means underline.
 
     # Formatter will log in local time
-    TIMEZONE = getTZ(get_localzone())
+    TIMEZONE = get_TZ(get_localzone())
 
     LEVEL_COLOURS = [
         (logging.DEBUG, '\x1b[40;1m', TIMEZONE),
@@ -61,17 +61,19 @@ def define_log():
     except FileExistsError:
         pass
 
-    log_filename = cfg.PROJECT_PATH +'/logs/bot.log'
+    log_filename = cfg.PROJECT_PATH + '/logs/bot.log'
     console_handler = logging.StreamHandler(sys.stdout)
     console_formatter = ColorFormatter()
     timezone = console_formatter.TIMEZONE
-    file_formatter = logging.Formatter('%(asctime)s | %(levelname)s %(message)s', f"%Y-%m-%d %H:%M:%S {timezone}")
+    file_formatter = logging.Formatter(
+        '%(asctime)s | %(levelname)s %(message)s', f"%Y-%m-%d %H:%M:%S {timezone}")
 
     # Print debug
     level = logging.DEBUG
     # Print to file, change file everyday at 12:00 Local
     date = datetime(2020, 1, 1, 12)
-    file_handler = logging.handlers.TimedRotatingFileHandler(log_filename, when='midnight', atTime=date)
+    file_handler = logging.handlers.TimedRotatingFileHandler(
+        log_filename, when='midnight', atTime=date)
     file_handler.setLevel(level)
     file_handler.setFormatter(file_formatter)
 
@@ -82,6 +84,7 @@ class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
     """
+
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level
@@ -89,14 +92,15 @@ class StreamToLogger(object):
 
     def write(self, buf):
         for line in buf.rstrip().splitlines():
-                self.logger.log(self.log_level, line.rstrip())
+            self.logger.log(self.log_level, line.rstrip())
 
     def flush(self):
         pass
+
 
 def exception_to_log(log, traceback_message):
     log.error("An exception has ocurred while executing the bot:")
     for line in traceback_message:
         line = line.rstrip().splitlines()
         for splits in line:
-                log.error(splits)
+            log.error(splits)

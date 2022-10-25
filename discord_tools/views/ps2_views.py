@@ -1,7 +1,8 @@
 from discord.ui import View, Button
 from discord import ButtonStyle, Interaction, InteractionResponded
 
-from discord_tools.embeds import getOWEmbed
+from discord_tools.embeds import get_ow_embed
+
 
 class NextPrevButtonView(View):
     """_summary_: Abstract Class that contains the common functionality for the Views Using Next and Previous Buttons
@@ -30,7 +31,7 @@ class NextPrevButtonView(View):
 
     async def next(self, interaction: Interaction):
         pass
-    
+
 
 class OWView(NextPrevButtonView):
 
@@ -48,12 +49,14 @@ class OWView(NextPrevButtonView):
             if self.current_page > 1:
                 self.current_page -= 1
                 content = self.pages[self.current_page-1]
-                embed = getOWEmbed(content, self.server, self.current_page, len(self.pages), match=self.match)
+                embed = get_ow_embed(content, self.server, self.current_page, len(
+                    self.pages), match=self.match)
                 await interaction.response.edit_message(embed=embed)
             else:
                 self.current_page = len(self.pages)
                 content = self.pages[self.current_page-1]
-                embed = getOWEmbed(content, self.server, self.current_page, len(self.pages), match=self.match)
+                embed = get_ow_embed(content, self.server, self.current_page, len(
+                    self.pages), match=self.match)
                 await interaction.response.edit_message(embed=embed)
         except InteractionResponded:
             pass
@@ -63,12 +66,14 @@ class OWView(NextPrevButtonView):
             if self.current_page != len(self.pages):
                 self.current_page += 1
                 content = self.pages[self.current_page-1]
-                embed = getOWEmbed(content, self.server, self.current_page, len(self.pages), match=self.match)
+                embed = get_ow_embed(content, self.server, self.current_page, len(
+                    self.pages), match=self.match)
                 await interaction.response.edit_message(embed=embed)
             else:
                 self.current_page = 1
                 content = self.pages[self.current_page-1]
-                embed = getOWEmbed(content, self.server, self.current_page, len(self.pages), match=self.match)
+                embed = get_ow_embed(content, self.server, self.current_page, len(
+                    self.pages), match=self.match)
                 await interaction.response.edit_message(embed=embed)
         except InteractionResponded:
             pass

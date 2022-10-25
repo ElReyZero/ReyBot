@@ -3,13 +3,14 @@ import config as cfg
 
 timezones = read_excel(cfg.PROJECT_PATH + '/utils/data/timezones.xlsx')
 
-def getIANA(tz):
+def get_IANA(tz):
     standard = timezones.loc[timezones["STNDAbbreviation"] == tz]
     if standard.empty:
         return timezones.loc[timezones["DSTAbbreviation"] == "EDT"].iloc[0]["TZ database name"]
     else:
         return standard.iloc[0]["TZ database name"]
 
-def getTZ(tz):
+
+def get_TZ(tz):
     timezone = timezones.loc[timezones['TZ database name'] == str(tz)]
     return timezone.iloc[0]["STNDAbbreviation"]

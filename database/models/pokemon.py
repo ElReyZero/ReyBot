@@ -1,6 +1,5 @@
 from mongoengine import *
 
-
 class Pokemon(Document):
     pokedex_number = IntField(required=True)
     name = StringField(required=True)
