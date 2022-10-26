@@ -52,23 +52,20 @@ def get_server_panel(server):
                                 continent["alertEnd"][:-1], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
                         except TypeError:
                             endTime = startTime + timedelta(minutes=90)
-                        embed.add_field(
-                            name=cont_name, value=f"Alert in Progress:\n[Control territory to lock {cont_name}](https://ps2alerts.com/alert/{alertID})", inline=False)
-                        embed.add_field(
-                            name="Start Time", value=f"<t:{int(startTime.timestamp())}:t>", inline=True)
-                        embed.add_field(
-                            name="Time Left", value=f"Ends <t:{int(endTime.timestamp())}:R>", inline=True)
-                        embed.add_field(
-                            name='\u200b', value='\u200b', inline=True)
-                        embed.add_field(name="Territory Control",
-                                        value=territory, inline=True)
+                        try:
+                            embed.add_field(name=cont_name, value=f"Alert in Progress:\n[Control territory to lock {cont_name}](https://ps2alerts.com/alert/{alertID})", inline=False)
+                        except UnboundLocalError:
+                            embed.add_field(name=cont_name, value=f"Alert in Progress:\nControl territory to lock {cont_name}", inline=False)
+                        embed.add_field(name="Start Time", value=f"<t:{int(startTime.timestamp())}:t>", inline=True)
+                        embed.add_field(name="Time Left", value=f"Ends <t:{int(endTime.timestamp())}:R>", inline=True)
+                        embed.add_field(name='\u200b', value='\u200b', inline=True)
+                        embed.add_field(name="Territory Control", value=territory, inline=True)
                         population = f"Total: {continent['playerCount']}"
                         population += f"\n<:VS:1014970179291205745> VS: {continent['players']['vs']}"
                         population += f"\n<:NC:1014970942235099177> NC: {continent['players']['nc']}"
                         population += f"\n<:TR:1014970962493575262> TR: {continent['players']['tr']}"
                         population += f"\n<:NSO:1014970981556703362> NS (Unknown): {continent['players']['unknown']}"
-                        embed.add_field(name="Population (Continent)",
-                                        value=population, inline=True)
+                        embed.add_field(name="Population (Continent)", value=population, inline=True)
                     elif continent["isOpened"]:
                         unstableStateID = continent["unstableState"]
                         unstableState = id_to_continent_name(unstableStateID)
@@ -83,22 +80,19 @@ def get_server_panel(server):
 
                         embed.add_field(
                             name=cont_name, value=f"Continent Status: {continentStatus}\n", inline=False)
-                        embed.add_field(name="Territory Control",
-                                        value=territory, inline=True)
+                        embed.add_field(name="Territory Control", value=territory, inline=True)
                         population = f"Total: {continent['playerCount']}"
                         population += f"\n<:VS:1014970179291205745> VS: {continent['players']['vs']}"
                         population += f"\n<:NC:1014970942235099177> NC: {continent['players']['nc']}"
                         population += f"\n<:TR:1014970962493575262> TR: {continent['players']['tr']}"
                         population += f"\n<:NSO:1014970981556703362> NS (Unknown): {continent['players']['unknown']}"
-                        embed.add_field(name="Population (Continent)",
-                                        value=population, inline=True)
+                        embed.add_field(name="Population (Continent)", value=population, inline=True)
             populationGlobal = f"Total: {data_pop.get('total')}"
             populationGlobal += f"\n<:VS:1014970179291205745> VS: {data_pop.get('vs')}"
             populationGlobal += f"\n<:NC:1014970942235099177> NC: {data_pop.get('nc')}"
             populationGlobal += f"\n<:TR:1014970962493575262> TR: {data_pop.get('tr')}"
             populationGlobal += f"\n<:NSO:1014970981556703362> NS: {data_pop.get('ns')}"
-            embed.add_field(name="Population (Global)",
-                            value=populationGlobal, inline=False)
+            embed.add_field(name="Population (Global)", value=populationGlobal, inline=False)
             embed.set_footer(text="Last updated")
             return embed
         else:
