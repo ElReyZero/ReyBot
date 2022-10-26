@@ -37,7 +37,7 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
     @app_commands.command(name="get_all_characters", description="Get all characters from the database")
     async def get_all_characters(self, interaction):
         await interaction.response.defer()
-        characters = await getAllCharacters()
+        characters = await get_all_characters()
         if characters:
             characters = [character.to_mongo() for character in characters]
             view = AllCharactersView(characters)
