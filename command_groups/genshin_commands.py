@@ -1,4 +1,4 @@
-from discord import app_commands, Attachment
+from discord import app_commands, Attachment, Interaction
 from random import randint
 import config as cfg
 import genshin as gi
@@ -7,11 +7,10 @@ from discord_tools.embeds import genshin_character_embed
 from discord_tools.views.genshin_views import AllCharactersView, WeaponView
 import os
 
-
 class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
 
     @app_commands.command(name="push_characters", description="Push all current characters to the database")
-    async def push_characters(self, interaction):
+    async def push_characters(self, interaction: Interaction):
         client = gi.Client()
         await interaction.response.send_message("Pushing characters...")
         if interaction.user.id == int(cfg.MAIN_ADMIN_ID):
@@ -22,7 +21,7 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
             await interaction.followup.send("Successfully pushed all characters to database", ephemeral=True)
 
     @app_commands.command(name="get_character", description="Get a character from the database")
-    async def get_character(self, interaction, name: str):
+    async def get_character(self, interaction: Interaction, name: str):
         await interaction.response.defer()
         character = await get_character(name)
         if character:
@@ -35,7 +34,7 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
             await interaction.followup.send(f"Character called {name} not found", ephemeral=True)
 
     @app_commands.command(name="get_all_characters", description="Get all characters from the database")
-    async def get_all_characters(self, interaction):
+    async def get_all_characters(self, interaction: Interaction):
         await interaction.response.defer()
         characters = await get_all_characters()
         if characters:
@@ -48,7 +47,7 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
             await interaction.followup.send(f"No characters found", ephemeral=True)
 
     @app_commands.command(name="push_wishes", description="Push an excel file of all wishes to the database")
-    async def get_wishes(self, interaction, wishes_file: Attachment):
+    async def get_wishes(self, interaction: Interaction, wishes_file: Attachment):
         await interaction.response.defer()
         if not wishes_file.filename.endswith(".xlsx"):
             await interaction.followup.send("Please upload a valid excel file")

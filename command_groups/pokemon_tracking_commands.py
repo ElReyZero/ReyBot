@@ -1,4 +1,4 @@
-from discord import app_commands, Attachment
+from discord import app_commands, Attachment, Interaction
 from database.query_scripts.pokemon import mark_pokemon, get_pkmn_entry, import_dex
 from typing import Literal
 import config as cfg
@@ -7,7 +7,7 @@ import os
 class PokemonTracker(app_commands.Group, name="pkmn_tracker", description="Commands Related to Pokemon Tracking"):
 
     @app_commands.command(name="mark_pokemon", description="Marks a pokemon as obtained")
-    async def mark_pokemon(self, interaction, pokemon_name: str, ability: str, shiny:Literal["Yes", "No"]="No", regional: Literal["Yes", "No"]="No"):
+    async def mark_pokemon(self, interaction: Interaction, pokemon_name: str, ability: str, shiny:Literal["Yes", "No"]="No", regional: Literal["Yes", "No"]="No"):
         await interaction.response.defer()
         if shiny == "Yes":
             shiny = True
@@ -26,7 +26,7 @@ class PokemonTracker(app_commands.Group, name="pkmn_tracker", description="Comma
             await interaction.followup.send(f"You already have {pokemon_name.capitalize()} marked as obtained")
 
     @app_commands.command(name="import_dex", description="Imports your dex from an excel file")
-    async def import_dex(self, interaction, dex_file: Attachment):
+    async def import_dex(self, interaction: Interaction, dex_file: Attachment):
         await interaction.response.defer()
         if not dex_file.filename.endswith(".xlsx"):
             await interaction.followup.send("Please upload a valid excel file")
@@ -47,7 +47,7 @@ class PokemonTracker(app_commands.Group, name="pkmn_tracker", description="Comma
         pass
 
     @app_commands.command(name="check_pokemon", description="Checks if you have a pokemon marked as obtained")
-    async def check_pokemon(self, interaction, pokemon_name: str):
+    async def check_pokemon(self, interaction: Interaction, pokemon_name: str):
         await interaction.response.defer()
         result = await get_pkmn_entry(interaction.user.id, pokemon_name.capitalize())
         if not result:

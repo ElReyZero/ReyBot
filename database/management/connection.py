@@ -23,7 +23,7 @@ class Connections:
             if self.connections[connection]["connected"]:
                 self.disconnect(connection)
 
-    def connect(self, name):
+    def connect(self, name: str):
         try:
             if not self.connections[name]["connected"]:
                 self.connections[name]["connected"] = True
@@ -34,7 +34,7 @@ class Connections:
             log.critical(f"MongoDB - Attempting to connect - Connection {name} not found.")
             raise Exception(f"Connection {name} not found.")
 
-    def disconnect(self, name):
+    def disconnect(self, name: str):
         try:
             if self.connections[name]["connected"]:
                 self.connections[name]["connected"] = False
@@ -44,11 +44,11 @@ class Connections:
             log.critical(f"MongoDB - Attempting to disconnect - Connection {name} not found.")
             raise Exception(f"Connection {name} not found.")
 
-def set_connections():
+def set_connections() -> dict | Connections:
     if database["host"].capitalize() == "None" or database["host"] == "":
         return None
     else:
         return Connections()
 
-def db_exit_handler(connections):
+def db_exit_handler(connections: dict):
     connections.disconnect_all()

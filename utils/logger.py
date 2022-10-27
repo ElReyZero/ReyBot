@@ -37,7 +37,7 @@ class ColorFormatter(logging.Formatter):
         for level, colour, tz in LEVEL_COLOURS
     }
 
-    def format(self, record):
+    def format(self, record) -> logging.Formatter:
         formatter = self.FORMATS.get(record.levelno)
         if formatter is None:
             formatter = self.FORMATS[logging.DEBUG]
@@ -54,7 +54,7 @@ class ColorFormatter(logging.Formatter):
         return output
 
 
-def define_log():
+def define_log() -> tuple[logging.StreamHandler, logging.FileHandler, ColorFormatter]:
     # Logging config, logging outside the github repo
     try:
         os.makedirs(cfg.PROJECT_PATH + '/logs')

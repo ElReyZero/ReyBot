@@ -40,21 +40,21 @@ CLASS_IDS = {
 }
 
 
-def continent_to_id(continent):
+def continent_to_id(continent: str) -> int | None:
     for key in CONTINENT_IDS:
         if continent.capitalize() == key:
             return CONTINENT_IDS[key]
     return None
 
 
-def id_to_continent_name(id):
+def id_to_continent_name(id: int) -> str | None:
     for key in CONTINENT_IDS:
         if id == CONTINENT_IDS[key]:
             return key
     return None
 
 
-def server_id_to_name(serverID, activeServer=True):
+def server_id_to_name(serverID: int, activeServer=True) -> str:
     if activeServer:
         for key in SERVER_IDS:
             if serverID == key and key not in [3, 24, 25, 1000, 2000]:
@@ -65,7 +65,7 @@ def server_id_to_name(serverID, activeServer=True):
                 return SERVER_IDS[key]
 
 
-def name_to_server_ID(name, activeServer=True):
+def name_to_server_ID(name: str, activeServer=True) -> int | None:
     if activeServer:
         for key in SERVER_IDS:
             if name.capitalize() == SERVER_IDS[key] and key not in [3, 24, 25, 1000, 2000]:
@@ -77,7 +77,7 @@ def name_to_server_ID(name, activeServer=True):
     return None
 
 
-def check_emerald_health():
+def check_emerald_health() -> bool | None:
     request = requests.get("https://wt.honu.pw/api/health")
     data = request.json()
     if data:
@@ -90,7 +90,7 @@ def check_emerald_health():
         return None
 
 
-def id_to_continent_state(id):
+def id_to_continent_state(id) -> str | None:
     for key in CONTINENT_STATES:
         if id == key:
             return CONTINENT_STATES[key]
@@ -117,7 +117,7 @@ class CharacterStats:
         for stat in self.raw_stats:
             self._setAttr(stat["stat_name"], stat["all_time"])
 
-    def _setAttr(self, attr, value):
+    def _setAttr(self, attr: int, value: int):
         value = int(value)
         if attr == "battle_rank":
             self.battle_rank = value

@@ -10,7 +10,7 @@ log = logging.getLogger('discord')
 ART_ICON_PATH = "https://enka.network/ui/UI_Gacha_AvatarImg_"
 
 @to_thread
-def push_all_wishes(file):
+def push_all_wishes(file: str):
     log.info("MongoDB - Pushing all wishes to database")
     xls = pd.ExcelFile(file)
     for wishType in ["Character Event", "Weapon Event", "Standard"]:
@@ -28,7 +28,7 @@ def push_all_wishes(file):
             print(f"Count is {Wishes.objects.count()}")
 
 @to_thread
-def push_characters(chars, task=False):
+def push_characters(chars: list, task=False):
     log.info("MongoDB - Pushing current characters to database")
     for char in chars:
         if not task:
@@ -71,12 +71,12 @@ def push_characters(chars, task=False):
     log.info("MongoDB - Successfully pushed all characters to database")
 
 @to_thread
-def get_all_characters():
+def get_all_characters() -> list[Characters]:
     log.info("MongoDB - Getting all characters from database")
     return Characters.objects
 
 @to_thread
-def get_character(name):
+def get_character(name: str) -> Characters | None:
     try:
         log.info(f"MongoDB: Searching for character: {name}")
         return Characters.objects.get(name=name)
@@ -85,7 +85,7 @@ def get_character(name):
         return None
 
 @to_thread
-def get_weapon_by_obj_id(object_id):
+def get_weapon_by_obj_id(object_id: str) -> Weapons | None:
     try:
         log.info(f"MongoDB: Searching for weapon with object_id: {object_id}")
         return Weapons.objects.get(id=object_id)

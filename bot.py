@@ -32,7 +32,7 @@ from discord_tools.data import alert_reminder_dict
 from discord_tools.embeds import get_server_panel, get_census_health, get_PS2_character_embed
 from discord_tools.literals import Timezones
 from command_groups.genshin_commands import GenshinDB
-from discord_tools.tasks import update_genshin_charrs
+from discord_tools.tasks import update_genshin_chars
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
 log = logging.getLogger('discord')
@@ -59,8 +59,7 @@ def setup_log():
     sys.stderr = StreamToLogger(log, logging.ERROR)
     log.addHandler(file_handler)
     log.propagate = True
-    discord.utils.setup_logging(
-        handler=console_handler, formatter=formatter, level=logging.INFO)
+    discord.utils.setup_logging(handler=console_handler, formatter=formatter, level=logging.INFO)
 
 @bot.event
 async def on_ready():
@@ -74,17 +73,16 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     if cfg.connections:
-        update_genshin_charrs.start()
+        update_genshin_chars.start()
 
 
 @bot.tree.error
-async def on_app_command_error(interaction, error):
+async def on_app_command_error(interaction: discord.Interaction, error: Exception):
     """Modified function that runs on the 'on_app_command_error' event, it handles errors from the bot.
        The default behaviour is to send a warning to the user that triggered the command and DM the main admin regarding the exception (if debug is set to True).
     """
     # Depending on the type of exception, a different message will be sent
-    traceback_message = format_exception(
-        type(error), error, error.__traceback__)
+    traceback_message = format_exception(type(error), error, error.__traceback__)
     exception_to_log(log, traceback_message)
     try:
         original = error.original
@@ -124,7 +122,7 @@ async def on_app_command_error(interaction, error):
 
 @commands.dm_only()
 @bot.command(aliases=["logs", "getLogs"])
-async def get_bot_logs(ctx):
+async def get_bot_logs(ctx: commands.Context):
     """Command that returns the bot log file to the user that requested it.
     """
     if ctx.author not in await get_admins():
@@ -199,7 +197,7 @@ async def remove_reminder(interaction: discord.Interaction, continent: Literal["
 
 
 @bot.tree.command(name="census_health", description="Get the census API health check")
-async def census_health(interaction):
+async def census_health(interaction: discord.Interaction):
     try:
         embed = get_census_health()
     except JSONDecodeError:
@@ -208,7 +206,7 @@ async def census_health(interaction):
     refresh = Button(label="Refresh", custom_id="refresh_health",
                      style=discord.ButtonStyle.blurple)
 
-    async def refresh_callback(interaction):
+    async def refresh_callback(interaction: discord.Interaction):
         await interaction.response.defer()
         try:
             embed = get_census_health()
@@ -225,7 +223,7 @@ async def census_health(interaction):
 
 
 @bot.tree.command(name="check_personal_reminders", description="Check the alert reminders currently set (only for you)")
-async def check_personal_reminders(interaction):
+async def check_personal_reminders(interaction: discord.Interaction):
     try:
         reminders = alert_reminder_dict[interaction.user.id]
         embed = discord.Embed(
@@ -239,7 +237,7 @@ async def check_personal_reminders(interaction):
 
 
 @bot.tree.command(name="global_alert_reminders", description="Check the alert reminders currently set (Debug)")
-async def check_global_reminders(interaction):
+async def check_global_reminders(interaction: discord.Interaction):
     admins = await get_admins()
     if interaction.user in admins:
         if len(alert_reminder_dict) > 0:
@@ -259,7 +257,7 @@ async def check_global_reminders(interaction):
 
 
 @bot.tree.command(name="server_panel", description="Check the active alerts and open continents on a server. Default: Emerald")
-async def check_server_panel(interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger"] = "Emerald"):
+async def check_server_panel(interaction: discord.Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger"] = "Emerald"):
     try:
         embed = get_server_panel(server)
         if embed:
@@ -288,7 +286,7 @@ async def check_server_panel(interaction, server: Literal["Emerald", "Connery", 
 
 
 @bot.tree.command(name="send_timestamp", description="Send a timestamp for an event given a time, date and event name")
-async def send_timestamp(interaction, event_name: str, date: str, time: str, timezone: Timezones):
+async def send_timestamp(interaction: discord.Interaction, event_name: str, date: str, time: str, timezone: Timezones):
     await interaction.response.defer()
     try:
         date = find_dates(date)
@@ -305,22 +303,22 @@ async def send_timestamp(interaction, event_name: str, date: str, time: str, tim
             name="Date", value=f"<t:{int(timestamp.timestamp())}>", inline=True)
         embed.add_field(
             name="Relative", value=f"<t:{int(timestamp.timestamp())}:R>", inline=True)
-        getTimestampsButton = Button(
+        get_timestamps_button = Button(
             label="Get Timestamps", style=discord.ButtonStyle.blurple)
         ephemeral = False
 
-        async def discord_time_format_callback(interaction):
+        async def discord_time_format_callback(interaction: discord.Interaction):
             nonlocal ephemeral
-            getTimestampsButton.disabled = True
+            get_timestamps_button.disabled = True
             if ephemeral:
                 await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>", ephemeral=True)
             else:
                 await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>")
                 ephemeral = True
 
-        getTimestampsButton.callback = discord_time_format_callback
+        get_timestamps_button.callback = discord_time_format_callback
         view = View(timeout=None)
-        view.add_item(getTimestampsButton)
+        view.add_item(get_timestamps_button)
         await interaction.followup.send(embed=embed, view=view)
     except AttributeError:
         await interaction.followup.send(f"{interaction.user.mention} Invalid date format", ephemeral=True)
@@ -329,7 +327,7 @@ async def send_timestamp(interaction, event_name: str, date: str, time: str, tim
 
 
 @bot.tree.command(name="character", description="Get the stats of a character")
-async def get_character_stats(interaction, character_name: str):
+async def get_character_stats(interaction: discord.Interaction, character_name: str):
     await interaction.response.defer()
     embed = await get_PS2_character_embed(character_name)
     if embed:
@@ -350,6 +348,5 @@ if __name__ == "__main__":
 
     # Group commands
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
-    bot.tree.add_command(
-        PokemonTracker(), guild=discord.Object(id=cfg.MAIN_GUILD))
+    bot.tree.add_command(PokemonTracker(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN, log_handler=console_handler)

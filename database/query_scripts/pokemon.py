@@ -14,7 +14,7 @@ def push_all_pokemons():
     Pokemon.objects.insert(pokemon_instances)
 
 @to_thread
-def mark_pokemon(pokemon_name, user, ability, shiny, regional):
+def mark_pokemon(pokemon_name: str, user: str, ability: str, shiny: str, regional: str):
     pokemon = Pokemon.objects(name=pokemon_name).first()
     if pokemon is None:
         return None
@@ -27,13 +27,13 @@ def mark_pokemon(pokemon_name, user, ability, shiny, regional):
         return True
 
 @to_thread
-def get_pkmn_entries(user):
+def get_pkmn_entries(user: str):
     pokemon_entries = PokemonEntry.objects(user=user)
     pokemon = [pokemon_entry.pokemon for pokemon_entry in pokemon_entries]
     return pokemon
 
 @to_thread
-def get_pkmn_entry(user, pokemon_name):
+def get_pkmn_entry(user:str, pokemon_name:str):
     pokemon = Pokemon.objects(name=pokemon_name).first()
     if not pokemon:
         return None
@@ -43,7 +43,7 @@ def get_pkmn_entry(user, pokemon_name):
     return [pokemon, pokemon_entry]
 
 @to_thread
-def import_dex(user, filepath):
+def import_dex(user:str, filepath:str):
     df = pd.read_excel(filepath)
     for column in ["Obtained", "Shiny", "Regional"]:
         df[column] = df[column].apply(lambda x : True if x == "X" else False)
