@@ -64,7 +64,7 @@ def get_server_panel(server: str) -> Embed:
                         embed.add_field(name="Population (Continent)", value=population, inline=True)
                     elif continent["isOpened"]:
                         unstableStateID = continent["unstableState"]
-                        unstableState = id_to_continent_name(unstableStateID)
+                        unstableState = id_to_continent_state(unstableStateID)
                         continentStatus = ""
                         if not cont_name == "Oshur":
                             if "Unstable" in unstableState:
