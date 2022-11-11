@@ -13,7 +13,7 @@ from deprecated import deprecated
 
 
 def get_server_panel(server: str) -> Embed:
-    id = name_to_server_ID(server)
+    id = name_to_server_ID(server, activeServer=False)
     try:
         request = requests.get("https://wt.honu.pw/api/world/overview")
         data_pop = requests.get(f"https://wt.honu.pw/api/population/{id}").json()

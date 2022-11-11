@@ -257,7 +257,7 @@ async def check_global_reminders(interaction: discord.Interaction):
 
 
 @bot.tree.command(name="server_panel", description="Check the active alerts and open continents on a server. Default: Emerald")
-async def check_server_panel(interaction: discord.Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger"] = "Emerald"):
+async def check_server_panel(interaction: discord.Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
     try:
         embed = get_server_panel(server)
         if embed:
