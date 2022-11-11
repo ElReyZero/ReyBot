@@ -113,7 +113,7 @@ def get_census_health() -> Embed:
                 entry.get('lastEvent')[:-1], "%Y-%m-%d %H:%M:%S")
             eventTime = eventTime.replace(
                 tzinfo=timezone.utc).astimezone(tz=None)
-            server_name = server_id_to_name(entry.get('worldID'))
+            server_name = server_id_to_name(entry.get('worldID'), activeServer=False)
             embed.add_field(name=server_name,
                             value=f"Last Event: <t:{int(eventTime.timestamp())}:R>\nLast Event Date: {entry.get('lastEvent')[:-1]} UTC\nFailure Count: {entry.get('failureCount')}\nStatus: {status}",
                             inline=True)
