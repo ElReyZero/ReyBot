@@ -15,9 +15,9 @@ from deprecated import deprecated
 def get_server_panel(server: str) -> Embed:
     id = name_to_server_ID(server, activeServer=False)
     try:
-        request = requests.get("https://wt.honu.pw/api/world/overview")
-        data_pop = requests.get(f"https://wt.honu.pw/api/population/{id}").json()
-        alertData = requests.get(f"https://api.ps2alerts.com/instances/active?world={id}").json()
+        request = requests.get("https://wt.honu.pw/api/world/overview", timeout=5)
+        data_pop = requests.get(f"https://wt.honu.pw/api/population/{id}", timeout=5).json()
+        alertData = requests.get(f"https://api.ps2alerts.com/instances/active?world={id}", timeout=5).json()
         data = request.json()
         world_data = None
         embed = Embed(color=0x171717, title=f"{server} Panel",
@@ -93,6 +93,8 @@ def get_server_panel(server: str) -> Embed:
         else:
             return None
     except JSONDecodeError:
+        return None
+    except requests.Timeout:
         return None
 
 

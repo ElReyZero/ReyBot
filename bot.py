@@ -146,8 +146,7 @@ async def alert_reminder(interaction: discord.Interaction, continent: Literal["I
 
     # Since the input is the continent name, it must be converted to it's census id
     cont_id = continent_to_id(continent)
-    req = requests.get(
-        f"https://api.ps2alerts.com/instances/active?world=17&zone={cont_id}")
+    req = requests.get(f"https://api.ps2alerts.com/instances/active?world=17&zone={cont_id}")
     data = req.json()
     if len(data) > 0:
         data = data[0]
@@ -278,7 +277,7 @@ async def check_server_panel(interaction: discord.Interaction, server: Literal["
             view.add_item(refresh)
             await interaction.response.send_message(embed=embed, view=view)
         else:
-            await interaction.response.send_message(f"Can't fetch data from Honu (It's most likely down). Please try again later.")
+            await interaction.response.send_message(f"Can't fetch data from Honu or ps2alerts.com (It's most likely down). Please try again later.")
     except JSONDecodeError:
         await interaction.followup.send("Can't fetch data from Honu (It's most likely down). Please try again later.")
         return
