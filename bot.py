@@ -17,7 +17,6 @@ import sys
 from pytz import timezone as pytz_tz
 from datefinder import find_dates
 import requests
-from command_groups.pokemon_tracking_commands import PokemonTracker
 
 # Custom imports
 from database.management.connection import set_connections
@@ -342,9 +341,7 @@ if __name__ == "__main__":
     if cfg.connections:
         main_exit_handler(cfg.connections)
         cfg.connections.connect("genshin")
-        cfg.connections.connect("pokemon")
 
     # Group commands
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
-    bot.tree.add_command(PokemonTracker(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN, log_handler=console_handler)

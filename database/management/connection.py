@@ -10,10 +10,6 @@ class Connections:
             "genshin": {
                 "connected": False,
                 "connection_name": None
-            },
-            "pokemon": {
-                "connected": False,
-                "connection_name": None
             }
         }
         self.used_connections = list()
