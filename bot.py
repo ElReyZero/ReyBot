@@ -163,8 +163,7 @@ async def alert_reminder(interaction: discord.Interaction, continent: Literal["I
 
         # Setting up the alert reminder
         reminder = AlertReminder(continent, minutes, endTime, interaction.user)
-        task = asyncio.create_task(
-            reminder.checkRemainingReminderTime(interaction))
+        task = asyncio.create_task(reminder.check_remaining_reminder_time(interaction))
         reminder.setTask(task)
         # The bot will try to set the created reminder checking if there's one already set
         try:
