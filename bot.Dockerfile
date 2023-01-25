@@ -8,7 +8,6 @@ LABEL description="This is a custom Docker Image for the ReyBot."
 
 RUN mkdir "/home/ReyBot"
 COPY bot.py /home/ReyBot/bot.py
-COPY config.py /home/ReyBot/config.py
 COPY requirements.txt /home/ReyBot/requirements.txt
 ADD discord_tools /home/ReyBot/discord_tools
 ADD database /home/ReyBot/database
