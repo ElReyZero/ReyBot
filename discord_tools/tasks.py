@@ -3,7 +3,6 @@ from database.query_scripts.genshin import push_characters
 import config as cfg
 import genshin as gi
 
-
 @loop(hours=24)
 async def update_genshin_chars():
     client = gi.Client()

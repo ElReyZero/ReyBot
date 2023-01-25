@@ -14,7 +14,6 @@ reybot-clean:
     - docker stop reybot
     - docker rm reybot
 
-
 reybot-build:
   stage: build
   tags:

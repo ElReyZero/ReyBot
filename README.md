@@ -25,7 +25,7 @@ Note: Python 3.9 >= is required for the bot to run!
 (Note: The genshin vars are currently for testing purposes)
 3. Run the bot using `python bot.py` on windows or `python3 bot.py` on unix systems.
 
-Note: A MongoDB database is being used for personal storage. I use a MongoDB Atlas instance, if you want to use it, you can get it [here](https://www.mongodb.com/en/atlas/database).  
+Note: A MongoDB database is being used for personal storage. I use a MongoDB Atlas instance, if you want to use it, you can get it [here](https://www.mongodb.com/en/atlas/database).
 If you don't want to use a database, simply set the `host` variable under the [Database] section to `None` in the config file.
 
 ### Docker
@@ -37,5 +37,5 @@ I included a docker installation since I'm using it to run it on my local server
 5. Run `docker-compose up -d`
 
 ## Contact
-If you have any questions or inquiries, feel free to contact me on Discord:  
+If you have any questions or inquiries, feel free to contact me on Discord:
 **El Rey Zero#1501**

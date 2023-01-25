@@ -6,7 +6,6 @@ import sys
 import os
 import config as cfg
 
-
 class ColorFormatter(logging.Formatter):
 
     # ANSI codes are a bit weird to decipher if you're unfamiliar with them, so here's a refresher
@@ -84,7 +83,6 @@ class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
     """
-
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level

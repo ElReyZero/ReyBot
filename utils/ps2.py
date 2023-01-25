@@ -46,13 +46,11 @@ def continent_to_id(continent: str) -> int | None:
             return CONTINENT_IDS[key]
     return None
 
-
 def id_to_continent_name(id: int) -> str | None:
     for key in CONTINENT_IDS:
         if id == CONTINENT_IDS[key]:
             return key
     return None
-
 
 def server_id_to_name(serverID: int, activeServer=True) -> str:
     if activeServer:
@@ -64,7 +62,6 @@ def server_id_to_name(serverID: int, activeServer=True) -> str:
             if serverID == key:
                 return SERVER_IDS[key]
 
-
 def name_to_server_ID(name: str, activeServer=True) -> int | None:
     if activeServer:
         for key in SERVER_IDS:
@@ -75,7 +72,6 @@ def name_to_server_ID(name: str, activeServer=True) -> int | None:
             if name.capitalize() == SERVER_IDS[key]:
                 return key
     return None
-
 
 def check_emerald_health() -> bool | None:
     request = requests.get("https://wt.honu.pw/api/health")
@@ -89,13 +85,11 @@ def check_emerald_health() -> bool | None:
     else:
         return None
 
-
 def id_to_continent_state(id) -> str | None:
     for key in CONTINENT_STATES:
         if id == key:
             return CONTINENT_STATES[key]
     return None
-
 
 @dataclass
 class CharacterStats:

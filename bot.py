@@ -73,7 +73,6 @@ async def on_ready():
     if cfg.connections:
         update_genshin_chars.start()
 
-
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: Exception):
     """Modified function that runs on the 'on_app_command_error' event, it handles errors from the bot.
@@ -117,7 +116,6 @@ async def on_app_command_error(interaction: discord.Interaction, error: Exceptio
         except discord.errors.HTTPException:
             pass
 
-
 @commands.dm_only()
 @bot.command(aliases=["logs", "getLogs"])
 async def get_bot_logs(ctx: commands.Context):
@@ -130,7 +128,6 @@ async def get_bot_logs(ctx: commands.Context):
         await ctx.send("Here you go!", file=discord.File(cfg.PROJECT_PATH+"/logs/bot.log"))
     except FileNotFoundError:
         await ctx.send("The log file doesn't exist!")
-
 
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alert_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes: int = 5):
@@ -178,7 +175,6 @@ async def alert_reminder(interaction: discord.Interaction, continent: Literal["I
     else:
         await interaction.response.send_message(f"{interaction.user.mention} There are no active alerts for {continent}", ephemeral=True)
 
-
 @bot.tree.command(name="remove_alert_reminder", description="Remove an alert reminder")
 async def remove_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"]):
     try:
@@ -190,7 +186,6 @@ async def remove_reminder(interaction: discord.Interaction, continent: Literal["
                 await interaction.response.send_message(f"Your alert reminder for {continent} has been removed", ephemeral=True)
     except KeyError:
         await interaction.response.send_message(f"{interaction.user.mention} You do not have a reminder for {continent}", ephemeral=True)
-
 
 @bot.tree.command(name="census_health", description="Get the census API health check")
 async def census_health(interaction: discord.Interaction):
@@ -231,7 +226,6 @@ async def check_personal_reminders(interaction: discord.Interaction):
     except KeyError:
         await interaction.response.send_message(f"{interaction.user.mention} You do not have any alert reminders set", ephemeral=True)
 
-
 @bot.tree.command(name="global_alert_reminders", description="Check the alert reminders currently set (Debug)")
 async def check_global_reminders(interaction: discord.Interaction):
     admins = await get_admins()
@@ -250,7 +244,6 @@ async def check_global_reminders(interaction: discord.Interaction):
             await interaction.response.send_message(f"{interaction.user.mention} There are no alert reminders set", ephemeral=True)
     else:
         await interaction.response.send_message(f"{interaction.user.mention} You are not authorized to use this command", ephemeral=True)
-
 
 @bot.tree.command(name="server_panel", description="Check the active alerts and open continents on a server. Default: Emerald")
 async def check_server_panel(interaction: discord.Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
@@ -279,7 +272,6 @@ async def check_server_panel(interaction: discord.Interaction, server: Literal["
     except JSONDecodeError:
         await interaction.followup.send("Can't fetch data from Honu (It's most likely down). Please try again later.")
         return
-
 
 @bot.tree.command(name="send_timestamp", description="Send a timestamp for an event given a time, date and event name")
 async def send_timestamp(interaction: discord.Interaction, event_name: str, date: str, time: str, timezone: Timezones):
@@ -320,7 +312,6 @@ async def send_timestamp(interaction: discord.Interaction, event_name: str, date
         await interaction.followup.send(f"{interaction.user.mention} Invalid date format", ephemeral=True)
     except (IndexError, ValueError):
         await interaction.followup.send(f"{interaction.user.mention} Invalid time format, time must be in the format HH:MM (24h)", ephemeral=True)
-
 
 @bot.tree.command(name="character", description="Get the stats of a character")
 async def get_character_stats(interaction: discord.Interaction, character_name: str):

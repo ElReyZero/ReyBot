@@ -1,4 +1,4 @@
-# Download base image ubuntu 20.04
+# Download base image python 3.11
 FROM python:3.11
 
 # LABEL about the custom image

@@ -5,7 +5,6 @@ from discord_tools.embeds import get_ow_embed, get_ow_matches_data, get_ow_ranki
 from discord_tools.views.ps2_views import OWView
 from discord.ext import commands
 import discord
-import asyncio
 
 description = "A multipurpose bot made by ElReyZero"
 intents = discord.Intents.default()
