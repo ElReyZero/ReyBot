@@ -42,7 +42,6 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='$',
                    description=description, intents=intents)
 
-
 async def get_admins() -> list:
     """Simple function that retrieves the admin User objects from the discord api.
 

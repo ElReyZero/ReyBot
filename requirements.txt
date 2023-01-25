@@ -9,4 +9,4 @@ tzlocal
 genshin
 auraxium
 deprecated
-git+https://github.com/Rapptz/discord.py@aa0acf1d567ff95467472ce5d7377c9eb6f541be
+git+https://github.com/Rapptz/discord.py@7e95f985210f6d91f133a2538ce9dcf684df63e0
