@@ -46,6 +46,14 @@ class EventModal(Modal, title="Crear Evento"):
         except ValueError:
             await interaction.response.send_message(f"{interaction.user.mention} El número de jugadores debe de ser un número", ephemeral=True)
             return
+        time = self.time.value.split(":")
+        date = datetime.strptime(self.date.value, "%d/%m/%Y")
+        timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
+        timezone_py = pytz_tz(get_IANA(self.timezone))
+        event_time = timezone_py.localize(timestamp).astimezone(None).timestamp()
+        if event_time < datetime.now().timestamp():
+            await interaction.response.send_message(f"{interaction.user.mention} No puedes crear eventos en el pasado. La fecha y hora debe ser posterior a <t:{int(datetime.now().timestamp())}>", ephemeral=True)
+            return
         try:
             embed = event_embed(self.date.value, self.time.value, self.timezone,
                                 self.activity.value, self.description.value, self.player_count.value, accepted=[interaction.user.mention])
