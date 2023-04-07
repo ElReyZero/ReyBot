@@ -2,7 +2,7 @@ from discord.ui import View, Button
 from discord import ButtonStyle, Interaction
 from discord_tools.embeds import event_embed
 from discord_tools.data import event_dict
-
+import config as cfg
 
 class EventView(View):
 
@@ -39,14 +39,14 @@ class EventView(View):
 
     async def join(self, interaction: Interaction):
         if interaction.user.mention in self.accepted:
-            await interaction.response.send_message("Ya estás inscrito en el evento", ephemeral=True)
+            await interaction.response.send_message(f"{interaction.user.mention} Ya estás inscrito en el evento", ephemeral=True)
             return
         if interaction.user.mention in self.reserves:
             self.reserves.remove(interaction.user.mention)
         if interaction.user.mention not in self.accepted:
             self.accepted.append(interaction.user.mention)
         if len(self.accepted) + 1 > self.player_count:
-            await interaction.response.send_message("No puedes unirte a este evento, ya está lleno", ephemeral=True)
+            await interaction.response.send_message(f"{interaction.user.mention} No puedes unirte a este evento, ya está lleno", ephemeral=True)
             return
 
         embed = event_embed(self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves)
@@ -54,7 +54,7 @@ class EventView(View):
 
     async def join_reserves(self, interaction: Interaction):
         if interaction.user.mention in self.reserves:
-            await interaction.response.send_message("Ya estás en la lista de reservas", ephemeral=True)
+            await interaction.response.send_message(f"{interaction.user.mention} Ya estás en la lista de reservas", ephemeral=True)
             return
         if interaction.user.mention in self.accepted:
             self.accepted.remove(interaction.user.mention)
@@ -64,11 +64,11 @@ class EventView(View):
         await interaction.response.edit_message(embed=embed, view=EventView(self.event_id, self.owner_id, self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves))
 
     async def edit(self, interaction: Interaction):
-        if interaction.user.id == self.owner_id:
+        if interaction.user.id == self.owner_id or interaction.user.id == cfg.MAIN_ADMIN_ID:
             from discord_tools.modals import EventModal
             await interaction.response.send_modal(EventModal(self.timezone, event_id=self.event_id, is_editing=True, accepted=self.accepted))
         else:
-            await interaction.response.send_message("No puedes editar este evento ya que no lo creaste", ephemeral=True)
+            await interaction.response.send_message(f"{interaction.user.mention} No puedes editar este evento ya que no lo creaste", ephemeral=True)
 
     async def delete(self, interaction: Interaction):
         if interaction.user.id == self.owner_id:
