@@ -38,6 +38,9 @@ class EventView(View):
         self.add_item(borrar)
 
     async def join(self, interaction: Interaction):
+        if interaction.user.mention in self.accepted:
+            await interaction.response.send_message("Ya estás inscrito en el evento", ephemeral=True)
+            return
         if interaction.user.mention in self.reserves:
             self.reserves.remove(interaction.user.mention)
         if interaction.user.mention not in self.accepted:
@@ -50,6 +53,9 @@ class EventView(View):
         await interaction.response.edit_message(embed=embed, view=EventView(self.event_id, self.owner_id, self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves))
 
     async def join_reserves(self, interaction: Interaction):
+        if interaction.user.mention in self.reserves:
+            await interaction.response.send_message("Ya estás en la lista de reservas", ephemeral=True)
+            return
         if interaction.user.mention in self.accepted:
             self.accepted.remove(interaction.user.mention)
         if interaction.user.mention not in self.reserves:
