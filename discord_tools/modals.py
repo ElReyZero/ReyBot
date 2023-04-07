@@ -40,13 +40,14 @@ class EventModal(Modal, title="Crear Evento"):
             self.player_count.default = str(event_dict[event_id].player_count)
 
     async def on_submit(self, interaction: Interaction):
+        await interaction.response.defer()
         try:
             player_count = int(self.player_count.value)
             if player_count < 2 or player_count > 12:
-                await interaction.response.send_message(f"{interaction.user.mention} El número de jugadores debe de estar entre 2 y 12", ephemeral=True)
+                await interaction.followup.send(f"{interaction.user.mention} El número de jugadores debe de estar entre 2 y 12", ephemeral=True)
                 return
         except ValueError:
-            await interaction.response.send_message(f"{interaction.user.mention} El número de jugadores debe de ser un número", ephemeral=True)
+            await interaction.followup.send(f"{interaction.user.mention} El número de jugadores debe de ser un número", ephemeral=True)
             return
         time = self.time.value.split(":")
         date = datetime.strptime(self.date.value, "%d/%m/%Y")
@@ -54,7 +55,7 @@ class EventModal(Modal, title="Crear Evento"):
         timezone_py = pytz_tz(get_IANA(self.timezone))
         event_time = timezone_py.localize(timestamp).astimezone(None).timestamp()
         if event_time < datetime.now().timestamp():
-            await interaction.response.send_message(f"{interaction.user.mention} No puedes crear eventos en el pasado. La fecha y hora debe ser posterior a <t:{int(datetime.now().timestamp())}>", ephemeral=True)
+            await interaction.followup.send(f"{interaction.user.mention} No puedes crear eventos en el pasado. La fecha y hora debe ser posterior a <t:{int(datetime.now().timestamp())}>", ephemeral=True)
             return
         try:
             if not event_dict.get(self.event_id):
@@ -70,15 +71,15 @@ class EventModal(Modal, title="Crear Evento"):
                 event_dict[self.event_id].time = self.time.value
                 event_dict[self.event_id].player_count = int(self.player_count.value)
                 view = EventView(event_id=self.event_id, owner_id=interaction.user.id)
-                await interaction.response.edit_message(embed=embed, view=view)
+                await interaction.followup.edit(embed=embed, view=view)
             else:
-                await interaction.response.send_message(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id))
+                await interaction.followup.send(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id))
             event_dict[self.event_id].task = asyncio.create_task(check_event_time(interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone))
         except AttributeError:
-            await interaction.response.send_message(f"{interaction.user.mention} Formato de fecha inválido", ephemeral=True)
+            await interaction.followup.send(f"{interaction.user.mention} Formato de fecha inválido", ephemeral=True)
             raise
         except (IndexError, ValueError):
-            await interaction.response.send_message(f"{interaction.user.mention} Formato de hora inválido, el formato debe de estar en HH:MM (24h)", ephemeral=True)
+            await interaction.followup.send(f"{interaction.user.mention} Formato de hora inválido, el formato debe de estar en HH:MM (24h)", ephemeral=True)
 
 
 async def check_event_time(interaction: Interaction, event_id, activity, date, time, timezone):
