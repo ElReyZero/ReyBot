@@ -47,7 +47,7 @@ class EventView(View):
             return
 
         embed = event_embed(self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves)
-        await interaction.response.edit_message(embed=embed, view=EventView(self.owner_id, self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves))
+        await interaction.response.edit_message(embed=embed, view=EventView(self.event_id, self.owner_id, self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves))
 
     async def join_reserves(self, interaction: Interaction):
         if interaction.user.mention in self.accepted:
@@ -55,7 +55,7 @@ class EventView(View):
         if interaction.user.mention not in self.reserves:
             self.reserves.append(interaction.user.mention)
         embed = event_embed(self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves)
-        await interaction.response.edit_message(embed=embed, view=EventView(self.owner_id, self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves))
+        await interaction.response.edit_message(embed=embed, view=EventView(self.event_id, self.owner_id, self.date, self.time, self.timezone, self.activity, self.description, self.player_count, self.accepted, self.reserves))
 
     async def edit(self, interaction: Interaction):
         if interaction.user.id == self.owner_id:
