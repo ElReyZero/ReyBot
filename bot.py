@@ -20,6 +20,7 @@ import requests
 
 # Custom imports
 from database.management.connection import set_connections
+from discord_tools.modals import EventModal
 from utils.logger import define_log, StreamToLogger, exception_to_log
 from utils.ps2 import continent_to_id
 from utils.timezones import get_IANA
@@ -67,6 +68,7 @@ async def on_ready():
     await bot.tree.sync()
     await bot.tree.sync(guild=discord.Object(id=cfg.MAIN_GUILD))
     await bot.change_presence(activity=discord.Game(name="with the API"))
+    cfg.bot_id = bot.user.id
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
@@ -321,6 +323,10 @@ async def get_character_stats(interaction: discord.Interaction, character_name: 
         await interaction.followup.send(embed=embed)
     else:
         await interaction.followup.send("Character not found")
+
+@bot.tree.command(name="crear_evento", description="Crea un evento")
+async def create_event(interaction: discord.Interaction, zona_horaria: Timezones = "EST"):
+    await interaction.response.send_modal(EventModal(zona_horaria))
 
 if __name__ == "__main__":
     # Defining the logger

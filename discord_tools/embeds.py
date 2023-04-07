@@ -10,6 +10,9 @@ from utils.ps2 import CharacterStats, name_to_server_ID, id_to_continent_name, s
 import auraxium
 from auraxium import ps2
 from deprecated import deprecated
+from pytz import timezone as pytz_tz
+from datefinder import find_dates
+from utils.timezones import get_IANA
 
 
 def get_server_panel(server: str) -> Embed:
@@ -279,4 +282,35 @@ def genshin_weapon_embed(weapon_data: dict) -> Embed:
     embed = Embed(color=0x171717,
                   title=f"{weapon_data['name']}", description=desc)
     embed.set_image(url=weapon_data["icon"])
+    return embed
+
+
+def event_embed(date, time, datetime, activity, description, player_count, accepted=[], reserves=[]):
+    date = find_dates(date, first="day")
+    for dates in date:
+        date = dates
+        break
+    time = time.split(":")
+    timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
+    timezone_py = pytz_tz(get_IANA(datetime))
+    timestamp = timezone_py.localize(timestamp).astimezone(None)
+
+    accepted_text = ""
+    reserves_text = ""
+
+    for i in accepted:
+        accepted_text += f"{i}\n"
+
+    for i in reserves:
+        reserves_text += f"{i}\n"
+
+    embed = Embed(
+        color=0xFFD200, title=f"{activity}", description=f"{description}")
+    embed.add_field(
+        name="Hora de inicio", value=f"<t:{int(timestamp.timestamp())}>", inline=False)
+    embed.add_field(
+        name="Empieza:", value=f"<t:{int(timestamp.timestamp())}:R>", inline=False)
+    embed.add_field(name=f":white_check_mark: Escuadra ({len(accepted)}/{player_count})", value= "           -" if len(accepted) == 0 else accepted_text, inline=True)
+    embed.add_field(name=":question: Reservas", value="           -" if len(reserves) == 0 else reserves_text, inline=True)
+
     return embed

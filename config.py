@@ -48,6 +48,8 @@ connections = None
 
 service_id = None
 
+bot_id = None
+
 def get_config():
     """
     Populate the config data from the config file.
