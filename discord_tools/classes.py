@@ -39,4 +39,18 @@ class EventData:
     player_count:int
     accepted:list = field(default_factory=list)
     reserves:list = field(default_factory=list)
-    task:asyncio.Task = field(init=False)
+    task:asyncio.Task = field(default=None)
+
+    def to_json(self):
+        return {
+            "event_id": self.event_id,
+            "owner_id": self.owner_id,
+            "date": self.date,
+            "time": self.time,
+            "timezone": self.timezone,
+            "activity": self.activity,
+            "description": self.description,
+            "player_count": self.player_count,
+            "accepted": self.accepted,
+            "reserves": self.reserves
+        }

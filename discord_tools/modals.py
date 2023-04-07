@@ -1,4 +1,5 @@
 from discord.ui import Modal, TextInput
+from discord_tools.classes import EventData
 from discord_tools.embeds import event_embed
 from discord import TextStyle, Interaction
 from discord_tools.views.event_views import EventView
@@ -23,11 +24,12 @@ class EventModal(Modal, title="Crear Evento"):
     player_count = TextInput(label="Número de jugadores", placeholder="Escribe un número entre 2 y 12",
                              style=TextStyle.short, required=True, min_length=1, max_length=2)
 
-    def __init__(self, timezone, event_id=uuid.uuid4(), is_editing=False, accepted=list()):
-        self.event_id = event_id
+    def __init__(self, timezone, event_id=None, is_editing=False, accepted=list(), reserves=list()):
+        self.event_id = str(uuid.uuid4()) if not event_id else event_id
         self.timezone = timezone
         self.is_editing = is_editing
         self.accepted = accepted
+        self.reserves = reserves
         super().__init__()
 
         if is_editing:
@@ -55,25 +57,26 @@ class EventModal(Modal, title="Crear Evento"):
             await interaction.response.send_message(f"{interaction.user.mention} No puedes crear eventos en el pasado. La fecha y hora debe ser posterior a <t:{int(datetime.now().timestamp())}>", ephemeral=True)
             return
         try:
+            if not event_dict.get(self.event_id):
+                event_dict[self.event_id] = EventData(self.event_id, interaction.user.id, self.date.value, self.time.value, self.timezone, self.activity.value, self.description.value, int(self.player_count.value), self.accepted if self.is_editing else [interaction.user.mention], self.reserves)
             embed = event_embed(self.date.value, self.time.value, self.timezone,
-                                self.activity.value, self.description.value, self.player_count.value, accepted=[interaction.user.mention])
+                                self.activity.value, self.description.value, self.player_count.value, accepted=self.accepted if self.is_editing else [interaction.user.mention], reserves=self.reserves)
+
             if self.is_editing:
                 event_dict[self.event_id].task.cancel()
-                accepted = event_dict[self.event_id].accepted
-                reserves = event_dict[self.event_id].reserves
                 event_dict[self.event_id].activity = self.activity.value
                 event_dict[self.event_id].description = self.description.value
                 event_dict[self.event_id].date = self.date.value
                 event_dict[self.event_id].time = self.time.value
                 event_dict[self.event_id].player_count = int(self.player_count.value)
-                view = EventView(event_id=self.event_id, owner_id=interaction.user.id, activity=self.activity.value, description=self.description.value, player_count=int(self.player_count.value), date=self.date.value, time=self.time.value, timezone=self.timezone, accepted=accepted, reserves=reserves)
+                view = EventView(event_id=self.event_id, owner_id=interaction.user.id)
                 await interaction.response.edit_message(embed=embed, view=view)
             else:
-                await interaction.response.send_message(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id, activity=self.activity.value, description=self.description.value, player_count=int(self.player_count.value), date=self.date.value, time=self.time.value, timezone=self.timezone, accepted=[interaction.user.mention], reserves=[]))
+                await interaction.response.send_message(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id))
             event_dict[self.event_id].task = asyncio.create_task(check_event_time(interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone))
-
         except AttributeError:
             await interaction.response.send_message(f"{interaction.user.mention} Formato de fecha inválido", ephemeral=True)
+            raise
         except (IndexError, ValueError):
             await interaction.response.send_message(f"{interaction.user.mention} Formato de hora inválido, el formato debe de estar en HH:MM (24h)", ephemeral=True)
 
