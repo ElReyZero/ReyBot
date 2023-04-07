@@ -26,3 +26,17 @@ class AlertReminder:
 
     def set_task(self, task: asyncio.Task):
         self.task = task
+
+@dataclass
+class EventData:
+    event_id:str
+    owner_id:int
+    date:str
+    time:str
+    timezone:str
+    activity:str
+    description:str
+    player_count:int
+    accepted:list = field(default_factory=list)
+    reserves:list = field(default_factory=list)
+    task:asyncio.Task = field(init=False)

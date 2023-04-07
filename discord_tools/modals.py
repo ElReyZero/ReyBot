@@ -13,22 +13,21 @@ import uuid
 class EventModal(Modal, title="Crear Evento"):
 
     activity = TextInput(label="Actividad", placeholder="Selecciona una actividad",
-                         style=TextStyle.short, required=True, max_length=250)
+                         style=TextStyle.short, required=True, max_length=100)
     description = TextInput(label="Descripción", placeholder="Describe la actividad o sus requerimientos",
                             style=TextStyle.paragraph, required=True, max_length=250)
     date = TextInput(label="Fecha", placeholder="Fecha con formato (DD/MM/AAAA)",
-                     style=TextStyle.short, required=True, max_length=250)
+                     style=TextStyle.short, required=True, min_length=10, max_length=10)
     time = TextInput(label="Hora", placeholder="Hora en formato de 24 horas (HH:MM)",
-                     style=TextStyle.short, required=True, max_length=250)
+                     style=TextStyle.short, required=True, min_length=5, max_length=5)
     player_count = TextInput(label="Número de jugadores", placeholder="Escribe un número entre 2 y 12",
                              style=TextStyle.short, required=True, min_length=1, max_length=2)
 
-    def __init__(self, timezone, event_id=uuid.uuid4(), is_editing=False, accepted=list(), task=None):
+    def __init__(self, timezone, event_id=uuid.uuid4(), is_editing=False, accepted=list()):
         self.event_id = event_id
         self.timezone = timezone
         self.is_editing = is_editing
         self.accepted = accepted
-        self.task = task
         super().__init__()
 
         if is_editing:
@@ -51,14 +50,19 @@ class EventModal(Modal, title="Crear Evento"):
             embed = event_embed(self.date.value, self.time.value, self.timezone,
                                 self.activity.value, self.description.value, self.player_count.value, accepted=[interaction.user.mention])
             if self.is_editing:
-                self.task.cancel()
+                event_dict[self.event_id].task.cancel()
                 accepted = event_dict[self.event_id].accepted
                 reserves = event_dict[self.event_id].reserves
-                event_dict[self.event_id] = EventView(event_id=self.event_id, owner_id=interaction.user.id, activity=self.activity.value, description=self.description.value, player_count=int(self.player_count.value), date=self.date.value, time=self.time.value, timezone=self.timezone, accepted=accepted, reserves=reserves)
-                await interaction.response.edit_message(embed=embed, view=event_dict[self.event_id])
+                event_dict[self.event_id].activity = self.activity.value
+                event_dict[self.event_id].description = self.description.value
+                event_dict[self.event_id].date = self.date.value
+                event_dict[self.event_id].time = self.time.value
+                event_dict[self.event_id].player_count = int(self.player_count.value)
+                view = EventView(event_id=self.event_id, owner_id=interaction.user.id, activity=self.activity.value, description=self.description.value, player_count=int(self.player_count.value), date=self.date.value, time=self.time.value, timezone=self.timezone, accepted=accepted, reserves=reserves)
+                await interaction.response.edit_message(embed=embed, view=view)
             else:
                 await interaction.response.send_message(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id, activity=self.activity.value, description=self.description.value, player_count=int(self.player_count.value), date=self.date.value, time=self.time.value, timezone=self.timezone, accepted=[interaction.user.mention], reserves=[]))
-            self.task = asyncio.create_task(check_event_time(interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone))
+            event_dict[self.event_id].task = asyncio.create_task(check_event_time(interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone))
 
         except AttributeError:
             await interaction.response.send_message(f"{interaction.user.mention} Formato de fecha inválido", ephemeral=True)
