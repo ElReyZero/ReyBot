@@ -359,6 +359,33 @@ async def add_player_to_event(interaction: discord.Interaction, id_evento:str, j
         await interaction.response.send_message(f"{interaction.user.mention} Solo puedes agregar jugadores en el canal donde se creó el evento", ephemeral=True)
         return
 
+@bot.tree.command(name="remover_jugador", description="Remueve un jugador de un evento")
+async def remove_player_from_event(interaction: discord.Interaction, id_evento:str, jugador: discord.Member):
+    channel = interaction.channel
+    try:
+        if interaction.user.id != event_dict[id_evento].owner_id:
+            await interaction.response.send_message("No puedes remover jugadores ya que no eres dueño del evento", ephemeral=True)
+            return
+        message = await channel.fetch_message(event_dict[id_evento].message_id)
+        if jugador.mention in event_dict[id_evento].accepted:
+            event_dict[id_evento].accepted.remove(jugador.mention)
+        elif jugador.mention in event_dict[id_evento].reserves:
+            event_dict[id_evento].reserves.remove(jugador.mention)
+        else:
+            await interaction.response.send_message(f"{jugador.mention} no está en el evento", ephemeral=True)
+            return
+
+        evento = event_dict[id_evento]
+
+        await message.edit(embed=event_embed(id_evento, evento.date, evento.time, evento.timezone, evento.activity, evento.description, evento.player_count, evento.accepted, evento.reserves))
+        await interaction.response.send_message(f"{jugador.mention} fue removido del evento {id_evento}", ephemeral=True)
+    except KeyError:
+        await interaction.response.send_message(f"{interaction.user.mention} No se encontró el evento {id_evento}", ephemeral=True)
+        return
+    except NotFound:
+        await interaction.response.send_message(f"{interaction.user.mention} Solo puedes remover jugadores en el canal donde se creó el evento", ephemeral=True)
+        return
+
 if __name__ == "__main__":
     # Defining the logger
     console_handler = setup_log()
