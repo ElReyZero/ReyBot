@@ -40,6 +40,7 @@ class EventData:
     accepted:list = field(default_factory=list)
     reserves:list = field(default_factory=list)
     task:asyncio.Task = field(default=None)
+    message_id:int = field(default=None)
 
     def to_json(self):
         return {

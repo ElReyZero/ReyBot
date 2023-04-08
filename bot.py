@@ -29,10 +29,12 @@ import config as cfg
 # Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
-from discord_tools.embeds import get_server_panel, get_census_health, get_PS2_character_embed
+from discord_tools.embeds import get_server_panel, get_census_health, get_PS2_character_embed, event_embed
 from discord_tools.literals import Timezones
 from command_groups.genshin_commands import GenshinDB
 from discord_tools.tasks import update_genshin_chars
+from discord_tools.data import event_dict
+from discord.errors import NotFound
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
 log = logging.getLogger('discord')
@@ -327,6 +329,35 @@ async def get_character_stats(interaction: discord.Interaction, character_name: 
 @bot.tree.command(name="crear_evento", description="Crea un evento")
 async def create_event(interaction: discord.Interaction, zona_horaria: Timezones = "EST"):
     await interaction.response.send_modal(EventModal(zona_horaria))
+
+@bot.tree.command(name="agregar_jugador", description="Agrega un jugador a un evento")
+async def add_player_to_event(interaction: discord.Interaction, id_evento:str, jugador: discord.Member):
+    channel = interaction.channel
+    try:
+        if interaction.user.id != event_dict[id_evento].owner_id:
+            await interaction.response.send_message("No puedes agregar jugadores ya que no eres dueño del evento", ephemeral=True)
+            return
+        message = await channel.fetch_message(event_dict[id_evento].message_id)
+        if jugador.mention in event_dict[id_evento].accepted:
+            await interaction.response.send_message(f"{jugador.mention} ya está en el evento", ephemeral=True)
+            return
+        elif jugador.mention in event_dict[id_evento].reserves:
+            event_dict[id_evento].reserves.remove(jugador.mention)
+
+        if len(event_dict[id_evento].accepted) == event_dict[id_evento].player_count:
+            event_dict[id_evento].reserves.append(jugador.mention)
+        else:
+            event_dict[id_evento].accepted.append(jugador.mention)
+        evento = event_dict[id_evento]
+
+        await message.edit(embed=event_embed(id_evento, evento.date, evento.time, evento.timezone, evento.activity, evento.description, evento.player_count, evento.accepted, evento.reserves))
+        await interaction.response.send_message(f"{jugador.mention} fue agregado al evento {id_evento}", ephemeral=True)
+    except KeyError:
+        await interaction.response.send_message(f"{interaction.user.mention} No se encontró el evento {id_evento}", ephemeral=True)
+        return
+    except NotFound:
+        await interaction.response.send_message(f"{interaction.user.mention} Solo puedes agregar jugadores en el canal donde se creó el evento", ephemeral=True)
+        return
 
 if __name__ == "__main__":
     # Defining the logger

@@ -53,15 +53,17 @@ class EventModal(Modal, title="Crear Evento"):
         date = datetime.strptime(self.date.value, "%d/%m/%Y")
         timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
         timezone_py = pytz_tz(get_IANA(self.timezone))
-        event_time = timezone_py.localize(timestamp).astimezone(None).timestamp()
+        event_time = timezone_py.localize(
+            timestamp).astimezone(None).timestamp()
         if event_time < datetime.now().timestamp():
             await interaction.followup.send(f"{interaction.user.mention} No puedes crear eventos en el pasado. La fecha y hora debe ser posterior a <t:{int(datetime.now().timestamp())}>", ephemeral=True)
             return
         try:
             if not event_dict.get(self.event_id):
-                event_dict[self.event_id] = EventData(self.event_id, interaction.user.id, self.date.value, self.time.value, self.timezone, self.activity.value, self.description.value, int(self.player_count.value), self.accepted if self.is_editing else [interaction.user.mention], self.reserves)
-            embed = event_embed(self.date.value, self.time.value, self.timezone,
-                                self.activity.value, self.description.value, self.player_count.value, accepted=self.accepted if self.is_editing else [interaction.user.mention], reserves=self.reserves)
+                event_dict[self.event_id] = EventData(self.event_id, interaction.user.id, self.date.value, self.time.value, self.timezone, self.activity.value, self.description.value, int(
+                    self.player_count.value), self.accepted if self.is_editing else [interaction.user.mention], self.reserves if self.is_editing else list())
+            embed = event_embed(self.event_id, self.date.value, self.time.value, self.timezone,
+                                self.activity.value, self.description.value, self.player_count.value, accepted=self.accepted if self.is_editing else [interaction.user.mention], reserves=self.reserves if self.is_editing else list())
 
             if self.is_editing:
                 event_dict[self.event_id].task.cancel()
@@ -69,12 +71,17 @@ class EventModal(Modal, title="Crear Evento"):
                 event_dict[self.event_id].description = self.description.value
                 event_dict[self.event_id].date = self.date.value
                 event_dict[self.event_id].time = self.time.value
-                event_dict[self.event_id].player_count = int(self.player_count.value)
-                view = EventView(event_id=self.event_id, owner_id=interaction.user.id)
+                event_dict[self.event_id].player_count = int(
+                    self.player_count.value)
+                view = EventView(event_id=self.event_id,
+                                 owner_id=interaction.user.id)
                 await interaction.followup.edit(embed=embed, view=view)
             else:
-                await interaction.followup.send(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id))
-            event_dict[self.event_id].task = asyncio.create_task(check_event_time(interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone))
+                message = await interaction.followup.send(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id))
+                event_dict[self.event_id].message_id = message.id
+
+            event_dict[self.event_id].task = asyncio.create_task(check_event_time(
+                interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone))
         except AttributeError:
             await interaction.followup.send(f"{interaction.user.mention} Formato de fecha inválido", ephemeral=True)
             raise

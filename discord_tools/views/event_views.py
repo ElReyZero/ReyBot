@@ -43,7 +43,7 @@ class EventView(View):
         if interaction.user.mention not in event_dict[self.event_id].accepted:
             event_dict[self.event_id].accepted.append(interaction.user.mention)
 
-        embed = event_embed(event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
+        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
         await interaction.response.edit_message(embed=embed)
 
     async def join_reserves(self, interaction: Interaction):
@@ -54,7 +54,7 @@ class EventView(View):
             event_dict[self.event_id].accepted.remove(interaction.user.mention)
         if interaction.user.mention not in event_dict[self.event_id].reserves:
             event_dict[self.event_id].reserves.append(interaction.user.mention)
-        embed = event_embed(event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
+        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
         await interaction.response.edit_message(embed=embed)
 
     async def leave(self, interaction: Interaction):
@@ -65,7 +65,7 @@ class EventView(View):
             event_dict[self.event_id].accepted.remove(interaction.user.mention)
         if interaction.user.mention in event_dict[self.event_id].reserves:
             event_dict[self.event_id].reserves.remove(interaction.user.mention)
-        embed = event_embed(event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
+        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
         await interaction.response.edit_message(embed=embed)
 
     async def edit(self, interaction: Interaction):

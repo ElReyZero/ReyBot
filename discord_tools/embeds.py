@@ -285,7 +285,7 @@ def genshin_weapon_embed(weapon_data: dict) -> Embed:
     return embed
 
 
-def event_embed(date, time, datetime, activity, description, player_count, accepted=[], reserves=[]):
+def event_embed(event_id, date, time, datetime, activity, description, player_count, accepted=[], reserves=[]):
     date = find_dates(date, first="day")
     for dates in date:
         date = dates
@@ -305,7 +305,9 @@ def event_embed(date, time, datetime, activity, description, player_count, accep
         reserves_text += f"{i}\n"
 
     embed = Embed(
-        color=0xFFD200, title=f"{activity}", description=f"{description}")
+        color=0xFFD200, title=f"Actividad: {activity}")
+    embed.add_field(name="Id del evento", value=event_id, inline=False)
+    embed.add_field(name="Descripción", value=description, inline=False)
     embed.add_field(
         name="Hora de inicio", value=f"<t:{int(timestamp.timestamp())}>", inline=False)
     embed.add_field(
