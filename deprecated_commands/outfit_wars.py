@@ -11,6 +11,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='$', description=description, intents=intents)
 
+@deprecated(version="0.0.1", reason="Outfit Wars is over")
 @bot.tree.command(name="ow_matches", description="Get the Outfit Wars matches for the current round")
 async def get_ow_matches(interaction, server:Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"]="Emerald"):
     await interaction.response.defer()

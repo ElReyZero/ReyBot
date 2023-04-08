@@ -230,25 +230,6 @@ async def check_personal_reminders(interaction: discord.Interaction):
     except KeyError:
         await interaction.response.send_message(f"{interaction.user.mention} You do not have any alert reminders set", ephemeral=True)
 
-@bot.tree.command(name="global_alert_reminders", description="Check the alert reminders currently set (Debug)")
-async def check_global_reminders(interaction: discord.Interaction):
-    admins = await get_admins()
-    if interaction.user in admins:
-        if len(alert_reminder_dict) > 0:
-            embed = discord.Embed(color=0xff0000, title="Global Alert Reminders",
-                                  description="Current alert reminders set within the bot")
-            for user in alert_reminder_dict:
-                username = alert_reminder_dict[user][0].user.name
-                embed.add_field(name=username, value="᲼", inline=True)
-                for reminder in alert_reminder_dict[user]:
-                    embed.add_field(
-                        name=f'{reminder.continent}', value=f"{reminder.minutes} minutes before alert ends", inline=True)
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-        else:
-            await interaction.response.send_message(f"{interaction.user.mention} There are no alert reminders set", ephemeral=True)
-    else:
-        await interaction.response.send_message(f"{interaction.user.mention} You are not authorized to use this command", ephemeral=True)
-
 @bot.tree.command(name="server_panel", description="Check the active alerts and open continents on a server. Default: Emerald")
 async def check_server_panel(interaction: discord.Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
     try:
