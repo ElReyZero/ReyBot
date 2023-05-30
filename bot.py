@@ -22,7 +22,7 @@ import requests
 from database.management.connection import set_connections
 from discord_tools.modals import EventModal
 from utils.logger import define_log, StreamToLogger, exception_to_log
-from utils.ps2 import continent_to_id
+from utils.ps2 import continent_to_id, name_to_server_ID
 from utils.timezones import get_IANA
 from utils.exit_handlers import main_exit_handler
 import config as cfg
@@ -134,7 +134,7 @@ async def get_bot_logs(ctx: commands.Context):
         await ctx.send("The log file doesn't exist!")
 
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
-async def alert_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes: int = 5):
+async def alert_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes: int = 5, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
     """Command that sets up a reminder before an alert ends.
     """
     # Check if the user had inputs for minutes, it also checks if it's valid
@@ -143,9 +143,10 @@ async def alert_reminder(interaction: discord.Interaction, continent: Literal["I
         await interaction.response.send_message(f"{interaction.user.mention} Please enter a valid number of minutes.", ephemeral=True)
         return
 
-    # Since the input is the continent name, it must be converted to it's census id
+    # Since the input has the continent and server names, they must be converted to their respective census id
     cont_id = continent_to_id(continent)
-    req = requests.get(f"https://api.ps2alerts.com/instances/active?world=17&zone={cont_id}")
+    server_id = name_to_server_ID(server, activeServer=False)
+    req = requests.get(f"https://api.ps2alerts.com/instances/active?world={server_id}&zone={cont_id}")
     data = req.json()
     if len(data) > 0:
         data = data[0]
@@ -161,9 +162,7 @@ async def alert_reminder(interaction: discord.Interaction, continent: Literal["I
 
         # Setting up the alert reminder
         reminder = AlertReminder(continent, minutes, endTime, interaction.user)
-        task = asyncio.create_task(reminder.check_remaining_reminder_time(interaction))
-        reminder.setTask(task)
-        # The bot will try to set the created reminder checking if there's one already set
+        reminder.schedule_reminder(interaction)
         try:
             reminders = alert_reminder_dict[interaction.user.id]
             for reminder in reminders:
@@ -175,7 +174,6 @@ async def alert_reminder(interaction: discord.Interaction, continent: Literal["I
             alert_reminder_dict[interaction.user.id] = list()
             alert_reminder_dict[interaction.user.id].append(reminder)
         await interaction.response.send_message(f"{interaction.user.mention} You have successfully set a reminder for {continent}\nThe alert will end <t:{int(endTime.timestamp())}:R>\nReminder set to {minutes} minutes before it ends")
-        await task
     else:
         await interaction.response.send_message(f"{interaction.user.mention} There are no active alerts for {continent}", ephemeral=True)
 
@@ -185,7 +183,7 @@ async def remove_reminder(interaction: discord.Interaction, continent: Literal["
         reminders = alert_reminder_dict[interaction.user.id]
         for reminder in reminders:
             if reminder.continent == continent:
-                reminder.task.cancel()
+                reminder.scheduler.cancel(reminder.event)
                 reminders.remove(reminder)
                 await interaction.response.send_message(f"Your alert reminder for {continent} has been removed", ephemeral=True)
     except KeyError:

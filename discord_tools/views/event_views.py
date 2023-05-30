@@ -78,8 +78,11 @@ class EventView(View):
     async def delete_event(self, interaction: Interaction):
         if interaction.user.id == event_dict[self.event_id].owner_id:
             await interaction.response.edit_message(content="Evento borrado", embed=None, view=None)
-            if event_dict[self.event_id].task:
-                event_dict[self.event_id].task.cancel()
+            try:
+                if event_dict[self.event_id].event:
+                    event_dict[self.event_id].scheduler.cancel(event_dict[self.event_id].event)
+            except AttributeError:
+                pass
             del event_dict[self.event_id]
         else:
             await interaction.response.send_message("No puedes borrar este evento ya que no lo creaste", ephemeral=True)

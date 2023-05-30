@@ -10,6 +10,7 @@ from utils.timezones import get_IANA
 import config as cfg
 from discord_tools.data import event_dict
 import uuid
+import sched
 
 class EventModal(Modal, title="Crear Evento"):
 
@@ -80,35 +81,37 @@ class EventModal(Modal, title="Crear Evento"):
                 message = await interaction.followup.send(embed=embed, view=EventView(event_id=self.event_id, owner_id=interaction.user.id))
                 event_dict[self.event_id].message_id = message.id
 
-            event_dict[self.event_id].task = asyncio.create_task(check_event_time(
-                interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone))
+            self.schedule_event_time(interaction, self.event_id, self.activity.value, self.date.value, self.time.value, self.timezone)
         except AttributeError:
             await interaction.followup.send(f"{interaction.user.mention} Formato de fecha inválido", ephemeral=True)
             raise
         except (IndexError, ValueError):
             await interaction.followup.send(f"{interaction.user.mention} Formato de hora inválido, el formato debe de estar en HH:MM (24h)", ephemeral=True)
 
-
-async def check_event_time(interaction: Interaction, event_id, activity, date, time, timezone):
-    time = time.split(":")
-    date = datetime.strptime(date, "%d/%m/%Y")
-    timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
-    timezone_py = pytz_tz(get_IANA(timezone))
-    event_time = timezone_py.localize(timestamp).astimezone(None).timestamp()
-    while True:
+    async def send_reminder(self, interaction: Interaction, event_id, activity):
         try:
             event_dict[event_id]
         except KeyError:
             return
+        user_list_str = ""
+        for user in event_dict[event_id].accepted:
+            user_list_str += f"{user} "
+        await interaction.followup.send(f"{user_list_str}El evento '{activity}' ha empezado")
+        await asyncio.sleep(600)
+        await interaction.channel.purge(limit=5, check=lambda m: m.author.id == cfg.bot_id)
+        del event_dict[event_id]
 
-        await asyncio.sleep(1)
-        current_time = datetime.now().replace(microsecond=0).timestamp()
-        if current_time == event_time or current_time > event_time:
-            user_list_str = ""
-            for user in event_dict[event_id].accepted:
-                user_list_str += f"{user} "
-            await interaction.followup.send(f"{user_list_str}El evento '{activity}' ha empezado")
-            break
-    await asyncio.sleep(600)
-    await interaction.channel.purge(limit=5, check=lambda m: m.author.id == cfg.bot_id)
-    del event_dict[event_id]
+    def set_scheduler(self, interaction: Interaction, event_id:str, activity:str, loop: asyncio.AbstractEventLoop):
+        loop.create_task(self.send_reminder(interaction, event_id, activity))
+
+    def schedule_event_time(self, interaction: Interaction, event_id, activity, date, time, timezone):
+        time = time.split(":")
+        date = datetime.strptime(date, "%d/%m/%Y")
+        timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
+        timezone_py = pytz_tz(get_IANA(timezone))
+        event_time = timezone_py.localize(timestamp).astimezone(None).timestamp()
+        loop = asyncio.get_event_loop()
+        delay = event_time - datetime.now().timestamp()
+        self.scheduler = sched.scheduler()
+        self.event = self.scheduler.enter(delay, 1, self.set_scheduler, [interaction, event_id, activity, loop])
+        loop.run_in_executor(None, self.scheduler.run)
