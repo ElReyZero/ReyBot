@@ -9,7 +9,6 @@ from traceback import format_exception
 from datetime import datetime, timedelta
 from typing import Literal
 from datetime import timezone
-import asyncio
 import logging
 import logging.handlers
 import sys
@@ -84,7 +83,8 @@ async def on_app_command_error(interaction: discord.Interaction, error: Exceptio
     """
     # Depending on the type of exception, a different message will be sent
     traceback_message = format_exception(type(error), error, error.__traceback__)
-    exception_to_log(log, traceback_message)
+    #exception_to_log(log, traceback_message)
+    exception_to_log(log, error)
     try:
         original = error.original
     except AttributeError:

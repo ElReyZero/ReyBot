@@ -96,9 +96,6 @@ class StreamToLogger(object):
         pass
 
 
-def exception_to_log(log, traceback_message):
-    log.error("An exception has ocurred while executing the bot:")
-    for line in traceback_message:
-        line = line.rstrip().splitlines()
-        for splits in line:
-            log.error(splits)
+def exception_to_log(log, error):
+    log.critical("An exception has ocurred while executing the bot:")
+    log.critical(error, exc_info=True)
