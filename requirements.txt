@@ -9,4 +9,5 @@ tzlocal
 genshin
 auraxium
 deprecated
+pydantic<2
 discord.py
