@@ -1,5 +1,4 @@
 from mongoengine import *
-import config as cfg
 
 class Wishes(Document):
     type = StringField(required=True)

@@ -15,3 +15,4 @@ services:
       GI_UUID: ${GI_UUID}
       MAIN_GUILD: ${MAIN_GUILD}
       SERVICE_ID: ${SERVICE_ID}
+      FIREBASE_TOKEN : ${FIREBASE_TOKEN}

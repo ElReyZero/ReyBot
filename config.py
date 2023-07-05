@@ -28,6 +28,8 @@ MAIN_ADMIN_ID = None
 DISCORD_TOKEN = None
 MAIN_GUILD = None
 DEBUG = False
+GOOGLE_PROJECT_ID = None
+
 admin_ids = []
 
 #: Contains database parameters.
@@ -58,6 +60,8 @@ def get_config():
     file = PROJECT_PATH + "/config.cfg"
 
     try:
+        global GOOGLE_PROJECT_ID
+        GOOGLE_PROJECT_ID = os.environ["GOOGLE_PROJECT_ID"]
         global DISCORD_TOKEN
         DISCORD_TOKEN = os.environ["DISCORD_TOKEN"]
 
@@ -132,6 +136,13 @@ def get_config():
             _error_missing('host', 'Database', file)
         except ValueError:
             _error_incorrect('host', 'Database', file)
+
+        try:
+            os.environ["GCLOUD_PROJECT"] = config["Database"]["project_id"]
+        except KeyError:
+            _error_missing('project_id', 'Database', file)
+        except ValueError:
+            _error_incorrect('project_id', 'Database', file)
 
         if not (database['host'].capitalize() == "None" or database['host'] == ""):
             _check_section(config, "Genshin", file)
