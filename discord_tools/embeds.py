@@ -226,7 +226,7 @@ def get_ow_rankings(server: str) -> list:
 
 
 async def get_PS2_character_embed(char_name: str) -> Embed:
-    async with auraxium.Client(service_id=cfg.service_id) as client:
+    async with auraxium.Client(service_id=cfg.SERVICE_ID) as client:
         char = await client.get_by_name(ps2.Character, char_name)
         if char:
             server = await char.world()
