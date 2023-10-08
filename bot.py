@@ -76,6 +76,13 @@ async def on_ready():
     if cfg.connections:
         update_genshin_chars.start()
 
+@bot.event
+async def on_message(message):
+    if message.content.startswith("https://twitter.com/"):
+        content = message.content.replace("https://twitter.com", "https://vxtwitter.com")
+        await message.delete()
+        await message.channel.send(content)
+
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: Exception):
     """Modified function that runs on the 'on_app_command_error' event, it handles errors from the bot.
