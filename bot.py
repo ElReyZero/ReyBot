@@ -78,8 +78,8 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if message.content.startswith("https://twitter.com/"):
-        content = message.content.replace("https://twitter.com", "https://vxtwitter.com")
+    if message.content.startswith("https://twitter.com/") or message.content.startswith("https://x.com/"):
+        content = message.content.replace("https://twitter.com", "https://vxtwitter.com").replace("https://x.com", "https://vxtwitter.com")
         await message.delete()
         await message.channel.send(content)
 
