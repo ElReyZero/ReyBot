@@ -46,9 +46,9 @@ def get_server_panel(server: str) -> Embed:
                             if continent["zoneID"] == alert["zone"]:
                                 alertID = alert["instanceId"]
                                 break
-                        startTime = datetime.strptime(continent["alertStart"][:-1], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
+                        startTime = datetime.strptime(continent["alertStart"][:-1], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
                         try:
-                            endTime = datetime.strptime(continent["alertEnd"][:-1], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
+                            endTime = datetime.strptime(continent["alertEnd"][:-1], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
                         except TypeError:
                             endTime = startTime + timedelta(minutes=90)
                         try:
