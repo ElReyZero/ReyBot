@@ -60,10 +60,10 @@ def get_server_panel(server: str) -> Embed:
                         embed.add_field(name='\u200b', value='\u200b', inline=True)
                         embed.add_field(name="Territory Control", value=territory, inline=True)
                         population = f"Total: {continent['playerCount']}"
-                        population += f"\n<:VS:1014970179291205745> VS: {continent['players']['vs']}"
-                        population += f"\n<:NC:1014970942235099177> NC: {continent['players']['nc']}"
-                        population += f"\n<:TR:1014970962493575262> TR: {continent['players']['tr']}"
-                        population += f"\n<:NSO:1014970981556703362> NS (Unknown): {continent['players']['unknown']}"
+                        population += f"\n<:VS:1014970179291205745> VS: {continent['players']['vs']} - {round(continent['players']['vs']/continent['playerCount']*100, 2)}%"
+                        population += f"\n<:NC:1014970942235099177> NC: {continent['players']['nc']} - {round(continent['players']['nc']/continent['playerCount']*100, 2)}%"
+                        population += f"\n<:TR:1014970962493575262> TR: {continent['players']['tr']} - {round(continent['players']['tr']/continent['playerCount']*10, 2)}%"
+                        population += f"\n<:NSO:1014970981556703362> NS (Unknown): {continent['players']['unknown']} - {round(continent['players']['unknown']/continent['playerCount']*100, 2)}%"
                         embed.add_field(name="Population (Continent)", value=population, inline=True)
                     elif continent["isOpened"]:
                         unstableStateID = continent["unstableState"]
