@@ -115,7 +115,7 @@ def get_census_health() -> Embed:
             else:
                 status = "Ok"
             eventTime = datetime.strptime(
-                entry.get('lastEvent')[:-1], "%Y-%m-%d %H:%M:%S")
+                entry.get('lastEvent')[:-1], "%Y-%m-%dT%H:%M:%S")
             eventTime = eventTime.replace(
                 tzinfo=timezone.utc).astimezone(tz=None)
             server_name = server_id_to_name(entry.get('worldID'), activeServer=False)
