@@ -1,8 +1,8 @@
-from discord import app_commands, Attachment, Interaction
 from random import randint
+from discord import app_commands, Attachment, Interaction
 import config as cfg
 import genshin as gi
-from database.query_scripts.genshin import push_characters, push_all_wishes, get_character, get_weapon_by_obj_id, get_all_characters
+from database.crud.genshin import push_characters, push_all_wishes, get_character_and_weapon, get_weapon_by_obj_id, get_all_characters
 from discord_tools.embeds import genshin_character_embed
 from discord_tools.views.genshin_views import AllCharactersView, WeaponView
 import os
@@ -23,10 +23,8 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
     @app_commands.command(name="get_character", description="Get a character from the database")
     async def get_character(self, interaction: Interaction, name: str):
         await interaction.response.defer()
-        character = await get_character(name)
+        character, weapon = await get_character_and_weapon(name)
         if character:
-            character = character.to_mongo()
-            weapon = await get_weapon_by_obj_id(character["weapon"])
             view = WeaponView(character, weapon)
             embed = genshin_character_embed(character)
             await interaction.followup.send(embed=embed, view=view)
@@ -38,7 +36,6 @@ class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Rel
         await interaction.response.defer()
         characters = await get_all_characters()
         if characters:
-            characters = [character.to_mongo() for character in characters]
             view = AllCharactersView(characters)
             embed = genshin_character_embed(
                 characters[randint(0, len(characters)-1)])

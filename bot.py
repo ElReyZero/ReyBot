@@ -18,13 +18,16 @@ from datefinder import find_dates
 import requests
 
 # Custom imports
-from database.management.connection import set_connections
+from database.config import init_db
+# Setting up the config
+import config as cfg
+cfg.get_config()
+init_db()
 from discord_tools.modals import EventModal
 from utils.logger import define_log, StreamToLogger, exception_to_log
 from utils.ps2 import continent_to_id, name_to_server_ID
 from utils.timezones import get_IANA
-from utils.exit_handlers import main_exit_handler
-import config as cfg
+
 # Discord Tools
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict
@@ -73,7 +76,7 @@ async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
-    if cfg.connections:
+    if cfg.database["host"] != "":
         update_genshin_chars.start()
 
 @bot.event
@@ -375,13 +378,6 @@ async def remove_player_from_event(interaction: discord.Interaction, id_evento:s
 if __name__ == "__main__":
     # Defining the logger
     console_handler = setup_log()
-    # Setting up the config
-    cfg.get_config()
-    cfg.connections = set_connections()
-    if cfg.connections:
-        main_exit_handler(cfg.connections)
-        cfg.connections.connect("genshin")
-
     # Group commands
     bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
     bot.run(cfg.DISCORD_TOKEN, log_handler=console_handler)

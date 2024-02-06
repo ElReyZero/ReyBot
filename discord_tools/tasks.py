@@ -1,5 +1,5 @@
 from discord.ext.tasks import loop
-from database.query_scripts.genshin import push_characters
+from database.crud.genshin import push_characters
 import config as cfg
 import genshin as gi
 

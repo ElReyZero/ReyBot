@@ -1,68 +1,65 @@
-from mongoengine import *
-import config as cfg
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.schema import MetaData
 
-class Wishes(Document):
-    type = StringField(required=True)
-    name = StringField(required=True)
-    time = DateTimeField(required=True)
-    stars = IntField(required=True)
-    pity = IntField(required=True)
-    roll_no = IntField(required=True)
-    group = IntField(required=True)
-    banner = StringField(required=True)
-    wish_type = StringField(required=True)
+GenshinBase = declarative_base(metadata=MetaData(schema='genshin'))
 
-    meta = {
-        'indexes': [
-            {'fields': ('name', 'time', 'roll_no'), 'unique': True, 'dropDups': True}
-        ],
-        "db_alias": "genshin"
-    }
+class Wish(GenshinBase):
+    __tablename__ = 'wishes'
 
-class Constellations(Document):
-    constellation_id = IntField(required=True)
-    character_name = StringField(required=True)
-    icon = StringField(required=True)
-    name = StringField(required=True)
-    effect = StringField(required=True)
-    activated = BooleanField(required=True)
+    id = Column(Integer, primary_key=True)
+    type = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    time = Column(DateTime, primary_key=True, nullable=False)
+    stars = Column(Integer, nullable=False)
+    pity = Column(Integer, nullable=False)
+    roll_no = Column(Integer, primary_key=True, nullable=False)
+    group = Column(Integer, nullable=False)
+    banner = Column(String, nullable=False)
+    wish_type = Column(String, nullable=False)
 
-    meta = {"db_alias": "genshin"}
+class Constellation(GenshinBase):
+    __tablename__ = 'constellations'
 
-class Weapons(Document):
-    weapon_id = IntField(required=True)
-    icon = StringField(required=True)
-    name = StringField(required=True)
-    rarity = IntField(required=True)
-    description = StringField(required=True)
-    level = IntField(required=True)
-    type = StringField(required=True)
-    ascension = IntField(required=True)
-    refinement = IntField(required=True)
+    id = Column(Integer, primary_key=True)
+    constellation_id = Column(Integer, nullable=False)
+    character_name = Column(String, nullable=False)
+    icon = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    effect = Column(String, nullable=False)
+    activated = Column(Boolean, nullable=False)
+    character_id = Column(Integer, ForeignKey('characters.id'))
 
-    meta = {
-        'indexes': [
-            {'fields': ('weapon_id',), 'unique': True, 'dropDups': True}
-        ],
-        "db_alias": "genshin"
-    }
 
-class Characters(Document):
-    character_id = IntField(required=True)
-    name = StringField(required=True)
-    element = StringField(required=True)
-    rarity = IntField(required=True)
-    icon = StringField(required=True)
-    collab = BooleanField(required=True)
-    level = IntField(required=True)
-    friendship = IntField(required=True)
-    constellation_level = IntField(required=True)
-    constellations = ListField(ReferenceField(Constellations))
-    weapon = ReferenceField(Weapons)
+class Weapon(GenshinBase):
+    __tablename__ = 'weapons'
 
-    meta = {
-        'indexes': [
-            {'fields': ('character_id',), 'unique': True, 'dropDups': True}
-        ],
-        "db_alias": "genshin"
-    }
+    id = Column(Integer, primary_key=True)
+    weapon_id = Column(Integer, nullable=False, unique=True)
+    icon = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    rarity = Column(Integer, nullable=False)
+    description = Column(String, nullable=False)
+    level = Column(Integer, nullable=False)
+    type = Column(String, nullable=False)
+    ascension = Column(Integer, nullable=False)
+    refinement = Column(Integer, nullable=False)
+
+class Character(GenshinBase):
+    __tablename__ = 'characters'
+
+    id = Column(Integer, primary_key=True)
+    character_id = Column(Integer, nullable=False, unique=True)
+    name = Column(String, nullable=False)
+    element = Column(String, nullable=False)
+    rarity = Column(Integer, nullable=False)
+    icon = Column(String, nullable=False)
+    collab = Column(Boolean, nullable=False)
+    level = Column(Integer, nullable=False)
+    friendship = Column(Integer, nullable=False)
+    constellation_level = Column(Integer, nullable=False)
+    weapon_id = Column(Integer, ForeignKey('weapons.id'))
+
+    constellations = relationship('Constellation', backref='character', cascade='all, delete-orphan')
+
+    weapon = relationship('Weapon', backref='character')

@@ -32,4 +32,4 @@ reybot-deploy:
   only:
     - master
   script:
-    - docker-compose up -d
+    - docker-compose up

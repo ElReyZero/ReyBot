@@ -258,17 +258,17 @@ async def get_PS2_character_embed(char_name: str) -> Embed:
 
 
 def genshin_character_embed(char_data: dict) -> Embed:
-    element_color = ElementColor[char_data['element']]
-    element_emote = ElementEmote[char_data['element']]
-    element = f"Element: {char_data['element']} {element_emote.value}\n"
-    level = f"Level: {char_data['level']}\n"
-    rarity = "Rarity: "+":star: " * char_data['rarity'] + "\n"
-    friendship_lvl = f"Friendship Level <:friendship_lvl:1017420726992654356>: {char_data['friendship']}\n"
-    constellation_lvl = f"Constellation Level: {char_data['constellation_level']}"
+    element_color = ElementColor[char_data.element]
+    element_emote = ElementEmote[char_data.element]
+    element = f"Element: {char_data.element} {element_emote.value}\n"
+    level = f"Level: {char_data.level}\n"
+    rarity = "Rarity: "+":star: " * char_data.rarity + "\n"
+    friendship_lvl = f"Friendship Level <:friendship_lvl:1017420726992654356>: {char_data.friendship}\n"
+    constellation_lvl = f"Constellation Level: {char_data.constellation_level}"
     desc = element + rarity + level + friendship_lvl + constellation_lvl
     embed = Embed(color=element_color.value,
-                  title=f"{char_data['name']}", description=desc)
-    embed.set_image(url=char_data["icon"])
+                  title=f"{char_data.name}", description=desc)
+    embed.set_image(url=char_data.icon)
 
     return embed
 

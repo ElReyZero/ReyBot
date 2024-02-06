@@ -22,7 +22,7 @@ class WeaponView(CharWeaponView):
 
     def add_buttons(self):
         button = Button(
-            label=f'Weapon: {self.weapon["name"]}', style=ButtonStyle.primary, custom_id="weapon")
+            label=f'Weapon: {self.weapon.name}', style=ButtonStyle.primary, custom_id="weapon")
         button.callback = self.get_weapon
         self.add_item(button)
 
@@ -35,7 +35,7 @@ class CharacterView(CharWeaponView):
 
     def add_buttons(self):
         button = Button(
-            label=f'Character: {self.character["name"]}', style=ButtonStyle.primary, custom_id="weapon")
+            label=f'Character: {self.character.name}', style=ButtonStyle.primary, custom_id="weapon")
         button.callback = self.get_character
         self.add_item(button)
 
@@ -46,40 +46,45 @@ class CharacterView(CharWeaponView):
 
 class AllCharactersView(View):
 
-    def __init__(self, characters, extra_options=[]):
+    def __init__(self, characters):
         super().__init__()
-        self.characters = characters
-        self.characters.sort(key=lambda x: x["name"])
-        self.options = list()
-        for character in characters:
-            self.options.append(SelectOption(label=character["name"]))
 
-        moreOption = SelectOption(label="More...")
-        if len(extra_options) > 0 and len(extra_options) != 24:
-            self.extra_options = self.options[:24]
-            self.options = extra_options
-            if moreOption not in self.extra_options:
-                self.options.append(moreOption)
-        elif len(self.options) > 25:
-            self.extra_options = self.options[24:]
-            self.options = self.options[:24]
-            if moreOption not in self.options:
-                self.options.append(moreOption)
+        self.characters = characters
+        self.characters.sort(key=lambda x: x.name)
+        self.per_page = 23
+        self.current_page = 0
+        self.options = []
+
+        self.update_options()
+
+    def update_options(self):
+        start_idx = self.current_page * self.per_page
+        end_idx = (self.current_page + 1) * self.per_page
+
+        self.options = [SelectOption(label=character.name) for character in self.characters[start_idx:end_idx]]
+
+        more_option = SelectOption(label="More...")
+
+        if len(self.characters) > end_idx or self.current_page > 0:
+            self.options.append(more_option)
 
         select = Select(placeholder="Select a character",
                         options=self.options, custom_id="character_select")
         select.callback = self.get_character
+        self.clear_items()
         self.add_item(select)
 
     async def get_character(self, interaction: Interaction):
         if interaction.data["values"][0] == "More...":
-            select = Select(placeholder="Select a character",
-                            options=self.extra_options, custom_id="character_select")
-            select.callback = self.get_character
-            await interaction.response.edit_message(view=AllCharactersView(self.characters, extra_options=self.extra_options))
-            return
-        for character in self.characters:
-            if character["name"] == interaction.data["values"][0]:
-                break
-        embed = genshin_character_embed(character)
-        await interaction.response.edit_message(embed=embed, view=AllCharactersView(self.characters))
+            self.current_page += 1
+            if self.current_page * self.per_page >= len(self.characters):
+                # If it's the last page, reset to the first page
+                self.current_page = 0
+            self.update_options()
+            await interaction.response.edit_message(view=self)
+        else:
+            for character in self.characters:
+                if character.name == interaction.data["values"][0]:
+                    break
+            embed = genshin_character_embed(character)
+            await interaction.response.edit_message(embed=embed, view=self)

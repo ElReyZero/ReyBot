@@ -48,7 +48,6 @@ genshin_data = {
     "uuid": 0
 }
 
-connections = None
 
 SERVICE_ID = None
 
@@ -69,6 +68,9 @@ def set_config_vars():
     SERVICE_ID = os.environ["SERVICE_ID"]
     global database
     database['host'] = os.environ["DB_HOST"]
+    database['name'] = os.environ["DB_NAME"]
+    database['user'] = os.environ["DB_USER"]
+    database['password'] = os.environ["DB_PASSWORD"]
     global genshin_data
     genshin_data['ltuid'] = os.environ["GI_LTUID"]
     genshin_data['ltoken'] = os.environ["GI_LTOKEN"]

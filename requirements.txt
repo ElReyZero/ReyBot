@@ -3,7 +3,6 @@ openpyxl
 pandas
 pytz
 datefinder
-mongoengine
 dnspython
 tzlocal
 genshin
@@ -11,3 +10,5 @@ auraxium
 deprecated
 pydantic<2
 discord.py
+sqlalchemy
+psycopg2
