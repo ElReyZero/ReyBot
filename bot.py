@@ -1,42 +1,39 @@
-# discord.py
-import discord
-from discord.ext import commands
-from discord.ui import Button, View
-
-# Other modules
-from json import JSONDecodeError
-from traceback import format_exception
-from datetime import datetime, timedelta
-from typing import Literal
-from datetime import timezone
+import asyncio
 import logging
 import logging.handlers
 import sys
-# Dependency imports
-from pytz import timezone as pytz_tz
-from datefinder import find_dates
-import requests
+from datetime import datetime, timedelta, timezone
+from json import JSONDecodeError
+from traceback import format_exception
+from typing import Literal
 
-# Custom imports
-from database.config import init_db
+import discord
+import requests
+from datefinder import find_dates
+from discord.ext import commands
+from discord.ui import Button, View
+from pytz import timezone as pytz_tz
+
 # Setting up the config
 import config as cfg
+from database.config import init_db
+
 cfg.get_config()
 init_db()
+from discord.errors import NotFound
+
+from command_groups.genshin_commands import GenshinDB
+from command_groups.event_commands import SubscribeToEvents
+from discord_tools.classes import AlertReminder
+from discord_tools.data import alert_reminder_dict, event_dict
+from discord_tools.embeds import (event_embed, get_census_health,
+                                  get_PS2_character_embed)
+from discord_tools.literals import Timezones
 from discord_tools.modals import EventModal
-from utils.logger import define_log, StreamToLogger, exception_to_log
+from discord_tools.tasks import update_genshin_chars, update_server_panels
+from utils.logger import StreamToLogger, define_log, exception_to_log
 from utils.ps2 import continent_to_id, name_to_server_ID
 from utils.timezones import get_IANA
-
-# Discord Tools
-from discord_tools.classes import AlertReminder
-from discord_tools.data import alert_reminder_dict
-from discord_tools.embeds import get_server_panel, get_census_health, get_PS2_character_embed, event_embed
-from discord_tools.literals import Timezones
-from command_groups.genshin_commands import GenshinDB
-from discord_tools.tasks import update_genshin_chars
-from discord_tools.data import event_dict
-from discord.errors import NotFound
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
 log = logging.getLogger('discord')
@@ -78,6 +75,7 @@ async def on_ready():
     print(bot.user.id)
     if cfg.database["host"] != "":
         update_genshin_chars.start()
+        update_server_panels.start(bot)
 
 @bot.event
 async def on_message(message):
@@ -238,33 +236,6 @@ async def check_personal_reminders(interaction: discord.Interaction):
     except KeyError:
         await interaction.response.send_message(f"{interaction.user.mention} You do not have any alert reminders set", ephemeral=True)
 
-@bot.tree.command(name="server_panel", description="Check the active alerts and open continents on a server. Default: Emerald")
-async def check_server_panel(interaction: discord.Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
-    try:
-        embed = get_server_panel(server)
-        if embed:
-            refresh = Button(
-                label="Refresh", custom_id="refresh_alerts", style=discord.ButtonStyle.blurple)
-
-            async def refresh_callback(interaction):
-                await interaction.response.defer()
-                try:
-                    embed = get_server_panel(server)
-                    await interaction.edit_original_response(embed=embed)
-                except discord.errors.NotFound:
-                    pass
-                except JSONDecodeError:
-                    await interaction.followup.send("Can't fetch data from Honu (It's most likely down). Please try again later.")
-                    return
-            refresh.callback = refresh_callback
-            view = View(timeout=None)
-            view.add_item(refresh)
-            await interaction.response.send_message(embed=embed, view=view)
-        else:
-            await interaction.response.send_message(f"Can't fetch data from Honu or ps2alerts.com (It's most likely down). Please try again later.")
-    except JSONDecodeError:
-        await interaction.followup.send("Can't fetch data from Honu (It's most likely down). Please try again later.")
-        return
 
 @bot.tree.command(name="send_timestamp", description="Send a timestamp for an event given a time, date and event name")
 async def send_timestamp(interaction: discord.Interaction, event_name: str, date: str, time: str, timezone: Timezones):
@@ -375,9 +346,12 @@ async def remove_player_from_event(interaction: discord.Interaction, id_evento:s
         await interaction.response.send_message(f"{interaction.user.mention} Solo puedes remover jugadores en el canal donde se creó el evento", ephemeral=True)
         return
 
+async def main():
+    setup_log()
+    async with bot:
+        await bot.add_cog(SubscribeToEvents())
+        await bot.add_cog(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
+        await bot.start(cfg.DISCORD_TOKEN)
+
 if __name__ == "__main__":
-    # Defining the logger
-    console_handler = setup_log()
-    # Group commands
-    bot.tree.add_command(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))
-    bot.run(cfg.DISCORD_TOKEN, log_handler=console_handler)
+    asyncio.run(main())

@@ -1,13 +1,14 @@
 from random import randint
 from discord import app_commands, Attachment, Interaction
+from discord.ext import commands
 import config as cfg
 import genshin as gi
-from database.crud.genshin import push_characters, push_all_wishes, get_character_and_weapon, get_weapon_by_obj_id, get_all_characters
+from database.query.genshin import push_characters, push_all_wishes, get_character_and_weapon, get_all_characters
 from discord_tools.embeds import genshin_character_embed
 from discord_tools.views.genshin_views import AllCharactersView, WeaponView
 import os
 
-class GenshinDB(app_commands.Group, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
+class GenshinDB(commands.GroupCog, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
 
     @app_commands.command(name="push_characters", description="Push all current characters to the database")
     async def push_characters(self, interaction: Interaction):
