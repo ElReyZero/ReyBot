@@ -17,7 +17,7 @@ async def update_genshin_chars():
     await push_characters(chars, task=True)
 
 
-@loop(seconds=5)
+@loop(minutes=5)
 async def update_server_panels(bot):
 
     async def update_server_panel(server, channel_id, message_id):
