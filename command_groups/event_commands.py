@@ -22,8 +22,11 @@ class SubscribeToEvents(commands.GroupCog, name="server_panel", description="Sub
         if current_message:
             await interaction.followup.send(f"{interaction.user.mention} This channel is already subscribed to server panel for {server}", ephemeral=True)
             return
-
-        embed = get_server_panel(server)
+        try:
+            embed = get_server_panel(server, is_subscription=True)
+        except JSONDecodeError:
+            await interaction.followup.send("Can't fetch data from Honu (It's most likely down). Please try again later.")
+            return
         await interaction.followup.send(f"{interaction.user.mention} Subscribed this channel to server panel for {server}", ephemeral=True)
         message = await interaction.channel.send(embed=embed)
         create_server_panel_subscription(server, channel_id, message.id)
