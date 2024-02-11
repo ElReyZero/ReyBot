@@ -1,4 +1,6 @@
+import asyncio
 from json import JSONDecodeError
+import backoff
 from discord.errors import NotFound
 from discord.ext.tasks import loop
 from database.query.genshin import push_characters
@@ -20,6 +22,7 @@ async def update_genshin_chars():
 @loop(minutes=5)
 async def update_server_panels(bot):
 
+    @backoff.on_exception(backoff.expo, (JSONDecodeError), max_time=60)
     async def update_server_panel(server, channel_id, message_id):
         try:
             channel = bot.get_channel(channel_id)
@@ -28,10 +31,12 @@ async def update_server_panels(bot):
             await message.edit(embed=embed)
         except NotFound:
             delete_server_panel_subscription(server, channel_id)
+        except AttributeError:
+            pass
         except JSONDecodeError:
             pass
 
     messages = get_all_server_panels()
 
     for message in messages:
-        await update_server_panel(message.server, message.channel_id, message.message_id)
+        asyncio.create_task(update_server_panel(message.server, message.channel_id, message.message_id))

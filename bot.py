@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import logging.handlers
+import os
+import signal
 import sys
 from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
@@ -9,6 +11,7 @@ from typing import Literal
 
 import discord
 import requests
+import sentry_sdk
 from datefinder import find_dates
 from discord.ext import commands
 from discord.ui import Button, View
@@ -22,8 +25,8 @@ cfg.get_config()
 init_db()
 from discord.errors import NotFound
 
-from command_groups.genshin_commands import GenshinDB
 from command_groups.event_commands import SubscribeToEvents
+from command_groups.genshin_commands import GenshinDB
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict, event_dict
 from discord_tools.embeds import (event_embed, get_census_health,
@@ -91,7 +94,6 @@ async def on_app_command_error(interaction: discord.Interaction, error: Exceptio
     """
     # Depending on the type of exception, a different message will be sent
     traceback_message = format_exception(type(error), error, error.__traceback__)
-    #exception_to_log(log, traceback_message)
     exception_to_log(log, error)
     try:
         original = error.original
@@ -107,6 +109,8 @@ async def on_app_command_error(interaction: discord.Interaction, error: Exceptio
         await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
     except discord.errors.InteractionResponded:
         pass
+    if cfg.SENTRY_DSN:
+        sentry_sdk.capture_exception(error)
     # If the DEBUG variable is set, the bot will DM the main admin with the whole traceback. It's meant for debug purposes only
     if cfg.DEBUG:
         user = await bot.fetch_user(cfg.MAIN_ADMIN_ID)
@@ -346,8 +350,25 @@ async def remove_player_from_event(interaction: discord.Interaction, id_evento:s
         await interaction.response.send_message(f"{interaction.user.mention} Solo puedes remover jugadores en el canal donde se creó el evento", ephemeral=True)
         return
 
+async def exit_handler():
+    if cfg.SENTRY_DSN:
+        sentry_sdk.flush()
+        log.info("Sentry has been flushed")
+
+    log.info("Shutting down bot...")
+    await bot.close()
+    log.info("Bot has been shut down")
+    sys.exit(0)
+
 async def main():
+
+    signal.signal(signal.SIGINT, lambda sig, frame: asyncio.create_task(exit_handler()))
+    signal.signal(signal.SIGTERM, lambda sig, frame: asyncio.create_task(exit_handler()))
+
     setup_log()
+    if cfg.SENTRY_DSN:
+        sentry_sdk.init(dsn=cfg.SENTRY_DSN, enable_tracing=True, traces_sample_rate=1.0)
+
     async with bot:
         await bot.add_cog(SubscribeToEvents())
         await bot.add_cog(GenshinDB(), guild=discord.Object(id=cfg.MAIN_GUILD))

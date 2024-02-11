@@ -32,6 +32,9 @@ MAIN_ADMIN_ID = None
 DISCORD_TOKEN = None
 MAIN_GUILD = None
 DEBUG = False
+
+SENTRY_DSN = None
+
 admin_ids = []
 
 #: Contains database parameters.
@@ -66,6 +69,9 @@ def set_config_vars():
     MAIN_GUILD = os.environ["MAIN_GUILD"]
     global SERVICE_ID
     SERVICE_ID = os.environ["SERVICE_ID"]
+    global SENTRY_DSN
+    SENTRY_DSN = os.environ["SENTRY_DSN"]
+
     global database
     database['host'] = os.environ["DB_HOST"]
     database['name'] = os.environ["DB_NAME"]

@@ -12,3 +12,5 @@ pydantic<2
 discord.py
 sqlalchemy
 psycopg2
+backoff
+sentry-sdk
