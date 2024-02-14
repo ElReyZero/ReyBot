@@ -3,10 +3,12 @@ from json import JSONDecodeError
 import backoff
 from discord.errors import NotFound
 from discord.ext.tasks import loop
+
 from database.query.genshin import push_characters
 from database.query.subscriptions import get_all_server_panels, delete_server_panel_subscription
 
 from discord_tools.embeds import get_server_panel
+from discord_tools.exceptions import RetryException
 
 import config as cfg
 import genshin as gi
@@ -22,18 +24,19 @@ async def update_genshin_chars():
 @loop(minutes=5)
 async def update_server_panels(bot):
 
-    @backoff.on_exception(backoff.expo, (JSONDecodeError), max_time=60)
+    @backoff.on_exception(backoff.expo, (JSONDecodeError, ZeroDivisionError, RetryException), max_tries=5)
     async def update_server_panel(server, channel_id, message_id):
         try:
             channel = bot.get_channel(channel_id)
             message = await channel.fetch_message(message_id)
             embed = get_server_panel(server, is_subscription=True)
-            await message.edit(embed=embed)
+            if embed:
+                await message.edit(embed=embed)
+            else:
+                raise RetryException(f"Embed is None for {server.name}")
         except NotFound:
             delete_server_panel_subscription(server, channel_id)
         except AttributeError:
-            pass
-        except JSONDecodeError:
             pass
 
     messages = get_all_server_panels()
