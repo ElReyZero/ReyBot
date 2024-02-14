@@ -97,12 +97,13 @@ def get_server_panel(server: str, is_subscription=False) -> Optional[Embed]:
                     embed.add_field(name="Territory Control", value=territory, inline=True)
                     embed.add_field(name="Population (Continent)", value=population, inline=True)
             if data_pop.get('total') == 0:
-                population_global = "No players"
-            population_global = f"Total: {data_pop.get('total')}\n" \
-                                f"<:VS:1014970179291205745> VS: {round(data_pop.get('vs') / data_pop.get('total') * 100, 2)}%\n" \
-                                f"<:NC:1014970942235099177> NC: {round(data_pop.get('nc') / data_pop.get('total') * 100, 2)}%\n" \
-                                f"<:TR:1014970962493575262> TR: {round(data_pop.get('tr') / data_pop.get('total') * 100, 2)}%\n" \
-                                f"<:NSO:1014970981556703362> NS: {round(data_pop.get('ns') / data_pop.get('total') * 100, 2)}%"
+                population_global = "Total: No players, either the server is deserted or in maintenance"
+            else:
+                population_global = f"Total: {data_pop.get('total')}\n" \
+                                    f"<:VS:1014970179291205745> VS: {round(data_pop.get('vs') / data_pop.get('total') * 100, 2)}%\n" \
+                                    f"<:NC:1014970942235099177> NC: {round(data_pop.get('nc') / data_pop.get('total') * 100, 2)}%\n" \
+                                    f"<:TR:1014970962493575262> TR: {round(data_pop.get('tr') / data_pop.get('total') * 100, 2)}%\n" \
+                                    f"<:NSO:1014970981556703362> NS: {round(data_pop.get('ns') / data_pop.get('total') * 100, 2)}%"
             embed.add_field(name="Population (Global)", value=population_global, inline=False)
             if is_subscription:
                 embed.set_footer(text="Updates every 5 minutes - Last updated")

@@ -24,7 +24,7 @@ async def update_genshin_chars():
 @loop(minutes=5)
 async def update_server_panels(bot):
 
-    @backoff.on_exception(backoff.expo, (JSONDecodeError, ZeroDivisionError, RetryException), max_tries=5)
+    @backoff.on_exception(backoff.expo, (JSONDecodeError, RetryException), max_tries=5)
     async def update_server_panel(server, channel_id, message_id):
         try:
             channel = bot.get_channel(channel_id)
