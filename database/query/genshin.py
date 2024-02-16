@@ -6,7 +6,7 @@ from database.config import engine
 from utils.threading import to_thread
 import logging
 
-log = logging.getLogger('discord')
+log = logging.getLogger('ReyBot')
 
 ART_ICON_PATH = "https://enka.network/ui/UI_Gacha_AvatarImg_"
 

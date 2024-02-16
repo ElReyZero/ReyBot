@@ -4,7 +4,7 @@ from database.models.genshin import GenshinBase
 from database.models.subscriptions import BotEventsBase
 import config as cfg
 
-log = logging.getLogger('discord')
+log = logging.getLogger('ReyBot')
 
 engine = None
 

@@ -4,6 +4,7 @@ import logging.handlers
 import os
 import signal
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
 from traceback import format_exception
@@ -39,7 +40,7 @@ from utils.ps2 import continent_to_id, name_to_server_ID
 from utils.timezones import get_IANA
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
-log = logging.getLogger('discord')
+log = logging.getLogger('ReyBot')
 
 description = "A multipurpose bot made by ElReyZero"
 intents = discord.Intents.default()
@@ -349,6 +350,37 @@ async def remove_player_from_event(interaction: discord.Interaction, id_evento:s
     except NotFound:
         await interaction.response.send_message(f"{interaction.user.mention} Solo puedes remover jugadores en el canal donde se creó el evento", ephemeral=True)
         return
+
+@commands.dm_only()
+@bot.tree.command(name="restart_bot", description="Restarts the bot manually. Admin only.")
+async def restart_bot(interaction: discord.Interaction):
+    def check(m):
+        return (m.content.lower() == "y" or m.content.lower() == "n" or m.content.lower() == "yes" or m.content.lower() == "no")
+
+    def restart():
+        time.sleep(5)
+        os.execv(sys.executable, ['python3'] + sys.argv)
+
+    if str(interaction.user.id) not in cfg.admin_ids:
+        log.info(f"{interaction.user.id} tried to restart the bot")
+        await interaction.response.send_message("You don't have permission to use this command!")
+        return
+
+    try:
+        await interaction.response.send_message("Are you sure you want to restart the bot? (yes/no)")
+        msg = await bot.wait_for("message", check=check, timeout=60)
+        if msg.content.lower() == "no" or msg.content.lower() == "n":
+            await interaction.followup.send("Restart cancelled")
+            return
+        else:
+            await interaction.followup.send("Restarting...")
+            loop = asyncio.get_event_loop()
+            loop.run_in_executor(None, restart)
+            await exit_handler()
+    except asyncio.TimeoutError:
+        await interaction.followup.send("Restart cancelled due to timeout...")
+        return
+
 
 async def exit_handler():
     if cfg.SENTRY_DSN:
