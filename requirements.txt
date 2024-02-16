@@ -8,7 +8,7 @@ tzlocal
 genshin
 auraxium
 deprecated
-pydantic<2
+pydantic
 discord.py
 sqlalchemy
 psycopg2

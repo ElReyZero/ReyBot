@@ -18,6 +18,14 @@ def init_db():
         database=cfg.database["name"]
     )
     global engine
-    engine = create_engine(DATABASE_URL)
+    engine = create_engine(DATABASE_URL,
+                           pool_pre_ping=True,
+                           connect_args={
+                               "keepalives": 1,
+                               "keepalives_idle": 30,
+                               "keepalives_interval": 10,
+                               "keepalives_count": 5
+                               }
+                           )
     GenshinBase.metadata.create_all(engine)
     BotEventsBase.metadata.create_all(engine)
