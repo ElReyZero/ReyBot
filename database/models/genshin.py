@@ -1,3 +1,4 @@
+#pylint: disable=too-few-public-methods
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.schema import MetaData

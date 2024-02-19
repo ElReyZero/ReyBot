@@ -1,12 +1,14 @@
+import os
 from random import randint
 from discord import app_commands, Attachment, Interaction
 from discord.ext import commands
-import config as cfg
 import genshin as gi
+
+import config as cfg
 from database.query.genshin import push_characters, push_all_wishes, get_character_and_weapon, get_all_characters
 from discord_tools.embeds import genshin_character_embed
 from discord_tools.views.genshin_views import AllCharactersView, WeaponView
-import os
+
 
 class GenshinDB(commands.GroupCog, name="genshin_db", description="Commands Related to Genshin Impact's custom persistence"):
 
@@ -42,7 +44,7 @@ class GenshinDB(commands.GroupCog, name="genshin_db", description="Commands Rela
                 characters[randint(0, len(characters)-1)])
             await interaction.followup.send(embed=embed, view=view)
         else:
-            await interaction.followup.send(f"No characters found", ephemeral=True)
+            await interaction.followup.send("No characters found", ephemeral=True)
 
     @app_commands.command(name="push_wishes", description="Push an excel file of all wishes to the database")
     async def get_wishes(self, interaction: Interaction, wishes_file: Attachment):

@@ -1,3 +1,4 @@
+#pylint: disable=too-few-public-methods
 import uuid
 from sqlalchemy import Column, String, BigInteger
 from sqlalchemy.orm import declarative_base

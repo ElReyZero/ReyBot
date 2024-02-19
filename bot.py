@@ -1,3 +1,4 @@
+# pylint: disable=anomalous-backslash-in-string,wrong-import-position
 import asyncio
 import logging
 import logging.handlers
@@ -5,17 +6,18 @@ import os
 import signal
 import sys
 import time
+from typing import Literal
 from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
 from traceback import format_exception
-from typing import Literal
 
 import discord
+from discord.errors import NotFound
+from discord.ext import commands
+from discord.ui import Button, View
 import requests
 import sentry_sdk
 from datefinder import find_dates
-from discord.ext import commands
-from discord.ui import Button, View
 from pytz import timezone as pytz_tz
 
 # Setting up the config
@@ -24,29 +26,30 @@ from database.config import init_db
 
 cfg.get_config()
 init_db()
-from discord.errors import NotFound
 
 from command_groups.event_commands import SubscribeToEvents
 from command_groups.genshin_commands import GenshinDB
 from discord_tools.classes import AlertReminder
 from discord_tools.data import alert_reminder_dict, event_dict
 from discord_tools.embeds import (event_embed, get_census_health,
-                                  get_PS2_character_embed)
+                                  get_ps2_character_embed)
 from discord_tools.literals import Timezones
 from discord_tools.modals import EventModal
 from discord_tools.tasks import update_genshin_chars, update_server_panels
 from utils.logger import StreamToLogger, define_log, exception_to_log
-from utils.ps2 import continent_to_id, name_to_server_ID
-from utils.timezones import get_IANA
+from utils.ps2 import continent_to_id, name_to_server_id
+from utils.timezones import get_iana
+
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
 log = logging.getLogger('ReyBot')
 
-description = "A multipurpose bot made by ElReyZero"
+BOT_DESC = "A multipurpose bot made by ElReyZero"
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='$',
-                   description=description, intents=intents)
+                   description=BOT_DESC, intents=intents)
+
 
 async def get_admins() -> list:
     """Simple function that retrieves the admin User objects from the discord api.
@@ -56,6 +59,7 @@ async def get_admins() -> list:
     """
     return [await bot.fetch_user(admin) for admin in cfg.admin_ids]
 
+
 def setup_log():
     console_handler, file_handler, formatter = define_log()
     # Redirect stdout and stderr to log:
@@ -64,6 +68,7 @@ def setup_log():
     log.addHandler(file_handler)
     log.propagate = True
     discord.utils.setup_logging(handler=console_handler, formatter=formatter, level=logging.INFO)
+
 
 @bot.event
 async def on_ready():
@@ -81,12 +86,14 @@ async def on_ready():
         update_genshin_chars.start()
         update_server_panels.start(bot)
 
+
 @bot.event
 async def on_message(message):
     if message.content.startswith("https://twitter.com/") or message.content.startswith("https://x.com/"):
         content = message.content.replace("https://twitter.com", "https://fxtwitter.com").replace("https://x.com", "https://fxtwitter.com")
         await message.delete()
         await message.channel.send(content)
+
 
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: Exception):
@@ -103,11 +110,14 @@ async def on_app_command_error(interaction: discord.Interaction, error: Exceptio
     if type(original).__name__ == "ConnectionError":
         await interaction.response.send_message(f"{interaction.user.mention} The PS2 API timed out, please try again!")
         return
-    elif type(original).__name__ == "403 Forbidden" or isinstance(original, discord.errors.Forbidden):
-        await interaction.response.send_message(f"{interaction.user.mention} Your DM's are disabled.\nPlease enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again.")
+    if type(original).__name__ == "403 Forbidden" or isinstance(original, discord.errors.Forbidden):
+        message = f"{interaction.user.mention} Your DM's are disabled." \
+            "Please enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again."
+
+        await interaction.response.send_message(message)
         return
     try:
-        await interaction.response.send_message(("Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{}*").format(type(original).__name__))
+        await interaction.response.send_message(f"Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{type(original).__name__}*")
     except discord.errors.InteractionResponded:
         pass
     if cfg.SENTRY_DSN:
@@ -124,14 +134,15 @@ async def on_app_command_error(interaction: discord.Interaction, error: Exceptio
                 etype, value, tb = sys.exc_info()
                 traceback_message = "".join(format_exception(etype, value, tb))
                 await user.send(f"Exception: {traceback_message}")
-            except discord.errors.HTTPException:
+            except discord.errors.HTTPException as e:
                 etype, value, tb = sys.exc_info()
                 traceback_message = "".join(format_exception(etype, value, tb))
                 await user.send(f"Exception: {traceback_message}")
-                raise error
+                raise error from e
             raise error
         except discord.errors.HTTPException:
             pass
+
 
 @commands.dm_only()
 @bot.command(aliases=["logs", "getLogs"])
@@ -146,35 +157,38 @@ async def get_bot_logs(ctx: commands.Context):
     except FileNotFoundError:
         await ctx.send("The log file doesn't exist!")
 
+# pylint: disable=line-too-long
+
+
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
 async def alert_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes: int = 5, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
     """Command that sets up a reminder before an alert ends.
     """
     # Check if the user had inputs for minutes, it also checks if it's valid
-    minutes = 5 if minutes == None else minutes
+    minutes = 5 if minutes is None else minutes
     if minutes < 1:
         await interaction.response.send_message(f"{interaction.user.mention} Please enter a valid number of minutes.", ephemeral=True)
         return
 
     # Since the input has the continent and server names, they must be converted to their respective census id
     cont_id = continent_to_id(continent)
-    server_id = name_to_server_ID(server, activeServer=False)
-    req = requests.get(f"https://api.ps2alerts.com/instances/active?world={server_id}&zone={cont_id}")
+    server_id = name_to_server_id(server, active_server=False)
+    req = requests.get(f"https://api.ps2alerts.com/instances/active?world={server_id}&zone={cont_id}", timeout=90)
     data = req.json()
     if len(data) > 0:
         data = data[0]
         # Formatting and replacing timezones
-        startTime = data['timeStarted'][:-6]
-        startTime = datetime.strptime(startTime, "%Y-%m-%dT%H:%M:%S")
-        startTime = startTime.replace(tzinfo=timezone.utc).astimezone(tz=None)
-        endTime = startTime + timedelta(minutes=90)
+        start_time = data['timeStarted'][:-6]
+        start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
+        start_time = start_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        end_time = start_time + timedelta(minutes=90)
 
-        if datetime.now() + timedelta(minutes=minutes) >= endTime.replace(tzinfo=None):
+        if datetime.now() + timedelta(minutes=minutes) >= end_time.replace(tzinfo=None):
             await interaction.response.send_message(f"There is less than {minutes} minutes in the alert, you cannot set a reminder for that!")
             return
 
         # Setting up the alert reminder
-        reminder = AlertReminder(continent, minutes, endTime, interaction.user)
+        reminder = AlertReminder(continent, minutes, end_time, interaction.user)
         reminder.schedule_reminder(interaction)
         try:
             reminders = alert_reminder_dict[interaction.user.id]
@@ -184,11 +198,12 @@ async def alert_reminder(interaction: discord.Interaction, continent: Literal["I
                     return
             alert_reminder_dict[interaction.user.id].append(reminder)
         except KeyError:
-            alert_reminder_dict[interaction.user.id] = list()
+            alert_reminder_dict[interaction.user.id] = []
             alert_reminder_dict[interaction.user.id].append(reminder)
-        await interaction.response.send_message(f"{interaction.user.mention} You have successfully set a reminder for {continent}\nThe alert will end <t:{int(endTime.timestamp())}:R>\nReminder set to {minutes} minutes before it ends")
+        await interaction.response.send_message(f"{interaction.user.mention} You have successfully set a reminder for {continent}\nThe alert will end <t:{int(end_time.timestamp())}:R>\nReminder set to {minutes} minutes before it ends")
     else:
         await interaction.response.send_message(f"{interaction.user.mention} There are no active alerts for {continent}", ephemeral=True)
+
 
 @bot.tree.command(name="remove_alert_reminder", description="Remove an alert reminder")
 async def remove_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"]):
@@ -201,6 +216,7 @@ async def remove_reminder(interaction: discord.Interaction, continent: Literal["
                 await interaction.response.send_message(f"Your alert reminder for {continent} has been removed", ephemeral=True)
     except KeyError:
         await interaction.response.send_message(f"{interaction.user.mention} You do not have a reminder for {continent}", ephemeral=True)
+
 
 @bot.tree.command(name="census_health", description="Get the census API health check")
 async def census_health(interaction: discord.Interaction):
@@ -241,6 +257,8 @@ async def check_personal_reminders(interaction: discord.Interaction):
     except KeyError:
         await interaction.response.send_message(f"{interaction.user.mention} You do not have any alert reminders set", ephemeral=True)
 
+# pylint: disable=redefined-outer-name
+
 
 @bot.tree.command(name="send_timestamp", description="Send a timestamp for an event given a time, date and event name")
 async def send_timestamp(interaction: discord.Interaction, event_name: str, date: str, time: str, timezone: Timezones):
@@ -252,7 +270,7 @@ async def send_timestamp(interaction: discord.Interaction, event_name: str, date
             break
         time = time.split(":")
         timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
-        timezone_py = pytz_tz(get_IANA(timezone))
+        timezone_py = pytz_tz(get_iana(timezone))
         timestamp = timezone_py.localize(timestamp).astimezone(None)
         embed = discord.Embed(
             color=0x171717, title=f"{event_name}", description=f"{event_name} will happen at")
@@ -282,21 +300,24 @@ async def send_timestamp(interaction: discord.Interaction, event_name: str, date
     except (IndexError, ValueError):
         await interaction.followup.send(f"{interaction.user.mention} Invalid time format, time must be in the format HH:MM (24h)", ephemeral=True)
 
+
 @bot.tree.command(name="character", description="Get the stats of a character")
 async def get_character_stats(interaction: discord.Interaction, character_name: str):
     await interaction.response.defer()
-    embed = await get_PS2_character_embed(character_name)
+    embed = await get_ps2_character_embed(character_name)
     if embed:
         await interaction.followup.send(embed=embed)
     else:
         await interaction.followup.send("Character not found")
 
+
 @bot.tree.command(name="crear_evento", description="Crea un evento")
 async def create_event(interaction: discord.Interaction, zona_horaria: Timezones = "EST"):
     await interaction.response.send_modal(EventModal(zona_horaria))
 
+
 @bot.tree.command(name="agregar_jugador", description="Agrega un jugador a un evento")
-async def add_player_to_event(interaction: discord.Interaction, id_evento:str, jugador: discord.Member):
+async def add_player_to_event(interaction: discord.Interaction, id_evento: str, jugador: discord.Member):
     channel = interaction.channel
     try:
         if interaction.user.id != event_dict[id_evento].owner_id:
@@ -306,7 +327,7 @@ async def add_player_to_event(interaction: discord.Interaction, id_evento:str, j
         if jugador.mention in event_dict[id_evento].accepted:
             await interaction.response.send_message(f"{jugador.mention} ya está en el evento", ephemeral=True)
             return
-        elif jugador.mention in event_dict[id_evento].reserves:
+        if jugador.mention in event_dict[id_evento].reserves:
             event_dict[id_evento].reserves.remove(jugador.mention)
 
         if len(event_dict[id_evento].accepted) == event_dict[id_evento].player_count:
@@ -324,8 +345,9 @@ async def add_player_to_event(interaction: discord.Interaction, id_evento:str, j
         await interaction.response.send_message(f"{interaction.user.mention} Solo puedes agregar jugadores en el canal donde se creó el evento", ephemeral=True)
         return
 
+
 @bot.tree.command(name="remover_jugador", description="Remueve un jugador de un evento")
-async def remove_player_from_event(interaction: discord.Interaction, id_evento:str, jugador: discord.Member):
+async def remove_player_from_event(interaction: discord.Interaction, id_evento: str, jugador: discord.Member):
     channel = interaction.channel
     try:
         if interaction.user.id != event_dict[id_evento].owner_id:
@@ -351,6 +373,7 @@ async def remove_player_from_event(interaction: discord.Interaction, id_evento:s
         await interaction.response.send_message(f"{interaction.user.mention} Solo puedes remover jugadores en el canal donde se creó el evento", ephemeral=True)
         return
 
+
 @commands.dm_only()
 @bot.tree.command(name="restart_bot", description="Restarts the bot manually. Admin only.")
 async def restart_bot(interaction: discord.Interaction):
@@ -372,11 +395,11 @@ async def restart_bot(interaction: discord.Interaction):
         if msg.content.lower() == "no" or msg.content.lower() == "n":
             await interaction.followup.send("Restart cancelled")
             return
-        else:
-            await interaction.followup.send("Restarting...")
-            loop = asyncio.get_event_loop()
-            loop.run_in_executor(None, restart)
-            await exit_handler()
+
+        await interaction.followup.send("Restarting...")
+        loop = asyncio.get_event_loop()
+        loop.run_in_executor(None, restart)
+        await exit_handler()
     except asyncio.TimeoutError:
         await interaction.followup.send("Restart cancelled due to timeout...")
         return
@@ -391,6 +414,7 @@ async def exit_handler():
     await bot.close()
     log.info("Bot has been shut down")
     sys.exit(0)
+
 
 async def main():
 

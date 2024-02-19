@@ -1,3 +1,5 @@
+#pylint: disable=invalid-name
+
 from typing import Literal
 from enum import Enum
 

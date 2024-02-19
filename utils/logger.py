@@ -1,10 +1,12 @@
-import logging
-from tzlocal import get_localzone
-from utils.timezones import get_TZ
-from datetime import datetime
 import sys
 import os
+import logging
+from datetime import datetime
+
+from tzlocal import get_localzone
+from utils.timezones import get_tz
 import config as cfg
+
 
 class ColorFormatter(logging.Formatter):
 
@@ -18,7 +20,7 @@ class ColorFormatter(logging.Formatter):
     # 1 means bold, 2 means dim, 0 means reset, and 4 means underline.
 
     # Formatter will log in local time
-    TIMEZONE = get_TZ(get_localzone())
+    TIMEZONE = get_tz(get_localzone())
 
     LEVEL_COLOURS = [
         (logging.DEBUG, '\x1b[40;1m', TIMEZONE),
@@ -79,10 +81,11 @@ def define_log() -> tuple[logging.StreamHandler, logging.FileHandler, ColorForma
     return console_handler, file_handler, console_formatter
 
 
-class StreamToLogger(object):
+class StreamToLogger:
     """
     Fake file-like stream object that redirects writes to a logger instance.
     """
+
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level

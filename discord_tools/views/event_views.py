@@ -1,8 +1,10 @@
+#pylint: disable=import-outside-toplevel
 from discord.ui import View, Button
 from discord import ButtonStyle, Interaction
 from discord_tools.embeds import event_embed
 from discord_tools.data import event_dict
 import config as cfg
+
 
 class EventView(View):
 
@@ -43,7 +45,8 @@ class EventView(View):
         if interaction.user.mention not in event_dict[self.event_id].accepted:
             event_dict[self.event_id].accepted.append(interaction.user.mention)
 
-        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
+        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity,
+                            event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
         await interaction.response.edit_message(embed=embed)
 
     async def join_reserves(self, interaction: Interaction):
@@ -54,7 +57,8 @@ class EventView(View):
             event_dict[self.event_id].accepted.remove(interaction.user.mention)
         if interaction.user.mention not in event_dict[self.event_id].reserves:
             event_dict[self.event_id].reserves.append(interaction.user.mention)
-        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
+        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity,
+                            event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
         await interaction.response.edit_message(embed=embed)
 
     async def leave(self, interaction: Interaction):
@@ -65,11 +69,12 @@ class EventView(View):
             event_dict[self.event_id].accepted.remove(interaction.user.mention)
         if interaction.user.mention in event_dict[self.event_id].reserves:
             event_dict[self.event_id].reserves.remove(interaction.user.mention)
-        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity, event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
+        embed = event_embed(self.event_id, event_dict[self.event_id].date, event_dict[self.event_id].time, event_dict[self.event_id].timezone, event_dict[self.event_id].activity,
+                            event_dict[self.event_id].description, event_dict[self.event_id].player_count, event_dict[self.event_id].accepted, event_dict[self.event_id].reserves)
         await interaction.response.edit_message(embed=embed)
 
     async def edit(self, interaction: Interaction):
-        if interaction.user.id == event_dict[self.event_id].owner_id or interaction.user.id == cfg.MAIN_ADMIN_ID:
+        if interaction.user.id in (event_dict[self.event_id].owner_id, cfg.MAIN_ADMIN_ID):
             from discord_tools.modals import EventModal
             await interaction.response.send_modal(EventModal(event_dict[self.event_id].timezone, event_id=self.event_id, is_editing=True, accepted=event_dict[self.event_id].accepted))
         else:

@@ -1,3 +1,4 @@
+#pylint: disable=arguments-differ, no-method-argument, too-many-function-args
 from discord.ui import View, Button, Select
 from discord import ButtonStyle, Interaction, SelectOption
 from discord_tools.embeds import genshin_character_embed, genshin_weapon_embed
@@ -15,14 +16,12 @@ class CharWeaponView(View):
     def add_buttons():
         """_summary_: Adds buttons to the view
         """
-        pass
 
 
 class WeaponView(CharWeaponView):
 
     def add_buttons(self):
-        button = Button(
-            label=f'Weapon: {self.weapon.name}', style=ButtonStyle.primary, custom_id="weapon")
+        button = Button(label=f'Weapon: {self.weapon.name}', style=ButtonStyle.primary, custom_id="weapon")
         button.callback = self.get_weapon
         self.add_item(button)
 
@@ -34,8 +33,7 @@ class WeaponView(CharWeaponView):
 class CharacterView(CharWeaponView):
 
     def add_buttons(self):
-        button = Button(
-            label=f'Character: {self.character.name}', style=ButtonStyle.primary, custom_id="weapon")
+        button = Button(label=f'Character: {self.character.name}', style=ButtonStyle.primary, custom_id="weapon")
         button.callback = self.get_character
         self.add_item(button)
 
@@ -83,8 +81,10 @@ class AllCharactersView(View):
             self.update_options()
             await interaction.response.edit_message(view=self)
         else:
-            for character in self.characters:
-                if character.name == interaction.data["values"][0]:
+            char = None
+            for char in self.characters:
+                if char.name == interaction.data["values"][0]:
+                    character = char
                     break
             embed = genshin_character_embed(character)
             await interaction.response.edit_message(embed=embed, view=self)

@@ -7,11 +7,12 @@ from discord.ext import commands
 from discord_tools.embeds import get_server_panel
 from database.query.subscriptions import get_server_panel_subscription, create_server_panel_subscription, delete_server_panel_subscription
 
+
 @app_commands.guild_only()
 class SubscribeToEvents(commands.GroupCog, name="server_panel", description="Subscribe this channel to bot events"):
 
     @app_commands.command(name="subscribe", description="Subscribe this channel to the PS2 server panel embed")
-    async def subscribe_to_server_panel(self, interaction : Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
+    async def subscribe_to_server_panel(self, interaction: Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
         if not interaction.user.guild_permissions.manage_messages:
             await interaction.response.send_message(f"{interaction.user.mention} You don't have the required permissions to use this command", ephemeral=True)
             return
@@ -32,7 +33,7 @@ class SubscribeToEvents(commands.GroupCog, name="server_panel", description="Sub
         create_server_panel_subscription(server, channel_id, message.id)
 
     @app_commands.command(name="unsubscribe", description="Unsubscribe this channel from the PS2 server panel embed")
-    async def unsubscribe_from_server_panel(self, interaction : Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
+    async def unsubscribe_from_server_panel(self, interaction: Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
         if not interaction.user.guild_permissions.manage_messages:
             await interaction.response.send_message(f"{interaction.user.mention} You don't have the required permissions to use this command", ephemeral=True)
             return
@@ -73,7 +74,7 @@ class SubscribeToEvents(commands.GroupCog, name="server_panel", description="Sub
                 view.add_item(refresh)
                 await interaction.response.send_message(embed=embed, view=view)
             else:
-                await interaction.response.send_message(f"Can't fetch data from Honu or ps2alerts.com (It's most likely down). Please try again later.")
+                await interaction.response.send_message("Can't fetch data from Honu or ps2alerts.com (It's most likely down). Please try again later.")
         except JSONDecodeError:
             await interaction.followup.send("Can't fetch data from Honu (It's most likely down). Please try again later.")
             return

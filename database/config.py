@@ -1,3 +1,4 @@
+#pylint: disable=no-member,import-self,global-statement,invalid-name
 import logging
 from sqlalchemy import create_engine, URL
 from database.models.genshin import GenshinBase

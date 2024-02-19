@@ -1,0 +1,8 @@
+[MASTER]
+disable= W1203,C0114,C0116,C0115,E0401,R0902,W0102,R0912,R0915
+[FORMAT]
+max-line-length=240
+max-nested-blocks=7
+[DESIGN]
+max-locals=25
+max-args=10

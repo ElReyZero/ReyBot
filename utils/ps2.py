@@ -1,5 +1,6 @@
-import requests
+#pylint: disable=invalid-name, consider-using-dict-items
 from dataclasses import dataclass
+import requests
 
 CONTINENT_IDS = {
     "Amerish": 6,
@@ -46,24 +47,27 @@ def continent_to_id(continent: str) -> int | None:
             return CONTINENT_IDS[key]
     return None
 
-def id_to_continent_name(id: int) -> str | None:
+
+def id_to_continent_name(cont_id: int) -> str | None:
     for key in CONTINENT_IDS:
-        if id == CONTINENT_IDS[key]:
+        if cont_id == CONTINENT_IDS[key]:
             return key
     return None
 
-def server_id_to_name(serverID: int, activeServer=True) -> str:
-    if activeServer:
+
+def server_id_to_name(server_id: int, active_server=True) -> str:
+    if active_server:
         for key in SERVER_IDS:
-            if serverID == key and key not in [3, 24, 25, 1000, 2000]:
+            if server_id == key and key not in [3, 24, 25, 1000, 2000]:
                 return SERVER_IDS[key]
     else:
         for key in SERVER_IDS:
-            if serverID == key:
+            if server_id == key:
                 return SERVER_IDS[key]
+    return None
 
-def name_to_server_ID(name: str, activeServer=True) -> int | None:
-    if activeServer:
+def name_to_server_id(name: str, active_server=True) -> int | None:
+    if active_server:
         for key in SERVER_IDS:
             if name.capitalize() == SERVER_IDS[key] and key not in [3, 24, 25, 1000, 2000]:
                 return key
@@ -73,23 +77,26 @@ def name_to_server_ID(name: str, activeServer=True) -> int | None:
                 return key
     return None
 
+
 def check_emerald_health() -> bool | None:
-    request = requests.get("https://wt.honu.pw/api/health")
+    request = requests.get("https://wt.honu.pw/api/health", timeout=90)
     data = request.json()
     if data:
         for entry in data["death"]:
             if entry["worldID"] == 17 and entry['failureCount'] > 0:
                 return False
-            elif entry["worldID"] == 17:
+            if entry["worldID"] == 17:
                 return True
     else:
         return None
+    return None
 
-def id_to_continent_state(id) -> str | None:
+def id_to_continent_state(state_id) -> str | None:
     for key in CONTINENT_STATES:
-        if id == key:
+        if state_id == key:
             return CONTINENT_STATES[key]
     return None
+
 
 @dataclass
 class CharacterStats:
@@ -100,8 +107,8 @@ class CharacterStats:
     certs: int = None
     deaths: int = None
     kills: int = None
-    KD: int = None
-    KPM: int = None
+    kd: int = None
+    kpm: int = None
     facility_captures: int = None
     facility_defenses: int = None
     score: int = None
@@ -133,7 +140,7 @@ class CharacterStats:
             self.time = value
 
         if self.kills and self.deaths:
-            self.KD = round(self.kills / self.deaths, 2)
+            self.kd = round(self.kills / self.deaths, 2)
 
         if self.kills and self.time:
-            self.KPM = round(self.kills / (self.time / 60), 3)
+            self.kpm = round(self.kills / (self.time / 60), 3)

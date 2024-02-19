@@ -1,16 +1,20 @@
-from discord.ui import Modal, TextInput
-from discord_tools.classes import EventData
-from discord_tools.embeds import event_embed
-from discord import TextStyle, Interaction
-from discord_tools.views.event_views import EventView
+#pylint: disable=arguments-differ
 import asyncio
 from datetime import datetime
-from pytz import timezone as pytz_tz
-from utils.timezones import get_IANA
-import config as cfg
-from discord_tools.data import event_dict
 import uuid
 import sched
+
+from discord import TextStyle, Interaction
+from discord.ui import Modal, TextInput
+from pytz import timezone as pytz_tz
+
+from discord_tools.classes import EventData
+from discord_tools.embeds import event_embed
+from discord_tools.views.event_views import EventView
+from discord_tools.data import event_dict
+
+from utils.timezones import get_iana
+import config as cfg
 
 class EventModal(Modal, title="Crear Evento"):
 
@@ -25,12 +29,14 @@ class EventModal(Modal, title="Crear Evento"):
     player_count = TextInput(label="Número de jugadores", placeholder="Escribe un número entre 2 y 12",
                              style=TextStyle.short, required=True, min_length=1, max_length=2)
 
-    def __init__(self, timezone, event_id=None, is_editing=False, accepted=list(), reserves=list()):
+    def __init__(self, timezone, event_id=None, is_editing=False, accepted=[], reserves=[]):
         self.event_id = str(uuid.uuid4()) if not event_id else event_id
         self.timezone = timezone
         self.is_editing = is_editing
         self.accepted = accepted
         self.reserves = reserves
+        self.scheduler = None
+        self.event = None
         super().__init__()
 
         if is_editing:
@@ -53,7 +59,7 @@ class EventModal(Modal, title="Crear Evento"):
         time = self.time.value.split(":")
         date = datetime.strptime(self.date.value, "%d/%m/%Y")
         timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
-        timezone_py = pytz_tz(get_IANA(self.timezone))
+        timezone_py = pytz_tz(get_iana(self.timezone))
         event_time = timezone_py.localize(
             timestamp).astimezone(None).timestamp()
         if event_time < datetime.now().timestamp():
@@ -62,9 +68,9 @@ class EventModal(Modal, title="Crear Evento"):
         try:
             if not event_dict.get(self.event_id):
                 event_dict[self.event_id] = EventData(self.event_id, interaction.user.id, self.date.value, self.time.value, self.timezone, self.activity.value, self.description.value, int(
-                    self.player_count.value), self.accepted if self.is_editing else [interaction.user.mention], self.reserves if self.is_editing else list())
+                    self.player_count.value), self.accepted if self.is_editing else [interaction.user.mention], self.reserves if self.is_editing else [])
             embed = event_embed(self.event_id, self.date.value, self.time.value, self.timezone,
-                                self.activity.value, self.description.value, self.player_count.value, accepted=self.accepted if self.is_editing else [interaction.user.mention], reserves=self.reserves if self.is_editing else list())
+                                self.activity.value, self.description.value, self.player_count.value, accepted=self.accepted if self.is_editing else [interaction.user.mention], reserves=self.reserves if self.is_editing else [])
 
             if self.is_editing:
                 event_dict[self.event_id].task.cancel()
@@ -93,22 +99,20 @@ class EventModal(Modal, title="Crear Evento"):
             event_dict[event_id]
         except KeyError:
             return
-        user_list_str = ""
-        for user in event_dict[event_id].accepted:
-            user_list_str += f"{user} "
+        user_list_str = " ".join(event_dict[event_id].accepted)
         await interaction.followup.send(f"{user_list_str}El evento '{activity}' ha empezado")
         await asyncio.sleep(600)
         await interaction.channel.purge(limit=5, check=lambda m: m.author.id == cfg.bot_id)
         del event_dict[event_id]
 
-    def set_scheduler(self, interaction: Interaction, event_id:str, activity:str, loop: asyncio.AbstractEventLoop):
+    def set_scheduler(self, interaction: Interaction, event_id: str, activity: str, loop: asyncio.AbstractEventLoop):
         loop.create_task(self.send_reminder(interaction, event_id, activity))
 
     def schedule_event_time(self, interaction: Interaction, event_id, activity, date, time, timezone):
         time = time.split(":")
         date = datetime.strptime(date, "%d/%m/%Y")
         timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
-        timezone_py = pytz_tz(get_IANA(timezone))
+        timezone_py = pytz_tz(get_iana(timezone))
         event_time = timezone_py.localize(timestamp).astimezone(None).timestamp()
         loop = asyncio.get_event_loop()
         delay = event_time - datetime.now().timestamp()

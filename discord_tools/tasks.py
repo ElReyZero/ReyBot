@@ -3,15 +3,14 @@ from json import JSONDecodeError
 import backoff
 from discord.errors import NotFound
 from discord.ext.tasks import loop
+import genshin as gi
 
 from database.query.genshin import push_characters
 from database.query.subscriptions import get_all_server_panels, delete_server_panel_subscription
-
 from discord_tools.embeds import get_server_panel
 from discord_tools.exceptions import RetryException
-
 import config as cfg
-import genshin as gi
+
 
 @loop(hours=24)
 async def update_genshin_chars():

@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from json import JSONDecodeError
 from operator import indexOf
 from typing import Optional
 
@@ -12,12 +11,13 @@ from discord import Embed
 from pytz import timezone as pytz_tz
 
 import config as cfg
+from database.models.genshin import Weapon
 from discord_tools.exceptions import OWException
 from discord_tools.literals import ElementColor, ElementEmote
 from utils.ps2 import (CharacterStats, id_to_continent_name,
-                       id_to_continent_state, name_to_server_ID,
+                       id_to_continent_state, name_to_server_id,
                        server_id_to_name)
-from utils.timezones import get_IANA
+from utils.timezones import get_iana
 
 
 def get_server_panel(server: str, is_subscription=False) -> Optional[Embed]:
@@ -45,10 +45,10 @@ def get_server_panel(server: str, is_subscription=False) -> Optional[Embed]:
                f"<:NSO:1014970981556703362> NS (Unknown): {unknown_percentage}%"
 
     try:
-        id = name_to_server_ID(server, activeServer=False)
-        request = requests.get("https://wt.honu.pw/api/world/overview", timeout=5)
-        data_pop = requests.get(f"https://wt.honu.pw/api/population/{id}", timeout=5).json()
-        alert_data = requests.get(f"https://api.ps2alerts.com/instances/active?world={id}", timeout=5).json()
+        server_id = name_to_server_id(server, active_server=False)
+        request = requests.get("https://wt.honu.pw/api/world/overview", timeout=90)
+        data_pop = requests.get(f"https://wt.honu.pw/api/population/{server_id}", timeout=90).json()
+        alert_data = requests.get(f"https://api.ps2alerts.com/instances/active?world={server_id}", timeout=90).json()
         data = request.json()
 
         if data:
@@ -110,16 +110,23 @@ def get_server_panel(server: str, is_subscription=False) -> Optional[Embed]:
             else:
                 embed.set_footer(text="Last updated")
             return embed
-        else:
-            return None
-
-    except (JSONDecodeError, requests.Timeout):
         return None
+
+    except (requests.exceptions.JSONDecodeError, requests.Timeout):
+        embed = Embed(color=0x171717, title=f"{server} Panel",
+                          description=f"Current status and population of {server}", timestamp=datetime.now())
+        embed.add_field(name="API Error", value="Can't fetch data from Honu or PS2 alerts (One of them is most likely down)")
+        if is_subscription:
+            embed.set_footer(text="Updates every 5 minutes - Last updated")
+        else:
+            embed.set_footer(text="Last updated")
+        return embed
+
 
 
 def get_census_health() -> Optional[Embed]:
     try:
-        request = requests.get("https://wt.honu.pw/api/health")
+        request = requests.get("https://wt.honu.pw/api/health", timeout=90)
         data = request.json()
         embed = Embed(color=0xff0000, title="Census API Health Check",
                       description="Current status of the Census API separated by server events", timestamp=datetime.now())
@@ -130,7 +137,7 @@ def get_census_health() -> Optional[Embed]:
                 status = "Down" if failure_count >= 30 else "Possible Issues" if failure_count > 0 else "Ok"
                 event_time = datetime.strptime(entry.get('lastEvent')[:-1], "%Y-%m-%dT%H:%M:%S") \
                     .replace(tzinfo=timezone.utc).astimezone(tz=None)
-                server_name = server_id_to_name(entry.get('worldID'), activeServer=False)
+                server_name = server_id_to_name(entry.get('worldID'), active_server=False)
                 embed.add_field(name=server_name,
                                 value=f"Last Event: <t:{int(event_time.timestamp())}:R>\n"
                                       f"Last Event Date: {entry.get('lastEvent')[:-1]} UTC\n"
@@ -153,29 +160,29 @@ def get_census_health() -> Optional[Embed]:
 
 @deprecated(version="0.0.1", reason="Reason: Outfit Wars is over")
 def get_ow_matches_data(server: str) -> Embed:
-    server_id = name_to_server_ID(server)
-    currentRound = requests.get(f"https://api.ps2alerts.com/outfit-wars/{server_id}/current-round").json()
-    req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}&round={currentRound}")
+    server_id = name_to_server_id(server)
+    current_round = requests.get(f"https://api.ps2alerts.com/outfit-wars/{server_id}/current-round", timeout=90).json()
+    req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}&round={current_round}", timeout=90)
     data = req.json()
     sorted_rankings = sorted(
         data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
     factions = {1: "<:VS:1014970179291205745>",
                 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>"}
-    matches = list()
+    matches = []
     outfit_limit = None
-    if currentRound == 5:
+    if current_round == 5:
         outfit_limit = 8
-    elif currentRound == 6:
+    elif current_round == 6:
         outfit_limit = 4
-    elif currentRound == 7:
+    elif current_round == 7:
         outfit_limit = 4
-    elif currentRound >= 7:
+    elif current_round >= 7:
         raise OWException()
 
     if outfit_limit:
         sorted_rankings = sorted_rankings[:outfit_limit]
     for i in range(0, len(sorted_rankings)-1, 2):
-        startTime = datetime.strptime(sorted_rankings[i]['startTime'][:-5], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
+        start_time = datetime.strptime(sorted_rankings[i]['startTime'][:-5], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(tz=None)
         if outfit_limit:
             team1 = i
             team2 = len(sorted_rankings)-i-1
@@ -187,26 +194,26 @@ def get_ow_matches_data(server: str) -> Embed:
         tag1 = sorted_rankings[team1]['outfit']['tag']
         tag2 = sorted_rankings[team2]['outfit']['tag']
         if not sorted_rankings[team1]["instanceId"]:
-            matchString = f"{faction1}[{tag1}] {sorted_rankings[team1]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[team2]['outfit']['name']}\nStart Time: <t:{int(startTime.timestamp())}>"
+            match_string = f"{faction1}[{tag1}] {sorted_rankings[team1]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[team2]['outfit']['name']}\nStart Time: <t:{int(start_time.timestamp())}>"
         else:
-            instance = requests.get(f"https://api.ps2alerts.com/outfit-wars/{sorted_rankings[team1]['instanceId']}").json()
+            instance = requests.get(f"https://api.ps2alerts.com/outfit-wars/{sorted_rankings[team1]['instanceId']}", timeout=90).json()
             winner = "blue" if instance["result"]["blue"] > instance["result"]["red"] else "red"
-            winnerTag = instance["outfitwars"]["teams"][winner]["tag"]
-            winnerFaction = factions[instance["outfitwars"]
-                                     ["teams"][winner]["faction"]]
+            winner_tag = instance["outfitwars"]["teams"][winner]["tag"]
+            winner_faction = factions[instance["outfitwars"]
+                                      ["teams"][winner]["faction"]]
             winner_name = instance["outfitwars"]["teams"][winner]['name']
-            matchString = f"{faction1}[{tag1}] {sorted_rankings[team1]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[team2]['outfit']['name']}\nWinner: {winnerFaction}[{winnerTag}] {winner_name}"
-        matches.append(matchString)
+            match_string = f"{faction1}[{tag1}] {sorted_rankings[team1]['outfit']['name']} vs {faction2}[{tag2}] {sorted_rankings[team2]['outfit']['name']}\nWinner: {winner_faction}[{winner_tag}] {winner_name}"
+        matches.append(match_string)
 
     return matches
 
 
 @deprecated(version="0.0.1", reason="Reason: Outfit Wars is over")
-def get_ow_embed(data: list, server: str, current_page: int, pages: int, match=True) -> Embed:
-    if match:
+def get_ow_embed(data: list, server: str, current_page: int, pages: int, match_data=True) -> Embed:
+    if match_data:
         embed = Embed(color=0x171717, title=f"Outfit Wars Matches for {server}", description=f"Page {current_page}/{pages}")
-        for match in data:
-            embed.add_field(name=f"Match {indexOf(data, match) +1}", value=match, inline=False)
+        for element in data:
+            embed.add_field(name=f"Match {indexOf(data, element) +1}", value=element, inline=False)
     else:
         embed = Embed(color=0x171717, title=f"Outfit Wars Rankings for {server}", description=f"Page {current_page}/{pages}")
         positions = ""
@@ -225,18 +232,17 @@ def get_ow_embed(data: list, server: str, current_page: int, pages: int, match=T
 
 @deprecated(version="0.0.1", reason="Reason: Outfit Wars is over")
 def get_ow_rankings(server: str) -> list:
-    server_id = name_to_server_ID(server)
-    req = requests.get(
-        f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}")
+    server_id = name_to_server_id(server)
+    req = requests.get(f"https://api.ps2alerts.com/outfit-wars/rankings?world={server_id}", timeout=90)
     data = req.json()
     current_round = data[0]["round"]
     sorted_rankings = sorted(
         data, key=lambda score: score["rankingParameters"]["TotalScore"], reverse=True)
     factions = {1: "<:VS:1014970179291205745>",
                 2: "<:NC:1014970942235099177>", 3: "<:TR:1014970962493575262>"}
-    rankings = list()
+    rankings = []
     counter = 1
-    for i in range(len(sorted_rankings)):
+    for i, _ in enumerate(sorted_rankings):
         if sorted_rankings[i]["round"] == current_round:
             faction = factions[sorted_rankings[i]['outfit']['faction']]
             tag = sorted_rankings[i]['outfit']['tag']
@@ -247,7 +253,7 @@ def get_ow_rankings(server: str) -> list:
     return rankings
 
 
-async def get_PS2_character_embed(char_name: str) -> Optional[Embed]:
+async def get_ps2_character_embed(char_name: str) -> Optional[Embed]:
     async with auraxium.Client(service_id=cfg.SERVICE_ID) as client:
         char = await client.get_by_name(ps2.Character, char_name)
         if not char:
@@ -275,8 +281,8 @@ async def get_PS2_character_embed(char_name: str) -> Optional[Embed]:
         embed.add_field(name="Last Login", value=f"<t:{int(char.times.last_login)}:R>", inline=True)
         embed.add_field(name="Is Online", value="Yes" if await char.is_online() else "No", inline=True)
         embed.add_field(name="Kills", value=char_stats.kills, inline=True)
-        embed.add_field(name="Overall KD", value=char_stats.KD, inline=True)
-        embed.add_field(name="Overall KPM", value=char_stats.KPM, inline=True)
+        embed.add_field(name="Overall KD", value=char_stats.kd, inline=True)
+        embed.add_field(name="Overall KPM", value=char_stats.kpm, inline=True)
         embed.add_field(name="Outfit", value=f"[[{outfit.tag}] {outfit.name}](https://wt.honu.pw/o/{outfit.id}) ", inline=True)
 
         return embed
@@ -297,26 +303,26 @@ def genshin_character_embed(char_data: dict) -> Embed:
     return embed
 
 
-def genshin_weapon_embed(weapon_data: dict) -> Embed:
-    rarity = "Rarity: "+":star: " * weapon_data['rarity'] + "\n"
-    level = f"Level: {weapon_data['level']}\n"
-    type = f"Type: {weapon_data['type']}\n"
-    refinement_lvl = f"Refinement Level: {weapon_data['refinement']}\n"
-    desc = rarity + level + type + refinement_lvl
+def genshin_weapon_embed(weapon_data: Weapon) -> Embed:
+    rarity = "Rarity: "+":star: " * weapon_data.rarity + "\n"
+    level = f"Level: {weapon_data.level}\n"
+    weapon_type = f"Type: {weapon_data.type}\n"
+    refinement_lvl = f"Refinement Level: {weapon_data.refinement}\n"
+    desc = rarity + level + weapon_type + refinement_lvl
     embed = Embed(color=0x171717,
-                  title=f"{weapon_data['name']}", description=desc)
-    embed.set_image(url=weapon_data["icon"])
+                  title=f"{weapon_data.name}", description=desc)
+    embed.set_image(url=weapon_data.icon)
     return embed
 
 
-def event_embed(event_id, date, time, datetime, activity, description, player_count, accepted=[], reserves=[]):
+def event_embed(event_id, date, time, datetime_in, activity, description, player_count, accepted=[], reserves=[]):
     date = find_dates(date, first="day")
     for dates in date:
         date = dates
         break
     time = time.split(":")
     timestamp = date.replace(hour=int(time[0]), minute=int(time[1]))
-    timezone_py = pytz_tz(get_IANA(datetime))
+    timezone_py = pytz_tz(get_iana(datetime_in))
     timestamp = timezone_py.localize(timestamp).astimezone(None)
 
     accepted_text = ""
@@ -332,11 +338,9 @@ def event_embed(event_id, date, time, datetime, activity, description, player_co
         color=0xFFD200, title=f"Actividad: {activity}")
     embed.add_field(name="Id del evento", value=event_id, inline=False)
     embed.add_field(name="Descripción", value=description, inline=False)
-    embed.add_field(
-        name="Hora de inicio", value=f"<t:{int(timestamp.timestamp())}>", inline=False)
-    embed.add_field(
-        name="Empieza:", value=f"<t:{int(timestamp.timestamp())}:R>", inline=False)
-    embed.add_field(name=f":white_check_mark: Escuadra ({len(accepted)}/{player_count})", value= "           -" if len(accepted) == 0 else accepted_text, inline=True)
+    embed.add_field(name="Hora de inicio", value=f"<t:{int(timestamp.timestamp())}>", inline=False)
+    embed.add_field(name="Empieza:", value=f"<t:{int(timestamp.timestamp())}:R>", inline=False)
+    embed.add_field(name=f":white_check_mark: Escuadra ({len(accepted)}/{player_count})", value="           -" if len(accepted) == 0 else accepted_text, inline=True)
     embed.add_field(name=":question: Reservas", value="           -" if len(reserves) == 0 else reserves_text, inline=True)
 
     return embed

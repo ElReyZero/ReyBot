@@ -1,13 +1,14 @@
 from deprecated import deprecated
-from discord_tools.data import alert_reminder_dict
-from discord.ext import commands
 import discord
+from discord.ext import commands
+
+from discord_tools.data import alert_reminder_dict
 import config as cfg
 
-description = "A multipurpose bot made by ElReyZero"
+DESC = "A multipurpose bot made by ElReyZero"
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='$', description=description, intents=intents)
+bot = commands.Bot(command_prefix='$', description=DESC, intents=intents)
 
 async def get_admins() -> list:
     """Simple function that retrieves the admin User objects from the discord api.
