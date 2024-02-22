@@ -92,7 +92,10 @@ def get_server_panel(server: str, is_subscription=False) -> Optional[Embed]:
                 elif continent["isOpened"]:
                     unstable_state_id = continent["unstableState"]
                     unstable_state = id_to_continent_state(unstable_state_id)
-                    continent_status = f"Continent Status: <:unstable:1014970998803664896> {unstable_state}\n" if unstable_state and not cont_name == "Oshur" else "Fully Open"
+                    if unstable_state != "Fully Open" and not cont_name == "Oshur":
+                        continent_status = f"Continent Status: <:unstable:1014970998803664896> {unstable_state}\n"
+                    else:
+                        continent_status = f"Continent Status: {unstable_state}\n"
                     embed.add_field(name=cont_name, value=continent_status, inline=False)
                     embed.add_field(name="Territory Control", value=territory, inline=True)
                     embed.add_field(name="Population (Continent)", value=population, inline=True)
