@@ -1,7 +1,7 @@
 version: '3'
 services:
   reybot:
-    image: localhost:5000/rey_bot:latest
+    image: rey/rey_bot:latest
     container_name: reybot
     restart: always
     environment:
