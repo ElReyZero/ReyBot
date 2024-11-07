@@ -83,8 +83,11 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     if cfg.database["host"] != "":
-        update_genshin_chars.start()
-        update_server_panels.start(bot)
+        try:
+            update_genshin_chars.start()
+            update_server_panels.start(bot)
+        except RuntimeError:
+            pass
 
 
 @bot.event
