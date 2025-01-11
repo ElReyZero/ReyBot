@@ -3,6 +3,7 @@ from operator import indexOf
 from typing import Optional
 
 import auraxium
+import backoff
 import requests
 from auraxium import ps2
 from datefinder import find_dates
@@ -19,7 +20,7 @@ from utils.ps2 import (CharacterStats, id_to_continent_name,
                        server_id_to_name)
 from utils.timezones import get_iana
 
-
+@backoff.on_exception(backoff.constant, ConnectionError)
 def get_server_panel(server: str, is_subscription=False) -> Optional[Embed]:
     def get_continent_territory_control(continent):
         total_control = continent['territoryControl']['total']
