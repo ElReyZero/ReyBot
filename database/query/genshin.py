@@ -53,16 +53,19 @@ def push_characters(chars: list, task=False):
                 session.add(char_weapon)
                 session.commit()
             constellation_list = []
-            for constellation in char.constellations:
-                constellation_doc = session.query(Constellation).filter(Constellation.constellation_id == constellation.id).first()
-                if not constellation_doc:
-                    constellation_doc = Constellation(constellation_id=constellation.id, character_name=char.name, icon=constellation.icon, name=constellation.name, effect=constellation.effect, activated=constellation.activated)
-                    session.add(constellation_doc)
-                    session.commit()
-                else:
-                    constellation_doc.activated = constellation.activated
-                    constellation_doc.character_name = char.name
-                constellation_list.append(constellation_doc)
+            try:
+                for constellation in char.constellations:
+                    constellation_doc = session.query(Constellation).filter(Constellation.constellation_id == constellation.id).first()
+                    if not constellation_doc:
+                        constellation_doc = Constellation(constellation_id=constellation.id, character_name=char.name, icon=constellation.icon, name=constellation.name, effect=constellation.effect, activated=constellation.activated)
+                        session.add(constellation_doc)
+                        session.commit()
+                    else:
+                        constellation_doc.activated = constellation.activated
+                        constellation_doc.character_name = char.name
+                    constellation_list.append(constellation_doc)
+            except AttributeError:
+                pass
             char_entry = session.query(Character).filter(Character.character_id == char.id).first()
             if char_entry:
                 char_entry.level = char.level
