@@ -2,6 +2,7 @@ stages:
 - clean
 - build
 - deploy
+- run
 
 reybot-clean:
   stage: clean
@@ -31,3 +32,19 @@ reybot-deploy:
     - master
   script:
     - docker compose up -d
+
+reybot-logs-live:
+    stage: run
+    when: manual
+    tags:
+        - rey-discord-bot
+    script:
+        - docker logs -f reybot --tail 1000
+
+reybot-restart:
+    stage: run
+    when: manual
+    tags:
+        - rey-discord-bot
+    script:
+        - docker restart reybot
