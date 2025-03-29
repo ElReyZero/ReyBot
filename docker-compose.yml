@@ -14,7 +14,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       GI_LTUID_V2: ${GI_LTUID_V2}
-      GI_LTOKEN_v2: ${GI_LTOKEN_V2}
+      GI_LTOKEN_V2: ${GI_LTOKEN_V2}
       GI_LTMID_V2: ${GI_LTMID_V2}
       GI_UUID: ${GI_UUID}
       MAIN_GUILD: ${MAIN_GUILD}
