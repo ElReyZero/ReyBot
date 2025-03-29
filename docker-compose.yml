@@ -13,8 +13,9 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      GI_LTUID: ${GI_LTUID}
-      GI_LTOKEN: ${GI_LTOKEN}
+      GI_LTUID_V2: ${GI_LTUID_V2}
+      GI_LTOKEN_v2: ${GI_LTOKEN_V2}
+      GI_LTMID_V2: ${GI_LTMID_V2}
       GI_UUID: ${GI_UUID}
       MAIN_GUILD: ${MAIN_GUILD}
       SERVICE_ID: ${SERVICE_ID}

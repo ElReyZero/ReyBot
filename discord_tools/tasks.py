@@ -14,8 +14,9 @@ import config as cfg
 
 @loop(hours=24)
 async def update_genshin_chars():
+    #return # Disable this task
     client = gi.Client()
-    client.set_cookies(ltuid=cfg.genshin_data["ltuid"], ltoken=cfg.genshin_data["ltoken"])
+    client.set_cookies(cfg.genshin_data)
     chars = await client.get_genshin_characters(cfg.genshin_data["uuid"])
     await push_characters(chars, task=True)
 

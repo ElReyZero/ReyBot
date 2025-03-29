@@ -46,9 +46,10 @@ database = {
 }
 
 genshin_data = {
-    "ltuid": "",
-    "ltoken": "",
-    "uuid": 0
+    "ltuid_v2": "",
+    "ltoken_v2": "",
+    "ltuid_v2": 0,
+    "uuid": 0,
 }
 
 
@@ -78,8 +79,9 @@ def set_config_vars():
     database['user'] = os.environ["DB_USER"]
     database['password'] = os.environ["DB_PASSWORD"]
     global genshin_data
-    genshin_data['ltuid'] = os.environ["GI_LTUID"]
-    genshin_data['ltoken'] = os.environ["GI_LTOKEN"]
+    genshin_data['ltuid_v2'] = int(os.environ["GI_LTUID_V2"])
+    genshin_data['ltoken_v2'] = os.environ["GI_LTOKEN_V2"]
+    genshin_data['ltmid_v2'] = os.environ["GI_LTMID_V2"]
     genshin_data['uuid'] = int(os.environ["GI_UUID"])
 
 
