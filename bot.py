@@ -89,14 +89,6 @@ async def on_ready():
             pass
 
 
-@bot.event
-async def on_message(message):
-    if message.content.startswith("https://twitter.com/") or message.content.startswith("https://x.com/"):
-        content = message.content.replace("https://twitter.com", "https://fxtwitter.com").replace("https://x.com", "https://fxtwitter.com")
-        await message.delete()
-        await message.channel.send(content)
-
-
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: Exception):
     """Modified function that runs on the 'on_app_command_error' event, it handles errors from the bot.
