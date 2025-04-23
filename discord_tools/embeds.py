@@ -54,7 +54,7 @@ def get_server_panel(server: str, is_subscription=False) -> Optional[Embed]:
 
         if data:
             for world in data:
-                if world["worldName"] == server:
+                if world["worldID"] == server_id:
                     world_data = world
                     break
             else:
