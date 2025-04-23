@@ -1,4 +1,4 @@
-#pylint: disable=invalid-name, consider-using-dict-items
+# pylint: disable=invalid-name, consider-using-dict-items
 from dataclasses import dataclass
 import requests
 
@@ -11,9 +11,9 @@ CONTINENT_IDS = {
 }
 
 SERVER_IDS = {
-    1: "Connery",
+    1: "Osprey",
     3: "Helios",
-    10: "Miller",
+    10: "Wainwright",
     13: "Cobalt",
     17: "Emerald",
     19: "Jaeger",
@@ -66,6 +66,7 @@ def server_id_to_name(server_id: int, active_server=True) -> str:
                 return SERVER_IDS[key]
     return None
 
+
 def name_to_server_id(name: str, active_server=True) -> int | None:
     if active_server:
         for key in SERVER_IDS:
@@ -78,18 +79,6 @@ def name_to_server_id(name: str, active_server=True) -> int | None:
     return None
 
 
-def check_emerald_health() -> bool | None:
-    request = requests.get("https://wt.honu.pw/api/health", timeout=90)
-    data = request.json()
-    if data:
-        for entry in data["death"]:
-            if entry["worldID"] == 17 and entry['failureCount'] > 0:
-                return False
-            if entry["worldID"] == 17:
-                return True
-    else:
-        return None
-    return None
 
 def id_to_continent_state(state_id) -> str | None:
     for key in CONTINENT_STATES:

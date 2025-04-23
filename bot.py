@@ -1,4 +1,16 @@
 # pylint: disable=anomalous-backslash-in-string,wrong-import-position
+from utils.timezones import get_iana
+from utils.ps2 import continent_to_id, name_to_server_id
+from utils.logger import StreamToLogger, define_log, exception_to_log
+from discord_tools.tasks import update_genshin_chars, update_server_panels
+from discord_tools.modals import EventModal
+from discord_tools.literals import Timezones
+from discord_tools.embeds import (event_embed, get_census_health,
+                                  get_ps2_character_embed)
+from discord_tools.data import alert_reminder_dict, event_dict
+from discord_tools.classes import AlertReminder
+from command_groups.genshin_commands import GenshinDB
+from command_groups.event_commands import SubscribeToEvents
 import asyncio
 import logging
 import logging.handlers
@@ -26,19 +38,6 @@ from database.config import init_db
 
 cfg.get_config()
 init_db()
-
-from command_groups.event_commands import SubscribeToEvents
-from command_groups.genshin_commands import GenshinDB
-from discord_tools.classes import AlertReminder
-from discord_tools.data import alert_reminder_dict, event_dict
-from discord_tools.embeds import (event_embed, get_census_health,
-                                  get_ps2_character_embed)
-from discord_tools.literals import Timezones
-from discord_tools.modals import EventModal
-from discord_tools.tasks import update_genshin_chars, update_server_panels
-from utils.logger import StreamToLogger, define_log, exception_to_log
-from utils.ps2 import continent_to_id, name_to_server_id
-from utils.timezones import get_iana
 
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
@@ -164,7 +163,7 @@ async def get_bot_logs(ctx: commands.Context):
 
 
 @bot.tree.command(name="alert_reminder", description="Set up a reminder before an alert ends!")
-async def alert_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes: int = 5, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
+async def alert_reminder(interaction: discord.Interaction, continent: Literal["Indar", "Amerish", "Hossin", "Esamir", "Oshur"], minutes: int = 5, server: Literal["Osprey", "Wainwright", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Osprey"):
     """Command that sets up a reminder before an alert ends.
     """
     # Check if the user had inputs for minutes, it also checks if it's valid

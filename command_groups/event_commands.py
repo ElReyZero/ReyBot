@@ -12,7 +12,7 @@ from database.query.subscriptions import get_server_panel_subscription, create_s
 class SubscribeToEvents(commands.GroupCog, name="server_panel", description="Subscribe this channel to bot events"):
 
     @app_commands.command(name="subscribe", description="Subscribe this channel to the PS2 server panel embed")
-    async def subscribe_to_server_panel(self, interaction: Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
+    async def subscribe_to_server_panel(self, interaction: Interaction, server: Literal["Osprey", "Wainwright", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Osprey"):
         if not interaction.user.guild_permissions.manage_messages:
             await interaction.response.send_message(f"{interaction.user.mention} You don't have the required permissions to use this command", ephemeral=True)
             return
@@ -33,7 +33,7 @@ class SubscribeToEvents(commands.GroupCog, name="server_panel", description="Sub
         create_server_panel_subscription(server, channel_id, message.id)
 
     @app_commands.command(name="unsubscribe", description="Unsubscribe this channel from the PS2 server panel embed")
-    async def unsubscribe_from_server_panel(self, interaction: Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
+    async def unsubscribe_from_server_panel(self, interaction: Interaction, server: Literal["Osprey", "Wainwright", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Osprey"):
         if not interaction.user.guild_permissions.manage_messages:
             await interaction.response.send_message(f"{interaction.user.mention} You don't have the required permissions to use this command", ephemeral=True)
             return
@@ -51,8 +51,8 @@ class SubscribeToEvents(commands.GroupCog, name="server_panel", description="Sub
         else:
             await interaction.response.send_message(f"{interaction.user.mention} This channel is not subscribed to server panel for {server}", ephemeral=True)
 
-    @app_commands.command(name="get", description="Check the active alerts and open continents on a server. Default: Emerald")
-    async def check_server_panel(self, interaction: Interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Emerald"):
+    @app_commands.command(name="get", description="Check the active alerts and open continents on a server. Default: Osprey")
+    async def check_server_panel(self, interaction: Interaction, server: Literal["Osprey", "Cobalt", "Wainwright", "Soltech", "Jaeger", "Genudine", "Ceres"] = "Osprey"):
         try:
             embed = get_server_panel(server)
             if embed:

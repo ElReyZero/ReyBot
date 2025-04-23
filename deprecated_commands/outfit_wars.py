@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix='$', description=DESC, intents=intents)
 
 @deprecated(version="0.0.1", reason="Outfit Wars is over")
 @bot.tree.command(name="ow_matches", description="Get the Outfit Wars matches for the current round")
-async def get_ow_matches(interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"] = "Emerald"):
+async def get_ow_matches(interaction, server: Literal["Osprey", "Cobalt", "Wainwright", "Soltech"] = "Osprey"):
     await interaction.response.defer()
     try:
         matches = get_ow_matches_data(server)
@@ -37,7 +37,7 @@ async def get_ow_matches(interaction, server: Literal["Emerald", "Connery", "Cob
 
 @deprecated(version="0.0.1", reason="Outfit Wars is over")
 @bot.tree.command(name="ow_standings", description="Get the Outfit Wars standings for the current round")
-async def get_ow_standings(interaction, server: Literal["Emerald", "Connery", "Cobalt", "Miller", "Soltech"] = "Emerald"):
+async def get_ow_standings(interaction, server: Literal["Osprey", "Osprey", "Cobalt", "Wainwright", "Soltech"] = "Osprey"):
     await interaction.response.defer()
     standings = get_ow_rankings(server)
     view = OWView(standings, server)

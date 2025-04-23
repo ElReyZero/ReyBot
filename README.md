@@ -6,7 +6,7 @@ Currently it's implemented only Planetside 2 related commands, however, I plan t
 
 ### Commands
 
-- `/server_panel` Return the current status of a server of your choice. Default: Emerald
+- `/server_panel` Return the current status of a server of your choice. Default: Osprey
 - `/census_health` Return the current status of the Census API
 - `/send_timestamp` Send a timestamp for an event given a time, date and event name
 - `/get_ow_matches` Get the Outfit Wars matches for the current round! (Only working for Current Outfit Wars)
