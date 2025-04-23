@@ -26,7 +26,7 @@ class MissingConfig(Exception):
 
 # DYNAMIC PARAMETERS:
 # (pulled from the config file)
-
+INITIALIZED = False
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 MAIN_ADMIN_ID = None
 DISCORD_TOKEN = None
@@ -89,6 +89,10 @@ def get_config():
     """
     Populate the config data from the config file.
     """
+    global INITIALIZED
+    if INITIALIZED:
+        return
+
     global PROJECT_PATH
     file = PROJECT_PATH + "/config.cfg"
 
@@ -118,3 +122,6 @@ def get_config():
                 raise MissingConfig(f"Missing variable '{var_name}' in '{file}'")
             elif type(var_value) == list and len(var_value) == 0:
                 raise MissingConfig(f"Missing '{var_name}' in '{file}'")
+
+
+    INITIALIZED = True

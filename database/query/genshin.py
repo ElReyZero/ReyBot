@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from database.models.genshin import Constellation, Wish, Weapon, Character
-from database.config import engine
+from database.config import Database
 from utils.threading import to_thread
 
 log = logging.getLogger('ReyBot')
@@ -16,7 +16,7 @@ ART_ICON_PATH = "https://enka.network/ui/UI_Gacha_AvatarImg_"
 def push_all_wishes(file: str):
     log.info("SQLAlchemy - Pushing all wishes to database")
     xls = pd.ExcelFile(file)
-    with Session(bind=engine) as session:
+    with Session(bind=Database.engine) as session:
         for wish_type in ["Character Event", "Weapon Event", "Standard"]:
             df = pd.read_excel(xls, wish_type)
             giga_list = []
@@ -36,7 +36,7 @@ def push_all_wishes(file: str):
 @to_thread
 def push_characters(chars: list, task=False):
     log.info("SQLAlchemy - Pushing current characters to database")
-    with Session(bind=engine) as session:
+    with Session(bind=Database.engine) as session:
         for char in chars:
             if not task:
                 log.info(f"SQLAlchemy - Pushing {char.name} to database")
@@ -48,8 +48,8 @@ def push_characters(chars: list, task=False):
                 log.info(f"SQLAlchemy - Friendship level: {char.friendship}")
             char_weapon = session.query(Weapon).filter(Weapon.weapon_id == char.weapon.id).first()
             if not char_weapon:
-                char_weapon = Weapon(weapon_id=char.weapon.id, icon=char.weapon.icon, name=char.weapon.name, rarity=char.weapon.rarity, description=char.weapon.description,
-                                     level=char.weapon.level, type=char.weapon.type, ascension=char.weapon.ascension, refinement=char.weapon.refinement)
+                char_weapon = Weapon(weapon_id=char.weapon.id, icon=char.weapon.icon, name=char.weapon.name, rarity=char.weapon.rarity,
+                                     level=char.weapon.level, type=char.weapon.type, refinement=char.weapon.refinement)
                 session.add(char_weapon)
                 session.commit()
             constellation_list = []
@@ -92,7 +92,7 @@ def push_characters(chars: list, task=False):
 @to_thread
 def get_all_characters() -> list[Character]:
     log.info("SQLAlchemy - Getting all characters from database")
-    with Session(bind=engine) as session:
+    with Session(bind=Database.engine) as session:
         return session.query(Character).all()
 
 
@@ -116,7 +116,7 @@ def get_weapon_by_obj_id(object_id: str, session: Session) -> Weapon | None:
 
 @to_thread
 def get_character_and_weapon(name: str):
-    with Session(bind=engine) as session:
+    with Session(bind=Database.engine) as session:
         character = get_character(name, session)
         if character:
             weapon = get_weapon_by_obj_id(character.weapon.id, session)

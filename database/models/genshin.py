@@ -1,66 +1,68 @@
-#pylint: disable=too-few-public-methods
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base
+#pylint: disable=too-few-public-methods, unsubscriptable-object
+from datetime import datetime
+from typing import List
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.schema import MetaData
 
-GenshinBase = declarative_base(metadata=MetaData(schema='genshin'))
+
+class GenshinBase(DeclarativeBase):
+    metadata = MetaData(schema='genshin')
 
 class Wish(GenshinBase):
     __tablename__ = 'wishes'
 
-    id = Column(Integer, primary_key=True)
-    type = Column(String, nullable=False)
-    name = Column(String, nullable=False)
-    time = Column(DateTime, primary_key=True, nullable=False)
-    stars = Column(Integer, nullable=False)
-    pity = Column(Integer, nullable=False)
-    roll_no = Column(Integer, primary_key=True, nullable=False)
-    group = Column(Integer, nullable=False)
-    banner = Column(String, nullable=False)
-    wish_type = Column(String, nullable=False)
+    id : Mapped[int] = mapped_column(primary_key=True)
+    type: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False)
+    time: Mapped[datetime] = mapped_column(primary_key=True, nullable=False)
+    stars: Mapped[int] = mapped_column(nullable=False)
+    pity: Mapped[int] = mapped_column(nullable=False)
+    roll_no: Mapped[int] = mapped_column(primary_key=True, nullable=False)
+    group: Mapped[int] = mapped_column(nullable=False)
+    banner: Mapped[str] = mapped_column(nullable=False)
+    wish_type: Mapped[str] = mapped_column(nullable=False)
 
 class Constellation(GenshinBase):
     __tablename__ = 'constellations'
 
-    id = Column(Integer, primary_key=True)
-    constellation_id = Column(Integer, nullable=False)
-    character_name = Column(String, nullable=False)
-    icon = Column(String, nullable=False)
-    name = Column(String, nullable=False)
-    effect = Column(String, nullable=False)
-    activated = Column(Boolean, nullable=False)
-    character_id = Column(Integer, ForeignKey('characters.id'))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    constellation_id: Mapped[int] = mapped_column(nullable=False)
+    character_name: Mapped[str] = mapped_column(nullable=False)
+    icon: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False)
+    effect: Mapped[str] = mapped_column(nullable=False)
+    activated: Mapped[bool] = mapped_column(nullable=False)
+    character_id: Mapped[int] = mapped_column(ForeignKey('characters.id'))
 
 
 class Weapon(GenshinBase):
     __tablename__ = 'weapons'
 
-    id = Column(Integer, primary_key=True)
-    weapon_id = Column(Integer, nullable=False, unique=True)
-    icon = Column(String, nullable=False)
-    name = Column(String, nullable=False)
-    rarity = Column(Integer, nullable=False)
-    description = Column(String, nullable=False)
-    level = Column(Integer, nullable=False)
-    type = Column(String, nullable=False)
-    ascension = Column(Integer, nullable=False)
-    refinement = Column(Integer, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    weapon_id: Mapped[int] = mapped_column(nullable=False, unique=True)
+    icon: Mapped[str] = mapped_column(nullable=False)
+    name : Mapped[str] = mapped_column(nullable=False)
+    rarity : Mapped[int] = mapped_column(nullable=False)
+    level : Mapped[int] = mapped_column(nullable=False)
+    type : Mapped[str] = mapped_column(nullable=False)
+    refinement : Mapped[int] = mapped_column(nullable=False)
 
 class Character(GenshinBase):
     __tablename__ = 'characters'
 
-    id = Column(Integer, primary_key=True)
-    character_id = Column(Integer, nullable=False, unique=True)
-    name = Column(String, nullable=False)
-    element = Column(String, nullable=False)
-    rarity = Column(Integer, nullable=False)
-    icon = Column(String, nullable=False)
-    collab = Column(Boolean, nullable=False)
-    level = Column(Integer, nullable=False)
-    friendship = Column(Integer, nullable=False)
-    constellation_level = Column(Integer, nullable=False)
-    weapon_id = Column(Integer, ForeignKey('weapons.id'))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    character_id: Mapped[int] = mapped_column(nullable=False, unique=True)
+    name : Mapped[str] = mapped_column(nullable=False)
+    element : Mapped[str] = mapped_column(nullable=False)
+    rarity : Mapped[int] = mapped_column(nullable=False)
+    icon : Mapped[str] = mapped_column(nullable=False)
+    collab : Mapped[bool] = mapped_column(nullable=False)
+    level : Mapped[int] = mapped_column(nullable=False)
+    friendship : Mapped[int] = mapped_column(nullable=False)
+    constellation_level: Mapped[int] = mapped_column(nullable=False)
+    weapon_id: Mapped[int] = mapped_column(ForeignKey('weapons.id'))
 
-    constellations = relationship('Constellation', backref='character', cascade='all, delete-orphan')
+    constellations: Mapped[List["Constellation"]] = relationship(backref='character', cascade='all, delete-orphan')
 
-    weapon = relationship('Weapon', backref='character')
+    weapon: Mapped["Weapon"] = relationship(backref='character')

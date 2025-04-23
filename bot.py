@@ -13,7 +13,6 @@ from command_groups.genshin_commands import GenshinDB
 from command_groups.event_commands import SubscribeToEvents
 import asyncio
 import logging
-import logging.handlers
 import os
 import signal
 import sys
@@ -34,11 +33,7 @@ from pytz import timezone as pytz_tz
 
 # Setting up the config
 import config as cfg
-from database.config import init_db
-
 cfg.get_config()
-init_db()
-
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
 log = logging.getLogger('ReyBot')
@@ -57,16 +52,6 @@ async def get_admins() -> list:
         List: List with the admin user objects
     """
     return [await bot.fetch_user(admin) for admin in cfg.admin_ids]
-
-
-def setup_log():
-    console_handler, file_handler, formatter = define_log()
-    # Redirect stdout and stderr to log:
-    sys.stdout = StreamToLogger(log, logging.INFO)
-    sys.stderr = StreamToLogger(log, logging.ERROR)
-    log.addHandler(file_handler)
-    log.propagate = True
-    discord.utils.setup_logging(handler=console_handler, formatter=formatter, level=logging.INFO)
 
 
 @bot.event
@@ -280,9 +265,9 @@ async def send_timestamp(interaction: discord.Interaction, event_name: str, date
             nonlocal ephemeral
             get_timestamps_button.disabled = True
             if ephemeral:
-                await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>", ephemeral=True)
+                await interaction.response.send_message(fr"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>", ephemeral=True)
             else:
-                await interaction.response.send_message(f"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>")
+                await interaction.response.send_message(fr"Date: \<t:{int(timestamp.timestamp())}>\nRelative: \<t:{int(timestamp.timestamp())}:R>")
                 ephemeral = True
 
         get_timestamps_button.callback = discord_time_format_callback
@@ -408,6 +393,16 @@ async def exit_handler():
     await bot.close()
     log.info("Bot has been shut down")
     sys.exit(0)
+
+
+def setup_log():
+    console_handler, file_handler, formatter = define_log()
+    # Redirect stdout and stderr to log:
+    sys.stdout = StreamToLogger(log, logging.INFO)
+    sys.stderr = StreamToLogger(log, logging.ERROR)
+    log.addHandler(file_handler)
+    log.propagate = True
+    discord.utils.setup_logging(handler=console_handler, formatter=formatter, level=logging.INFO)
 
 
 async def main():

@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime
 
 from tzlocal import get_localzone
@@ -73,8 +74,7 @@ def define_log() -> tuple[logging.StreamHandler, logging.FileHandler, ColorForma
     level = logging.DEBUG
     # Print to file, change file everyday at 12:00 Local
     date = datetime(2020, 1, 1, 12)
-    file_handler = logging.handlers.TimedRotatingFileHandler(
-        log_filename, when='midnight', atTime=date)
+    file_handler = TimedRotatingFileHandler(log_filename, when='midnight', atTime=date)
     file_handler.setLevel(level)
     file_handler.setFormatter(file_formatter)
 
