@@ -1,38 +1,40 @@
 # pylint: disable=anomalous-backslash-in-string,wrong-import-position
-from utils.timezones import get_iana
-from utils.ps2 import continent_to_id, name_to_server_id
-from utils.logger import StreamToLogger, define_log, exception_to_log
-from discord_tools.tasks import update_genshin_chars, update_server_panels
-from discord_tools.modals import EventModal
-from discord_tools.literals import Timezones
-from discord_tools.embeds import (event_embed, get_census_health,
-                                  get_ps2_character_embed)
-from discord_tools.data import alert_reminder_dict, event_dict
-from discord_tools.classes import AlertReminder
-from command_groups.genshin_commands import GenshinDB
-from command_groups.event_commands import SubscribeToEvents
 import asyncio
 import logging
-import os
 import signal
 import sys
-import time
-from typing import Literal
 from datetime import datetime, timedelta, timezone
 from json import JSONDecodeError
 from traceback import format_exception
+from typing import Literal
 
 import discord
+import requests
+import sentry_sdk
+from aiohttp import ClientConnectionError
+from psycopg2 import OperationalError
+from datefinder import find_dates
 from discord.errors import NotFound
 from discord.ext import commands
 from discord.ui import Button, View
-import requests
-import sentry_sdk
-from datefinder import find_dates
 from pytz import timezone as pytz_tz
 
 # Setting up the config
 import config as cfg
+from command_groups.event_commands import SubscribeToEvents
+from command_groups.genshin_commands import GenshinDB
+from discord_tools.classes import AlertReminder
+from discord_tools.data import alert_reminder_dict, event_dict
+from discord_tools.embeds import (event_embed, get_census_health,
+                                  get_ps2_character_embed)
+from discord_tools.literals import Timezones
+from discord_tools.modals import EventModal
+from discord_tools.tasks import update_genshin_chars, update_server_panels
+from utils.bot_management import restart_program
+from utils.logger import StreamToLogger, define_log, exception_to_log
+from utils.ps2 import continent_to_id, name_to_server_id
+from utils.timezones import get_iana
+
 cfg.get_config()
 
 logging.getLogger('discord.http').setLevel(logging.INFO)
@@ -86,14 +88,17 @@ async def on_app_command_error(interaction: discord.Interaction, error: Exceptio
         original = error.original
     except AttributeError:
         original = error
+
     if type(original).__name__ == "ConnectionError":
         await interaction.response.send_message(f"{interaction.user.mention} The PS2 API timed out, please try again!")
         return
     if type(original).__name__ == "403 Forbidden" or isinstance(original, discord.errors.Forbidden):
         message = f"{interaction.user.mention} Your DM's are disabled." \
             "Please enable 'Allow direct messages from server members' under the privacy tab of the server or 'Allow direct messages' on your privacy settings and try again."
-
         await interaction.response.send_message(message)
+        return
+    if isinstance(original, OperationalError) or isinstance(original, ClientConnectionError):
+        await restart_program(exit_handler)
         return
     try:
         await interaction.response.send_message(f"Uhhh something unexpected happened! Please try again or contact Rey if it keeps happening.\nDetails: *{type(original).__name__}*")
@@ -359,10 +364,6 @@ async def restart_bot(interaction: discord.Interaction):
     def check(m):
         return (m.content.lower() == "y" or m.content.lower() == "n" or m.content.lower() == "yes" or m.content.lower() == "no")
 
-    def restart():
-        time.sleep(5)
-        os.execv(sys.executable, ['python3'] + sys.argv)
-
     if str(interaction.user.id) not in cfg.admin_ids:
         log.info(f"{interaction.user.id} tried to restart the bot")
         await interaction.response.send_message("You don't have permission to use this command!")
@@ -376,9 +377,7 @@ async def restart_bot(interaction: discord.Interaction):
             return
 
         await interaction.followup.send("Restarting...")
-        loop = asyncio.get_event_loop()
-        loop.run_in_executor(None, restart)
-        await exit_handler()
+        await restart_program(exit_handler)
     except asyncio.TimeoutError:
         await interaction.followup.send("Restart cancelled due to timeout...")
         return
